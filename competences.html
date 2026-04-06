@@ -365,14 +365,14 @@ whoami
                     et les réponses vers l'Admin sont autorisées, tout le reste est bloqué.
                 </p>
                 <pre><code>ip access-list extended BLOCK_SERVICE_PROD
- permit ospf any any                              ! OSPF non bloqué
- permit ip   192.168.10.0 0.0.0.255 any          ! Admin gauche : accès total
- permit ip   192.168.11.0 0.0.0.255 any          ! Admin droit  : accès total
- permit tcp  any 192.168.10.0 0.0.0.255 established ! Réponses TCP vers Admin gauche
- permit tcp  any 192.168.11.0 0.0.0.255 established ! Réponses TCP vers Admin droit
- permit icmp any 192.168.10.0 0.0.0.255 echo-reply  ! Réponses ping vers Admin gauche
- permit icmp any 192.168.11.0 0.0.0.255 echo-reply  ! Réponses ping vers Admin droit
- deny   ip   any any                              ! Tout le reste bloqué</code></pre>
+ permit ospf any any                              !OSPF non bloqué
+ permit ip   192.168.10.0 0.0.0.255 any          !Admin gauche : accès total
+ permit ip   192.168.11.0 0.0.0.255 any          !Admin droit  : accès total
+ permit tcp  any 192.168.10.0 0.0.0.255 established !Réponses TCP vers Admin gauche
+ permit tcp  any 192.168.11.0 0.0.0.255 established !Réponses TCP vers Admin droit
+ permit icmp any 192.168.10.0 0.0.0.255 echo-reply  !Réponses ping vers Admin gauche
+ permit icmp any 192.168.11.0 0.0.0.255 echo-reply  !Réponses ping vers Admin droit
+ deny   ip   any any                              !Tout le reste bloqué</code></pre>
                 <p>
                     Le mot-clé <code>established</code> filtre les paquets TCP dont le bit ACK
                     ou RST est positionné, caractéristique des paquets appartenant à une connexion
