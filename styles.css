@@ -1,0 +1,415 @@
+/* ==========================================================
+   STYLES GÉNÉRAUX
+   ========================================================== */
+   body {
+    background-color: #331616; /* Fond rouge sombre */
+    color: white;              
+    font-family: Arial, sans-serif; 
+    margin: 0;                  
+    padding: 0;                 
+    text-align: center;         
+}
+
+h1, h2, h3, h4, h5 {
+    color: white;               
+    text-align: center;         
+    margin-top: 20px;           
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+footer {
+    background-color: #111111;  
+    padding: 10px 0;            
+    text-align: center;          
+    width: 100%;                 
+}
+
+footer p {
+    color: gray;                 
+    margin: 5px 0;               
+}
+
+footer a {
+    color: gray;                 
+    text-decoration: none;       
+}
+
+footer a:hover {
+    color: white;                
+    text-decoration: underline;  
+}
+
+/* ==========================================================
+   HEADER ET NAVIGATION
+   ========================================================== */
+header {
+    background-color: #111111;   
+    padding: 20px 0;             
+    text-align: center;          
+}
+
+nav {
+    background-color: #222222;   
+    padding: 10px 0;             
+    text-align: center;          
+}
+
+nav a {
+    color: white;                
+    text-decoration: none;       
+    margin: 0 15px;              
+    font-weight: bold;           
+    transition: color 0.3s ease; 
+}
+
+nav a:hover {
+    color: gray;                 
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.container {
+    padding: 20px;               
+    margin: 0 auto;              
+    max-width: 1200px;           
+}
+
+/* ==========================================================
+   IMAGE
+   ========================================================== */
+.image-container {
+    text-align: center;          
+    margin: 20px 0;              
+}
+
+.image-container img {
+    max-width: 100%;             
+    height: auto;                
+    border-radius: 10px;         
+}
+
+/* ==========================================================
+   SECTIONS GÉNÉRALES
+   ========================================================== */
+section:not(.cv-section) {
+    background-color: #2a1212;   
+    border-radius: 12px;         
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+    padding: 60px 30px;          
+    max-width: 1000px;           
+    margin: 40px auto;           
+}
+
+section h2 {
+    font-size: 32px;             
+    margin-bottom: 25px;         
+}
+
+section h3 {
+    font-size: 24px;             
+    margin-top: 25px;            
+    margin-bottom: 10px;         
+}
+
+section:not(.cv-section) p {
+    font-size: 18px;             
+    line-height: 1.8;            
+    max-width: 900px;            
+    margin: 0 auto 15px auto;    
+    text-align: center;          
+}
+
+/* ==========================================================
+   BLOC COMPÉTENCES (boutons)
+   ========================================================== */
+section#competences-buttons {
+    text-align: center;          
+    padding: 60px 20px;          
+    margin-bottom: 80px;         
+    background-color: #2a1212;   
+    border-radius: 12px;         
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+    max-width: 1000px;           
+    margin-left: auto;            
+    margin-right: auto;           
+}
+
+section#competences-buttons h2 {
+    font-size: 30px;             
+    margin-bottom: 15px;         
+}
+
+section#competences-buttons p {
+    font-size: 1.2em;            
+    margin-bottom: 25px;         
+}
+
+.skills-buttons {
+    display: flex;               
+    flex-wrap: wrap;             
+    justify-content: center;     
+    gap: 15px;                   
+}
+
+.skill-btn {
+    background-color: #331616;   
+    color: white;                
+    padding: 12px 25px;          
+    border-radius: 10px;         
+    border: 2px solid #444444;   
+    text-decoration: none;       
+    font-size: 18px;             
+    transition: 0.3s ease;       
+}
+
+.skill-btn:hover {
+    background-color: #4a1f1f;   
+    border-color: #ffffff;        
+    transform: translateY(-3px);  
+}
+
+/* ==========================================================
+   TABLEAUX (CV et Hobbies)
+   ========================================================== */
+table {
+    width: 90%;                  
+    margin: 25px auto;           
+    border-collapse: separate;   
+    border-spacing: 0;           
+    border-radius: 12px;         
+    overflow: hidden;            
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4); 
+    background-color: #2a1212;   
+}
+
+th {
+    background-color: #4a1f1f;   
+    color: white;                
+    font-size: 18px;             
+    padding: 15px 20px;          
+    text-align: left;            
+}
+
+td {
+    background-color: #331616;   
+    color: white;                
+    font-size: 16px;             
+    padding: 15px 20px;          
+    text-align: left;            
+}
+
+tr:nth-child(even) td {
+    background-color: #2d1a1a;   
+}
+
+tr:hover td {
+    background-color: #4a1f1f;   
+    cursor: pointer;             
+}
+
+table a {
+    color: #ffd700;              
+    text-decoration: none;       
+    transition: 0.3s ease;       
+}
+
+table a:hover {
+    text-decoration: underline;  
+}
+
+/* ==========================================================
+   ACCORDÉONS PRINCIPAUX
+   ========================================================== */
+details.accordion-item {
+    background-color: #2a1212;   
+    border: 2px solid #444444;   
+    border-radius: 10px;         
+    margin: 20px auto;           
+    padding: 0;                  
+    max-width: 900px;            
+    transition: 0.3s ease;       
+}
+
+details.accordion-item summary.accordion-title {
+    padding: 15px 25px;          
+    font-size: 24px;             
+    font-weight: bold;           
+    color: white;                
+    cursor: pointer;             
+    list-style: none;            
+    outline: none;               
+    user-select: none;           
+    background-color: #331616;   
+    border-bottom: 1px solid #444444; 
+    transition: 0.3s ease;       
+}
+
+details.accordion-item summary.accordion-title:hover {
+    background-color: #4a1f1f;   
+}
+
+details.accordion-item summary::-webkit-details-marker {
+    display: none;               
+}
+
+details.accordion-item .accordion-content {
+    padding: 15px 25px;          
+    background-color: #1a0d0d;   
+    border-left: none;           
+    color: white;                
+    font-size: 18px;             
+    line-height: 1.6;            
+}
+
+/* ==========================================================
+   BLOC CV
+   ========================================================== */
+.cv-section {
+    background-color: #222222;   
+    padding: 20px 25px;          
+    margin-bottom: 25px;         
+    border-radius: 10px;         
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); 
+    text-align: left;            
+    border: 1px solid #444444;  
+}
+
+.cv-section h2 {
+    font-size: 26px;             
+    margin-bottom: 15px;         
+    padding-bottom: 5px;         
+    border-bottom: 1px solid #444444; 
+}
+
+.cv-section p, .cv-section li {
+    font-size: 18px;             
+    line-height: 1.6;            
+    margin: 8px 0;               
+    text-align: left;            
+}
+
+/* ==========================================================
+   SOUS-MENUS / SOUS-ACCORDÉONS (AC22)
+   ========================================================== */
+details.accordion-subitem {
+    background-color: #1f0f0f;          /* Fond légèrement plus sombre */
+    border: 1px solid #444444;          /* Bordure gris clair */
+    border-radius: 8px;                  
+    margin: 15px 0 15px 30px;           /* Décalage à gauche pour hiérarchie */
+    max-width: 95%;                      
+    transition: 0.3s ease;               
+}
+
+details.accordion-subitem summary.accordion-subtitle {
+    padding: 12px 20px;                  
+    font-size: 18px;                     
+    font-weight: bold;                   
+    text-align: left;                    
+    color: #ffd700;                       /* Texte doré pour les sous-menus */
+    cursor: pointer;                     
+    list-style: none;                    
+    background-color: #2d1414;           
+    border-radius: 8px;                   
+    transition: 0.3s ease;               
+}
+
+details.accordion-subitem summary::-webkit-details-marker {
+    display: none;                       
+}
+
+details.accordion-subitem summary.accordion-subtitle:hover {
+    background-color: #4a1f1f;           
+    transform: translateX(5px);           /* Petit décalage au survol */
+}
+
+details.accordion-subitem .accordion-content {
+    background-color: #140808;           
+    padding: 20px;                        
+    text-align: left;                     
+    font-size: 17px;                      
+    line-height: 1.7;                     
+    border-radius: 0 0 8px 8px;           
+}
+
+details.accordion-subitem[open] {
+    border-color: #ffd700;                
+    box-shadow: 0 0 10px rgba(255,215,0,0.2); 
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media screen and (max-width: 768px) {
+
+    nav a {
+        display: block;
+        margin: 10px 0;
+    }
+
+    details.accordion-item,
+    details.accordion-subitem {
+        margin: 15px 10px;
+    }
+
+    details.accordion-item summary.accordion-title {
+        font-size: 20px;
+    }
+
+    details.accordion-subitem summary.accordion-subtitle {
+        font-size: 16px;
+    }
+
+    details.accordion-subitem .accordion-content {
+        font-size: 15px;
+    }
+
+    .cv-section {
+        padding: 15px 15px;
+    }
+
+    .cv-section h2 {
+        font-size: 22px;
+    }
+
+    .cv-section p, .cv-section li {
+        font-size: 16px;
+    }
+
+    section#presentation {
+        padding: 60px 15px;
+        margin-bottom: 80px;
+    }
+
+    section#competences-buttons {
+        padding: 50px 15px;
+        margin-bottom: 60px;
+    }
+
+    section {
+        padding: 40px 15px;
+    }
+
+    section h2 {
+        font-size: 28px;
+    }
+
+    section h3 {
+        font-size: 20px;
+    }
+
+    section:not(.cv-section) p {
+        font-size: 16px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    th, td {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
