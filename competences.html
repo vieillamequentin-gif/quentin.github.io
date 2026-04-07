@@ -127,6 +127,21 @@
                     journaux de connexion et mettre en place des alertes (SIEM) sur les connexions
                     SSH réussies depuis des IPs inconnues.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai analysé la surface d'attaque d'une machine cible (10.16.20.187) depuis Kali Linux en identifiant ses services exposés et ses vulnérabilités, puis j'ai dressé la liste des protections concrètes à mettre en place.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Avant de protéger un système, il faut savoir ce qu'un attaquant voit. Adopter la posture offensive permet de prioriser les bonnes mesures : inutile de déployer un antivirus sophistiqué si un mot de passe faible est exposé en clair sur une page HTTP.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Avec <code>ip a</code> pour vérifier ma connectivité réseau, puis <code>nmap</code> pour scanner les ports et services de la cible. J'ai ensuite analysé chaque service découvert pour en déduire les protections à administrer : désactivation des services inutiles, remplacement de Base64 par du hachage bcrypt, restrictions sudo, fail2ban sur SSH.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La difficulté principale n'était pas technique mais conceptuelle : passer d'une vision défensive ("que faut-il protéger ?") à une vision offensive ("que peut exploiter un attaquant ?"). Cette inversion du point de vue demande de la pratique.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Qu'une protection n'a de valeur que si elle résiste à quelqu'un qui cherche activement à la contourner. J'ai compris pourquoi l'ANSSI préconise des exercices de red team : les vulnérabilités les plus dangereuses sont souvent les plus simples, comme un port inutile ou un droit sudo mal configuré.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais documenté dès le départ un tableau de surface d'attaque (port / service / risque / contre-mesure) pour rendre l'analyse plus systématique et réutilisable dans un rapport de sécurité.</p>
+                </div>
             </div>
         </details>
 
@@ -200,7 +215,7 @@ echo "resultat_intermediaire" | base64 -d
                     j'ai mise en place utilise deux terminaux en parallèle :
                 </p>
                 <pre><code># Terminal 1 (en attente active) :
-ssh k1tt3ns@10.16.10.187
+ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="305b014444035e437001001e01061e01001e010807">[email&#160;protected]</a>
 # Le client SSH essaie de se connecter en boucle
 
 # Terminal 2 (déclenchement du port knocking) :
@@ -260,6 +275,21 @@ whoami
                     machine (<strong>10.15.250.129</strong>) et a affiché le flag validant la
                     réussite complète de la session de pentesting.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai conduit une session de pentesting complète en 6 étapes sur une machine cible : reconnaissance nmap, extraction de credentials Base64 avec curl, contournement du port knocking SSH, connexion SSH, escalade de privilèges via vim, récupération du flag.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Le module R3.Cyber.16 Méthodologie du pentesting m'a appris que l'on ne peut défendre efficacement que ce que l'on est capable d'attaquer. Cette SAÉ était l'occasion de mettre en pratique la kill chain offensive de A à Z sur un environnement réel, dans un cadre légal et pédagogique.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Avec Kali Linux et la chaîne d'outils : <code>nmap -all</code> pour la reconnaissance, <code>curl</code> pour l'analyse HTTP, <code>base64 -d</code> pour le décodage multicouche, deux terminaux en parallèle pour le port knocking, SSH pour la connexion, <code>sudo -l</code> puis <code>vim :!bin/sh</code> pour l'escalade de privilèges.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Le port knocking était le blocage le plus frustrant : le port 22 s'ouvrait puis se refermait en quelques secondes, trop vite pour une connexion SSH manuelle. J'ai mis un certain temps à comprendre qu'il fallait lancer le client SSH en attente active dans un premier terminal avant de déclencher le knocking dans un second.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que chaque technique d'attaque a une contre-mesure directe : Base64 → utiliser bcrypt ; port knocking seul → insuffisant, ajouter une authentification forte ; sudo vim → GTFOBins recense des dizaines de vecteurs similaires. Apprendre à attaquer m'a donné une intuition très concrète sur ce qui rend un système robuste.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais tenu un carnet de bord pendant la session (chaque commande, chaque résultat, chaque hypothèse testée) pour produire un vrai rapport de pentesting structuré selon la méthodologie PTES, et non juste valider le flag.</p>
+                </div>
             </div>
         </details>
 
@@ -340,6 +370,21 @@ whoami
                     de mots de passe) : KeePassXC (usage individuel) ou HashiCorp Vault (usage
                     centralisé).
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai analysé les 62 recommandations du guide ANSSI <em>Recommandations pour la protection des systèmes d'information essentiels</em> (v1.0) et appliqué chacune à notre infrastructure SAÉ 4.Cyber.01, aboutissant à 85 % de conformité (53 mesures retenues).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Un système d'information ne se sécurise pas au hasard : il existe des référentiels reconnus par les autorités françaises (ANSSI) qui définissent les bonnes pratiques. Les appliquer garantit un niveau de sécurité cohérent, auditables et documenté, ce qui est indispensable dans un contexte professionnel ou réglementaire.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Lecture du guide ANSSI, confrontation de chaque recommandation à notre maquette Packet Tracer, classement en trois statuts (Retenue / Exclue / Non applicable) avec justification écrite pour chacune. Les mesures exclues (MFA, coffre-fort de mots de passe, réseau physique dédié) ont toutes reçu un plan d'action production.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Distinguer "Non applicable" de "Exclue" a demandé une lecture fine du guide. Par exemple, R20 (chiffrement de disque) est non applicable car il concerne les postes nomades absents de notre maquette, tandis que R39 (réseau physique d'administration dédié) est exclue car pertinente mais irréalisable dans Packet Tracer.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Qu'un bon niveau de sécurité ne demande pas d'implémenter 100 % des recommandations d'un guide, mais de savoir pourquoi on n'en implémente pas certaines et d'avoir un plan pour les adresser en production. La rigueur de la justification est aussi importante que la mesure elle-même.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais intégré cette analyse ANSSI dès la phase de conception de l'infrastructure, plutôt qu'en fin de projet. Partir des recommandations comme cahier des charges technique aurait orienté certains choix architecturaux dès le début (ex : séparation physique du réseau d'administration).</p>
+                </div>
             </div>
         </details>
 
@@ -428,6 +473,21 @@ policy-map global_policy
   inspect icmp
   inspect tftp
 service-policy global_policy global</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai déployé une double couche de filtrage réseau sur deux sites : ACL étendue nommée <code>BLOCK_SERVICE_PROD</code> sur les switchs L3 (whitelist stateful avec <code>established</code> et <code>echo-reply</code>), et pare-feux Cisco ASA 5506-X avec trois ACLs par pare-feu (INSIDE_IN, OUTSIDE_IN, DMZ_IN) et <code>inspect icmp</code>.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Un seul niveau de filtrage crée un point de défaillance unique : si une règle est mal configurée ou contournée, l'attaquant accède directement aux ressources. La défense en profondeur (deux couches indépendantes) garantit que la compromission d'une couche ne suffit pas à atteindre les systèmes sensibles.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Sur les switchs L3 SR1/SR2, application de l'ACL <code>BLOCK_SERVICE_PROD</code> en entrée sur les VLANs Service et Production. Sur les ASA, configuration des trois ACLs nommées, liaison via <code>access-group</code>, et activation de <code>inspect icmp</code> dans la <code>service-policy global_policy</code> pour le filtrage stateful ICMP.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Comprendre la différence de comportement entre les ACLs IOS standards (numérotées, first-match) et les ACLs ASA (nommées étendues, avec <code>extended</code> obligatoire). Sur l'ASA, j'ai aussi dû comprendre pourquoi <code>security-level 100</code> sur toutes les interfaces ne suffit pas : le filtrage explicite par ACL est nécessaire.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que le filtrage stateful (établi vs initié) est fondamental pour respecter la règle "Admin peut tout initier, Service/Production ne peut que répondre" sans bloquer le retour des réponses légitimes. La commande <code>inspect icmp</code> sur l'ASA m'a appris que même ICMP, souvent oublié, doit être géré avec état.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais ajouté des <code>log</code> sur les règles <code>deny</code> finales pour pouvoir analyser les tentatives bloquées et détecter des comportements anormaux (ex : un poste Service tentant d'accéder à la DMZ). Sans journalisation, le filtrage est aveugle.</p>
+                </div>
             </div>
         </details>
 
@@ -520,6 +580,21 @@ sudo dnssec-signzone -o example.local /etc/bind/db.example.local
 # Vérification — présence du flag 'ad' et des enregistrements RRSIG
 dig @192.31.25.18 www.example.local +dnssec
 # --> Réponse avec RRSIG + flag ad = validation DNSSEC réussie</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai sécurisé les services exposés en DMZ : migration HTTP vers HTTPS sur Apache2 (ma spécialisation) avec certificat RSA 4096 bits, en-têtes HSTS/X-Frame-Options/X-XSS-Protection, redirection permanente, et prise en charge de DNSSEC sur BIND9 (spécialisation de Matisse Rudiger).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Exposer un service web en HTTP non chiffré sur un réseau d'entreprise revient à transmettre les données utilisateurs en clair : identifiants, formulaires, cookies de session. Sur un réseau où des outils de capture (Wireshark, tcpdump) peuvent tourner, c'est inacceptable. HTTPS et DNSSEC ensemble garantissent que la connexion est chiffrée ET que le serveur DNS qui a fourni l'adresse IP n'a pas été falsifié.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Installation d'OpenSSL et d'Apache2, génération d'un certificat auto-signé RSA 4096 bits (<code>openssl req -x509 -newkey rsa:4096</code>), configuration du VirtualHost SSL dans <code>default-ssl.conf</code>, activation de <code>mod_ssl</code>, ajout des en-têtes de sécurité HTTP et redirection permanente port 80 → 443. Pour DNSSEC : génération ZSK (RSA 2048) et KSK (RSA 4096) avec <code>dnssec-keygen</code>, signature de zone avec <code>dnssec-signzone</code>, validation par <code>dig +dnssec</code>.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Le navigateur affiche un avertissement de sécurité pour un certificat auto-signé car il n'est pas signé par une autorité de certification reconnue (Let's Encrypt, DigiCert). En production réelle, il faudrait utiliser Let's Encrypt (gratuit et automatisé) ou un certificat d'entreprise. Cette limitation est inhérente à l'environnement de TP.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que HTTPS ne se résume pas au cadenas dans le navigateur : les en-têtes HTTP de sécurité (HSTS, X-Frame-Options, Referrer-Policy) constituent une deuxième ligne de défense au niveau applicatif, indépendante du chiffrement TLS. HSTS en particulier prévient les attaques SSL Stripping même si l'utilisateur tape l'URL en HTTP.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>En production, j'utiliserais Let's Encrypt avec Certbot pour automatiser le renouvellement des certificats (tous les 90 jours) et bénéficier d'un certificat reconnu par tous les navigateurs. J'ajouterais aussi une politique de sécurité du contenu (CSP) pour prévenir les injections XSS au niveau du serveur.</p>
+                </div>
             </div>
         </details>
 
@@ -594,6 +669,21 @@ dig @192.31.25.18 www.example.local +dnssec
                     peut pas injecter de faux enregistrements car il ne possède pas la clé
                     privée ZSK pour générer une signature RRSIG valide.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai choisi et appliqué trois outils cryptographiques distincts adaptés à trois besoins fonctionnels différents : IPSec AES-256/SHA-256 pour le tunnel inter-sites, TLS avec RSA 4096 bits pour les services web en DMZ, et DNSSEC (RSA 2048/4096) pour l'intégrité des enregistrements DNS.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>La cryptographie n'est pas un outil unique que l'on applique partout de la même façon : AES-256 est adapté au chiffrement de flux réseau (symétrique, rapide, efficace sur de gros volumes), RSA est adapté à l'authentification et à l'échange de clés (asymétrique, plus lent), et DNSSEC utilise les signatures numériques pour l'intégrité sans chiffrement. Choisir le mauvais outil (ex : Base64 pour "protéger" un mot de passe) crée une fausse impression de sécurité.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Pour IPSec : configuration ISAKMP (AES-256, SHA-256, DH Group 5) et transform-set sur les routeurs Cisco. Pour HTTPS : génération du certificat avec <code>openssl req -x509 -newkey rsa:4096</code> et configuration Apache2. Pour DNSSEC : <code>dnssec-keygen -a RSASHA256 -b 2048</code> (ZSK) et <code>-b 4096 -f KSK</code> (KSK), puis <code>dnssec-signzone</code>.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Comprendre pourquoi RSA 4096 bits pour la KSK et RSA 2048 pour la ZSK dans DNSSEC, et non la même taille partout. La ZSK signe fréquemment (chaque enregistrement) donc sa taille est un compromis performance/sécurité ; la KSK ne signe que la ZSK (rarement) donc on peut se permettre une clé plus longue.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>La distinction fondamentale entre encodage (Base64 : représentation, sans clé, réversible par tous), hachage (bcrypt : vérification, irréversible, pour les mots de passe) et chiffrement (AES, RSA : confidentialité ou intégrité, avec clé). Cette taxonomie claire m'aide maintenant à répondre immédiatement à la question "quel outil cryptographique pour ce besoin ?"</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais utilisé ECDSA (courbes elliptiques) plutôt que RSA pour les certificats TLS : à niveau de sécurité équivalent, ECDSA utilise des clés beaucoup plus courtes (256 bits ≈ RSA 3072 bits), ce qui améliore les performances du handshake TLS, particulièrement sur les appareils mobiles.</p>
+                </div>
             </div>
         </details>
 
@@ -682,6 +772,21 @@ SR2(config)# spanning-tree vlan 1,10,20,30 priority 4096</code></pre>
                     C'est précisément pour contrer ce risque que GRE over IPSec (AES-256,
                     SHA-256) a été choisi pour l'interconnexion inter-sites.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai étudié et mis en pratique trois types d'attaques réseau : l'attaque STP (Root Bridge Hijacking avec priorité 0 sur un switch malveillant SW-A), le port knocking bypass (connexion SSH contournant la protection temporelle), et l'escalade de privilèges via vim (<code>sudo vim :!bin/sh</code>).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Connaître les types d'attaques existantes est indispensable pour concevoir des architectures qui y résistent. Un ingénieur réseau qui ne connaît pas l'attaque STP déploiera des switchs sans BPDU Guard ; un administrateur système qui ignore GTFOBins accordera des droits sudo sur vim. La connaissance des attaques guide directement les choix de configuration.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Pour STP : connexion d'un switch SW-A en trunk sur SR2, configuration <code>spanning-tree vlan 1,10,20,30 priority 0</code> pour forcer l'élection Root Bridge, vérification avec <code>show spanning-tree</code>. Contre-mesure : <code>spanning-tree portfast</code> + <code>bpduguard enable</code> sur les ports d'accès. Pour les autres attaques : manipulation directe dans le TP de pentesting SAÉ 3.Cyber.04.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Pour l'attaque STP, la difficulté était de comprendre pourquoi elle est aussi dévastatrice : le trafic ne s'arrête pas, il est simplement redirigé via l'attaquant. Un opérateur réseau sans monitoring STP ne verra rien d'anormal pendant plusieurs minutes. Cette discrétion en fait une attaque particulièrement dangereuse en milieu réel.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la sécurité L2 est souvent le parent pauvre des configurations réseau : on configure soigneusement les ACLs et les pare-feux (L3/L4) mais on oublie de protéger la couche 2 (STP, ARP, DHCP). BPDU Guard, Dynamic ARP Inspection et DHCP Snooping sont les trois piliers de la sécurité L2 sur un switch Cisco.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais testé l'attaque STP en mode silencieux (sans modifier la priorité de SR2 en réponse) pour mesurer combien de temps l'attaque passerait inaperçue sans monitoring. Cela aurait renforcé l'argument en faveur d'un SIEM avec alertes sur les changements de topologie STP.</p>
+                </div>
             </div>
         </details>
 
@@ -787,6 +892,21 @@ Files: .txt, .pdf
                     réutilisation immédiate du port), <code>SHUT_RDWR</code> (fermeture
                     bidirectionnelle propre du socket).
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai rédigé l'intégralité du code source de l'application SAÉ 3.02 en anglais (noms de variables, fonctions, classes, commentaires), produit un README.md complet en anglais, et consulté les documentations officielles anglaises de PyPDF2, openpyxl, BeautifulSoup et le module socket Python.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>L'anglais est la langue universelle du développement logiciel : les bibliothèques, les CVEs, Stack Overflow, GitHub, les API REST sont toutes documentées en anglais. Un développeur ou ingénieur réseau incapable de lire et écrire de l'anglais technique se coupe de la quasi-totalité des ressources professionnelles disponibles.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Conventions PEP 8 appliquées systématiquement : <code>snake_case</code> pour les fonctions et variables, <code>CamelCase</code> pour les classes, <code>UPPER_CASE</code> pour les constantes. Docstrings en anglais pour chaque fonction. README structuré avec sections Overview, Features, Requirements, Installation, Usage. Lecture des documentations officielles sur docs.python.org, openpyxl.readthedocs.io, beautiful-soup-4.readthedocs.io.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La difficulté principale n'était pas linguistique mais de précision : trouver le terme technique anglais exact ("streaming" vs "reading", "chunk" vs "fragment", "worker" vs "handler") pour décrire précisément le comportement du code. Un mauvais terme dans un commentaire peut induire un autre développeur en erreur.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la documentation en anglais n'est pas une formalité : les docstrings et commentaires bien rédigés sont ce qui permet à un collègue (ou à soi-même 6 mois plus tard) de comprendre le code sans avoir à le lire intégralement. Un code sans commentaires est un code à moitié écrit.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais utilisé un linter de documentation comme <code>pydocstyle</code> pour vérifier automatiquement que toutes les fonctions et classes ont des docstrings conformes au standard Google ou NumPy, garantissant une documentation exhaustive et cohérente.</p>
+                </div>
             </div>
         </details>
 
@@ -924,6 +1044,21 @@ echo "==> Initialisation terminée avec succès"</code></pre>
                     garantit que la suppression d'un utilisateur entraîne automatiquement la
                     suppression de ses éléments de panier, maintenant l'intégrité référentielle.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai développé deux scripts d'administration système : un script PowerShell déployé par GPO pour monter automatiquement le partage réseau au logon des employés, et un script Bash <code>init_prod.sh</code> pour initialiser automatiquement la base de données PostgreSQL au premier démarrage du conteneur Docker.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Dans une infrastructure d'entreprise, les tâches répétitives (monter un partage à chaque logon, initialiser une base de données lors d'un déploiement) ne doivent pas dépendre d'une intervention humaine : l'oubli d'une étape crée une incohérence ou une interruption de service. L'automatisation garantit la reproductibilité et libère l'administrateur pour des tâches à plus forte valeur ajoutée.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>PowerShell : commande <code>net use Z: \\192.168.10.10\Partage_Personnel /persistent:yes</code> avec vérification de <code>$LASTEXITCODE</code> et journalisation dans l'Event Log Windows. Déployé via GPO "Logon script" sur l'OU des employés. Bash : script avec <code>set -e</code> (arrêt immédiat sur erreur), héredoc psql pour créer utilisateurs, base et tables, copié dans <code>/docker-entrypoint-initdb.d/</code> pour exécution automatique au premier démarrage.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Pour le script PowerShell, la politique d'exécution par défaut (<em>Restricted</em>) bloquait l'exécution des scripts. Il a fallu créer une GPO supplémentaire pour passer la politique à <em>RemoteSigned</em> à l'échelle du domaine. Sans cette étape, le script s'affichait dans la GPO mais ne s'exécutait jamais.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que l'option <code>set -e</code> en Bash est cruciale pour les scripts d'initialisation : sans elle, un script qui échoue à mi-chemin (ex : création d'un utilisateur qui plante) continue silencieusement et laisse la base dans un état incohérent, difficile à diagnostiquer. <code>set -e</code> transforme une erreur silencieuse en erreur visible.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais ajouté de la journalisation structurée dans les deux scripts (horodatage, niveau de sévérité, message) pour faciliter le diagnostic en production. Pour le script PowerShell, j'aurais aussi géré le cas où le lecteur Z: est déjà connecté à une autre ressource, pour éviter un conflit silencieux.</p>
+                </div>
             </div>
         </details>
 
@@ -1068,6 +1203,21 @@ def search_xlsx(filepath, query1, query2, mode):
             self.connect_btn.config(state=tk.DISABLED)
     except (ConnectionRefusedError, ValueError) as e:
         messagebox.showerror("Connection Error", str(e))</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai développé une application client/serveur de recherche documentaire en Python (SAÉ 3.02), structurée en trois modules séparés (<code>serveur.py</code>, <code>client.py</code>, <code>recherche.py</code>) avec interface graphique Tkinter, support de 4 formats de fichiers (PDF, Excel, HTML, TXT) et 4 modes de recherche (simple, AND, OR, regex). Les fichiers de données s'appellent tous <code>pentesting.*</code>.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Cette SAÉ répondait à un besoin concret : disposer d'un outil permettant de rechercher des informations dans une base documentaire hétérogène (différents formats) sans passer par un moteur de recherche externe. Dans un contexte de sécurité informatique, pouvoir chercher rapidement dans des rapports de pentesting au format PDF, des notes en TXT et des tableaux Excel est très utile.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Architecture MVC informelle : <code>recherche.py</code> (modèle, logique pure), <code>serveur.py</code> (contrôleur réseau, multithreading avec <code>threading.Thread</code>), <code>client.py</code> (vue Tkinter). Respect des conventions PEP 8. Fichier <code>requirements.txt</code> avec PyPDF2, openpyxl, beautifulsoup4. Interface à thème sombre (#1e1e1e) avec indicateur de connexion coloré (rouge/vert) et coloration syntaxique des résultats (#569cd6).</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La gestion de l'état de l'interface (boutons désactivés quand non connecté, activation au bon moment) a demandé une bonne compréhension du cycle de vie des widgets Tkinter. Il fallait éviter qu'un utilisateur lance une recherche avant que la connexion soit établie, ce qui aurait planté le client silencieusement.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que séparer les responsabilités (SRP) n'est pas qu'une question de style : pendant le développement, j'ai pu tester <code>recherche.py</code> indépendamment sans lancer le serveur, ce qui a considérablement accéléré le débogage. Une architecture mal découpée m'aurait obligé à lancer toute l'application pour tester la moindre fonction.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais ajouté une barre de progression ou un spinner pendant la recherche pour indiquer à l'utilisateur que l'application travaille, surtout pour les fichiers PDF volumineux. J'aurais aussi implémenté un historique des recherches pour éviter de ressaisir les mêmes termes.</p>
+                </div>
             </div>
         </details>
 
@@ -1219,6 +1369,21 @@ def input_monitor():
    "location": "Line 47",
    "context": "nmap -sV -O 192.168.1.1 results:"}
 ]</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai implémenté from scratch une architecture TCP client/serveur en Python : création du socket, option <code>SO_REUSEADDR</code>, gestion de plusieurs clients simultanés via threads daemon, sérialisation JSON des requêtes/réponses, réception par chunks avec détection de fin de transmission, et déconnexion propre via signal <code>"q"</code>.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Une application client/serveur ne peut pas fonctionner sans un protocole d'échange clair entre les deux parties. Implémenter le protocole réseau manuellement (plutôt qu'utiliser une bibliothèque HTTP ou WebSocket toute faite) m'a permis de comprendre exactement ce qui se passe à chaque étape de la communication, ce que l'on ne comprend jamais aussi bien en utilisant une abstraction.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Module <code>socket</code> de Python standard : <code>socket.AF_INET</code>, <code>SOCK_STREAM</code> (TCP), <code>setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)</code>, <code>bind</code> sur port 52300, <code>listen(5)</code>. Pour chaque client accepté : instanciation d'un <code>ClientWorker(threading.Thread, daemon=True)</code>. Échange en JSON avec buffer de 16 384 octets. Réception en boucle jusqu'à chunk < buffer (détection de fin).</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>TCP est un protocole de flux, pas de messages : un seul appel à <code>send()</code> côté serveur peut nécessiter plusieurs <code>recv()</code> côté client si les données dépassent la taille du buffer. J'ai mis du temps à comprendre pourquoi certaines réponses étaient tronquées avant d'implémenter la boucle de réception par chunks.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la gestion des erreurs réseau est aussi importante que le fonctionnement normal : <code>ConnectionResetError</code> (client coupé brutalement), <code>BrokenPipeError</code> (socket fermé côté client pendant l'envoi) et la déconnexion propre via signal sont trois cas différents qui requièrent trois traitements différents. Le bloc <code>try/except/finally</code> garantit que le socket est toujours fermé, même en cas d'exception.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>Pour un projet plus robuste, j'aurais utilisé un protocole avec en-tête de longueur (4 octets indiquant la taille du message suivant) plutôt que la détection de fin par taille de chunk, qui est fragile si les données font exactement 16 384 octets. J'aurais aussi ajouté un timeout sur <code>recv()</code> pour éviter qu'un client ne monopolise un thread indéfiniment.</p>
+                </div>
             </div>
         </details>
 
@@ -1378,6 +1543,21 @@ sudo -u postgres psql -c "SELECT pg_is_in_recovery();"
 SHOW search_path;
 SET search_path TO production;
 -- Permet d'accéder aux tables sans préfixer : SELECT * FROM clients;</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai installé et administré PostgreSQL 14 sur Linux : configuration réseau (<code>listen_addresses = '*'</code>), création de la base <code>société_62</code> avec schéma <code>production</code>, gestion de quatre rôles distincts (prod_rw, web_read, replicat, prod_admin), création de trois tables (clients, produits, employe), attribution des droits granulaires, et configuration de la réplication en streaming vers une machine secondaire.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Une base de données bien administrée, ce n'est pas juste "une base qui fonctionne" : c'est une base où chaque utilisateur ne peut accéder qu'à ce dont il a besoin (moindre privilège), où les données peuvent être récupérées en cas de panne (réplication), et où la configuration réseau ne laisse pas de ports ouverts inutilement. Ces principes sont les mêmes que pour la sécurité réseau.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Installation avec <code>apt install postgresql postgresql-client</code>, configuration dans <code>postgresql.conf</code> (<code>wal_level = replica</code>, <code>max_wal_senders = 3</code>) et <code>pg_hba.conf</code> (passage de <em>peer</em> à <em>md5</em>, autorisation du réplicat). Clonage de la base vers le serveur secondaire avec <code>pg_basebackup -h 192.31.25.16 -U replicat --wal-method=stream</code>, création de <code>standby.signal</code>, vérification avec <code>SELECT pg_is_in_recovery();</code> et <code>SELECT client_addr, state FROM pg_stat_replication;</code>.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Le changement d'authentification de <em>peer</em> à <em>md5</em> dans <code>pg_hba.conf</code> est une étape invisible mais bloquante : avant ce changement, toute tentative de connexion avec un mot de passe échoue silencieusement avec une erreur d'authentification qui ne dit pas explicitement quelle méthode est utilisée. Il a fallu comprendre le mécanisme peer (authentification par nom d'utilisateur système) pour diagnostiquer le problème.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la réplication PostgreSQL repose sur les WAL (Write-Ahead Logs) : PostgreSQL écrit d'abord chaque modification dans un journal avant de l'appliquer à la base. Le serveur secondaire rejoue ces journaux en continu, ce qui garantit qu'il est toujours à jour. Ce mécanisme est à la base de la haute disponibilité de toutes les bases de données modernes.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais configuré un slot de réplication nommé (<code>primary_slot_name</code>) pour que le serveur primaire conserve les WAL jusqu'à ce que le secondaire les ait consommés, évitant ainsi de perdre la synchronisation si le secondaire est redémarré. J'aurais aussi configuré un basculement automatique (failover) avec un outil comme Patroni.</p>
+                </div>
             </div>
         </details>
 
@@ -1538,6 +1718,21 @@ def match_logic(text, query1, query2, mode):
                     les cellules Excel numériques (int, float, datetime) qui ne sont pas
                     des chaînes de caractères nativement.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai développé le module <code>recherche.py</code> de l'application SAÉ 3.02 : un moteur de recherche multi-format accédant à des fichiers TXT (avec cache LRU), HTML (avec BeautifulSoup), PDF (avec PyPDF2) et Excel (avec openpyxl en mode <code>data_only</code>), avec une fonction de correspondance unifiée <code>match_logic()</code> gérant les 4 modes (simple, AND, OR, regex).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Le cœur d'une application de recherche documentaire n'est pas l'interface ni le réseau, mais la capacité à extraire du texte de sources hétérogènes et à y trouver efficacement des informations. Centraliser cette logique dans un module dédié (<code>recherche.py</code>) garantit qu'elle peut être améliorée ou testée sans toucher au reste de l'application.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>PyPDF2 (<code>PdfReader.pages</code>, <code>extract_text()</code>), openpyxl (<code>load_workbook(data_only=True)</code>, <code>iter_rows(values_only=True)</code>), BeautifulSoup (<code>html.parser</code>, <code>get_text()</code>). Cache LRU avec <code>@lru_cache(maxsize=128)</code> sur la lecture TXT pour éviter les accès disque répétés. Mode regex avec <code>re.search(pattern, text, re.IGNORECASE)</code> dans un bloc <code>try/except re.error</code> pour ne pas crasher le serveur sur un pattern invalide.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>PyPDF2 ne peut extraire le texte que des PDF contenant de vraies polices embarquées. Les PDFs numérisés (images scannées) retournent une chaîne vide depuis <code>extract_text()</code>, sans erreur. Pendant les tests, certains fichiers PDF semblaient non fonctionnels alors qu'ils étaient juste numérisés. J'ai ajouté un test <code>if not page_text: continue</code> pour ignorer ces pages sans planter.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>L'importance du décorateur <code>@lru_cache</code> (Least Recently Used cache) : sans lui, chaque requête de recherche relit les fichiers TXT depuis le disque, même si le même fichier a déjà été lu par la requête précédente. Avec le cache, la seconde requête sur le même fichier est instantanée. Ce pattern de memoïsation est fondamental en développement pour éviter les goulots d'étranglement I/O.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais implémenté un indexeur asynchrone : au lieu de lire les fichiers à la demande à chaque requête, un thread de fond parcourt le répertoire au démarrage et construit un index inversé (mot → liste de fichiers/positions). Les recherches deviendraient quasi-instantanées quelle que soit la taille du corpus documentaire.</p>
+                </div>
             </div>
         </details>
 
@@ -1653,6 +1848,21 @@ def match_logic(text, query1, query2, mode):
                     DAB+ est 6 fois plus efficace spectralement. En France, DAB+ est déployé
                     en bande III (174-240 MHz).
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai étudié et caractérisé plusieurs systèmes de transmission radio complexes dans le cadre de la SAÉ 3.01 : recherche bibliographique sur l'Adalm-Pluto (SDR 325 MHz–3,8 GHz), le Spectran V4 et l'antenne Hyperlog 7060, analyse spectrale avec MCS Spectrum Analyzer, réception FM sous GNU Radio, et étude du standard DAB+.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Les réseaux de télécommunications ne se limitent pas aux câbles Ethernet et aux routeurs : comprendre la couche physique radio est fondamental pour un ingénieur RT. Analyser des signaux réels (4G LTE, Wi-Fi, FM, DAB+) avec des équipements professionnels développe une intuition que les simulations ne peuvent pas remplacer.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Adalm-Pluto connecté en USB, utilisé comme source SDR dans GNU Radio Companion via le bloc <code>PlutoSDR Source</code>. Chaîne de traitement : PlutoSDR Source → Low Pass Filter → Rational Resampler → WBFM Receive → Audio Sink, en respectant la relation <code>Fs = samp_rate / dRS × dAD</code>. Analyse spectrale avec MCS Spectrum Analyzer sur fichiers .mdr capturés avec le Spectran V4.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La relation <code>Fs = samp_rate / dRS × dAD</code> entre le taux d'échantillonnage du SDR, le facteur de décimation du Rational Resampler et le taux attendu par la carte son (44100 ou 48000 Hz) m'a demandé plusieurs essais pour trouver des valeurs compatibles. Un mauvais réglage produit un son déformé ou pas de son du tout.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que GNU Radio est un outil de prototypage rapide pour les systèmes radio : en assemblant des blocs visuellement, on peut construire un récepteur FM fonctionnel en moins d'une heure. Cette approche par blocs fonctionnels est la même que celle utilisée dans les systèmes de traitement du signal industriels (LabVIEW, Simulink). Elle m'a aidé à visualiser concrètement les étapes de la démodulation.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais comparé la réception FM obtenue avec différentes valeurs de samp_rate et documenté l'impact sur la qualité audio, pour mieux comprendre le lien entre taux d'échantillonnage et fidélité de la démodulation. J'aurais aussi capturé une trame DAB+ complète pour en analyser la structure OFDM.</p>
+                </div>
             </div>
         </details>
 
@@ -1753,6 +1963,21 @@ k1tt3ns@target:~$ sudo /usr/bin/vim
 # sh-5.0# ./flag.sh
 # Enter your IP address: 10.15.250.129
 # [FLAG RETRIEVED SUCCESSFULLY]</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai établi un accès SSH sécurisé sur une machine cible protégée par port knocking, en résolvant le problème de synchronisation temporelle grâce à une technique à deux terminaux : SSH en attente active dans le terminal 1, déclenchement du knocking avec <code>nmap -r</code> dans le terminal 2.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>SSH est le protocole standard d'administration à distance sécurisée. Comprendre comment l'établir dans une situation non triviale (port filtré, protection temporelle) m'a préparé à gérer des accès distants dans des environnements restrictifs, comme on en rencontre dans les entreprises où les pare-feux sont configurés pour limiter l'exposition des services d'administration.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Reconnaissance initiale avec <code>nmap -all 10.16.20.187</code> (port 22 filtré). Identification du mécanisme de port knocking (iptables avec module <code>xt_recent</code>). Solution : terminal 1 lance <code>ssh k1tt3ns@10.16.20.187</code> en attente, terminal 2 exécute <code>nmap 10.16.20.187 -r</code> pour déclencher l'ouverture du port. SSH s'établit dans la fenêtre d'ouverture. Post-connexion : <code>sudo -l</code> → escalade via vim.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Comprendre pourquoi la tentative SSH "normale" (knocking puis SSH immédiatement) échouait systématiquement. Le port se refermait avant que la poignée de main TCP (SYN → SYN-ACK → ACK) ne soit complète. Il a fallu raisonner sur la temporalité exacte de l'établissement d'une connexion TCP pour comprendre que la solution était de maintenir la tentative SSH ouverte avant le knocking.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que le port knocking est de la sécurité par l'obscurité : il ralentit un attaquant non préparé mais ne résiste pas à quelqu'un qui connaît la séquence ou qui dispose d'un sniffeur réseau. En milieu professionnel, il peut être utilisé comme couche additionnelle mais ne remplace pas une authentification forte (clé SSH, MFA). La vraie protection de SSH passe par <code>PasswordAuthentication no</code> et les clés publiques.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais documenté la commande complète de port knocking (les ports exacts de la séquence) pour en faire un script bash réutilisable, puis automatisé la connexion SSH post-knocking. En milieu professionnel, ce type de procédure doit être scriptée et documentée pour ne pas dépendre de la mémoire de l'opérateur.</p>
+                </div>
             </div>
         </details>
 
@@ -1840,6 +2065,21 @@ router ospf 2
                     est validé par les tests <code>nslookup</code> et
                     <code>https://dmz2.entreprise.local</code> depuis les postes Admin.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai déployé un tunnel GRE over IPSec entre deux sites distants (R1 et R3) via un routeur de transit R2 simulant un réseau opérateur, avec un dual OSPF process : OSPF 1 pour le réseau de transit, OSPF 2 pour le tunnel avec redistribution mutuelle pour propager les routes internes.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Dans une entreprise multi-sites, les deux bâtiments doivent communiquer comme s'ils formaient un seul réseau, mais les données transitent par le réseau d'un opérateur sur lequel on n'a aucune maîtrise. Le tunnel GRE crée un lien logique point-à-point par-dessus ce réseau public, et IPSec chiffre ce tunnel pour que l'opérateur ne puisse pas lire les communications internes de l'entreprise.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Configuration des interfaces <code>Tunnel0</code> sur R1 et R3 avec <code>tunnel source GigabitEthernet0/0</code> et <code>tunnel destination</code> réciproques. Dual OSPF : <code>router ospf 1</code> pour les réseaux physiques (10.0.x.x, 172.16.x.x), <code>router ospf 2</code> pour le tunnel (172.30.255.0/30) avec <code>redistribute ospf 1</code> et <code>redistribute connected</code>. Vérification : <code>show interfaces Tunnel0</code> (up/up), <code>ping 172.30.255.2</code> (!!!!!), <code>show ip route ospf</code> (routes O E2 visibles).</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Comprendre pourquoi deux processus OSPF sont nécessaires plutôt qu'un seul. Un OSPF unique déclarant tous les réseaux dans le même processus ferait connaître les routes internes (VLANs, DMZ) au routeur de transit R2, ce qui est exactement ce qu'on veut éviter. Le dual-process avec redistribution permet de cloisonner proprement les routes de transit et les routes internes.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que OSPF et GRE forment un couple particulièrement puissant : GRE fournit le tunnel L3 sur lequel OSPF peut s'exécuter comme sur n'importe quel lien, et OSPF distribue automatiquement les routes de tous les sous-réseaux internes sans configuration statique. Ajouter un nouveau VLAN côté siège est immédiatement visible côté succursale sans toucher à la configuration du tunnel.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais configuré la crypto map IPSec complète avec les paramètres ISAKMP/IKEv1 (transform-set AES-256, SHA-256, DH Group 5) pour avoir un tunnel réellement chiffré dans Packet Tracer, et non un tunnel GRE sans chiffrement. En production réelle, un GRE sans IPSec exposerait toutes les communications internes sur le réseau opérateur.</p>
+                </div>
             </div>
         </details>
 
@@ -1914,6 +2154,21 @@ router ospf 2
                     (contre 192 kbit/s pour le MP3 de qualité équivalente), permettant de
                     diffuser davantage de programmes par multiplex.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai analysé concrètement les réseaux d'accès des opérateurs télécoms avec des équipements de mesure : observation des trames 4G LTE échangées entre mon téléphone et un relais proche de l'IUT, analyse des réseaux Wi-Fi environnants (canaux 2,4 et 5 GHz, interférences), et étude du standard DAB+ (OFDM, bande III, HE-AAC v2).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Un ingénieur RT ne travaille pas uniquement sur les réseaux d'entreprise : il doit comprendre comment les opérateurs déploient leurs réseaux d'accès (LTE, Wi-Fi) pour pouvoir les intégrer dans des solutions d'entreprise (Wi-Fi géré, 4G de secours, convergence fixe-mobile). Observer ces signaux avec des équipements réels ancre la théorie des cours dans la réalité.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>MCS Spectrum Analyzer couplé au Spectran V4 pour la capture et l'analyse spectrale. Identification des canaux de synchronisation LTE (PSS/SSS) et du canal de diffusion (PBCH) dans les captures. Mesure des niveaux RSSI et RSRP. Pour le Wi-Fi : observation de l'occupation des canaux en 2,4 GHz (seuls 1, 6 et 11 sont non-chevauchants) et en 5 GHz (canaux non-chevauchants nativement). Étude théorique du DAB+ : COFDM avec 1536 sous-porteuses sur 1,536 MHz, préfixe cyclique 246 μs.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Interpréter les captures MCS Spectrum Analyzer sans formation formelle sur la structure des trames LTE a été difficile. Les canaux de contrôle (PBCH, PDCCH) et de données (PDSCH) se superposent dans le même spectre et se distinguent uniquement par leur position temps-fréquence dans la grille OFDM, ce qui nécessite de connaître la structure de la trame LTE pour les identifier.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la bande 2,4 GHz est un espace spectral extrêmement congestionné : Wi-Fi, Bluetooth, micro-ondes et ZigBee se partagent les mêmes fréquences. En entreprise, déployer un réseau Wi-Fi sans analyse spectrale préalable risque de créer des interférences importantes. Un audit radio (site survey) avec des outils comme ceux utilisés en SAÉ 3.01 est indispensable avant tout déploiement.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais réalisé une carte de couverture (heatmap) du signal Wi-Fi dans un bâtiment de l'IUT pour visualiser les zones de faible couverture et les zones d'interférences, en complément de l'analyse fréquentielle. Cela aurait rendu l'exercice directement applicable à un projet de déploiement Wi-Fi d'entreprise.</p>
+                </div>
             </div>
         </details>
 
@@ -1977,6 +2232,21 @@ Prod. VLAN30    Bloqué(sw)   Bloqué(FW)        Bloqué(FW)  Bloqué(FW)    Non
                     finale : chaque ligne de la matrice est testée et validée dans le tableau de
                     conformité du Write Up.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai analysé et questionné le cahier des charges de la SAÉ 4.Cyber.01 pour en déduire l'architecture réseau : identification des besoins de segmentation (3 VLANs par site), de services publics (DMZ), d'interconnexion sécurisée (GRE/IPSec), et de protection multicouche (ACL switch + ASA), avec justification écrite de chaque choix architectural.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Un cahier des charges n'est jamais une spécification technique complète : il exprime des besoins métier ("les services doivent être accessibles depuis les deux sites", "Service et Production doivent être isolés") qu'il faut traduire en contraintes techniques. Cette compétence de traduction est ce qui distingue un technicien qui configure ce qu'on lui dit d'un ingénieur qui conçoit ce dont l'entreprise a besoin.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Lecture du CDC, décomposition en catégories de besoins (segmentation, services, sécurité, interconnexion), traduction en choix techniques (VLANs, DMZ sur interface ASA dédiée, tunnel GRE, double couche de filtrage), justification de chaque choix par rapport aux alternatives (ex : GRE/IPSec vs BGP vs MPLS), production de la matrice d'accès Admin/Service/Production qui devient la référence de test.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La distinction entre "pourquoi une DMZ" et "comment configurer une DMZ" n'est pas toujours évidente quand on est dans l'action. Il est tentant de passer directement à la configuration sans s'interroger sur le sens de chaque choix. Prendre le temps de rédiger les justifications architecturales avant de configurer les équipements a changé ma façon d'aborder les projets.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la matrice d'accès (qui peut accéder à quoi) est l'outil central d'une politique de sécurité réseau : elle est à la fois le résultat de l'analyse du CDC et la référence qui guide toutes les règles ACL et pare-feu. Sans cette matrice, les règles de filtrage sont une collection de règles ad-hoc sans cohérence d'ensemble.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais rédigé un document d'architecture formalisé (DAT – Dossier d'Architecture Technique) avant de commencer la configuration, incluant le schéma de topologie, le plan d'adressage, la matrice d'accès et les justifications des choix. Ce type de document est standard dans les projets IT professionnels et facilite la revue par des tiers.</p>
+                </div>
             </div>
         </details>
 
@@ -2104,6 +2374,21 @@ interface Vlan10
                     SVI entrante, ce qui permet au serveur DHCP d'identifier le VLAN d'origine
                     et de répondre avec une adresse du scope correspondant.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai configuré OSPF sur deux architectures distinctes : un dual OSPF process (SAÉ 4.Cyber.01 avec redistribution pour le tunnel GRE) et OSPF avec HSRP (SAÉ 3.Cyber.03 avec priorité 105/preemption sur SR1, ip helper-address pour le relais DHCP centralisé).</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>OSPF est le protocole de routage dynamique de référence dans les réseaux d'entreprise : contrairement aux routes statiques, il s'adapte automatiquement aux pannes (convergence). Sans OSPF, ajouter un VLAN ou changer une adresse IP imposerait de reconfigurer manuellement toutes les routes sur tous les équipements. Dans une infrastructure à deux sites, c'est ingérable.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Pour le dual OSPF : <code>router ospf 1</code> (réseau physique) et <code>router ospf 2</code> (tunnel GRE) avec <code>redistribute ospf 1</code> et <code>redistribute connected</code> sur R1 et R3. Pour HSRP : <code>standby 10 ip 192.168.10.1</code> (IP virtuelle), <code>standby 10 priority 105</code>, <code>standby 10 preempt</code> sur SR1_siege. <code>ip helper-address 192.168.10.10</code> sur chaque SVI pour relayer les broadcasts DHCP.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>Le <code>preempt</code> HSRP est une option qui semble évidente mais qui crée un problème subtil : lors d'un redémarrage de SR1, il reprend immédiatement le rôle actif même si SR2 gère les connexions sans interruption. Sans <code>preempt</code>, SR2 garde le rôle actif indéfiniment. Avec, le basculement retour peut brièvement interrompre le trafic. Il faut donc évaluer si le retour automatique vers SR1 vaut l'interruption.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que le relais DHCP (ip helper-address) est la solution élégante au problème fondamental de DHCP : les requêtes DHCP sont des broadcasts IP que les routeurs ne transmettent pas par défaut. Sans ip helper-address, chaque VLAN aurait besoin de son propre serveur DHCP. Avec, un seul Windows Server 2022 peut servir tous les VLANs de tous les bâtiments.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais configuré l'authentification OSPF (MD5) sur toutes les adjacences pour empêcher un équipement non autorisé de s'insérer dans le domaine OSPF et d'injecter de fausses routes. Sans authentification OSPF, n'importe quel switch capable de parler OSPF peut perturber les tables de routage de toute l'infrastructure.</p>
+                </div>
             </div>
         </details>
 
@@ -2179,6 +2464,21 @@ Admin → DMZ locale/distante    Autorisé   INSIDE_IN + OUTSIDE_IN
 Service initie ping → Admin    Bloqué     ACL switch deny ip any any
 Service → DMZ                  Bloqué     INSIDE_IN deny any any
 Production → Admin             Bloqué     ACL switch deny ip any any</code></pre>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai conçu et configuré une politique de sécurité réseau en deux couches : ACL <code>BLOCK_SERVICE_PROD</code> (whitelist stateful avec <code>established</code>/<code>echo-reply</code>) sur les switchs L3, et ACLs nommées INSIDE_IN/OUTSIDE_IN/DMZ_IN avec <code>inspect icmp</code> sur les pare-feux Cisco ASA 5506-X.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Une politique de sécurité réseau sans documentation ni cohérence d'ensemble est une collection de règles que personne ne comprend et que personne ne peut maintenir. En partant de la matrice d'accès (Admin → tout, Service/Production → rien), chaque règle ACL découle logiquement d'un besoin identifié. Cette traçabilité est indispensable lors d'un audit ou d'une revue de sécurité.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Sur SR1/SR2 : <code>ip access-list extended BLOCK_SERVICE_PROD</code> appliquée en <em>in</em> sur VLAN20 et VLAN30. Sur ASA : <code>access-list INSIDE_IN extended permit ip 192.168.10.0 255.255.255.0 any</code> pour l'Admin, <code>deny ip any any</code> en fin. <code>inspect icmp</code> dans <code>policy-map global_policy</code> pour le filtrage stateful ICMP. Vérification avec la matrice de conformité (7 scénarios testés).</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La différence entre <code>established</code> (TCP) et l'inspection stateful ICMP est subtile : <code>established</code> teste un bit dans l'en-tête TCP (ACK ou RST), ce qui fonctionne nativement avec les ACLs IOS. ICMP n'a pas d'équivalent car les paquets ICMP n'ont pas de notion de "réponse" dans leur en-tête. Sur l'ASA, <code>inspect icmp</code> maintient une table d'état externe pour associer les echo-reply aux echo correspondants.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que le principe deny-all-permit-by-exception (tout bloquer, autoriser uniquement ce qui est nécessaire) est radicalement plus sûr que le permit-all-deny-by-exception (tout autoriser, bloquer les cas connus). Dans le premier cas, un oubli laisse un flux bloqué (signalé par un utilisateur) ; dans le second, un oubli laisse un flux autorisé (potentiellement non détecté pendant des semaines).</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais ajouté des compteurs de hits sur les règles deny (<code>log</code> sur le deny final des ACLs ASA) et configuré un syslog centralisé pour collecter ces logs. Sans journalisation, la politique de filtrage est aveugle : on ne sait pas si des flux sont bloqués, combien, et depuis quelles sources.</p>
+                </div>
             </div>
         </details>
 
@@ -2314,6 +2614,21 @@ GPO Restrictions_AdminPCs   → restreint la connexion locale aux membres de 10_
                     <code>product</code>, <code>cart_item</code>) et un utilisateur de réplication
                     dédié avec droit <code>REPLICATION LOGIN</code>.
                 </p>
+
+                <div class="reflexion">
+                    <p class="rlabel">&#128221; Ce que j'ai fait</p>
+                    <p>J'ai déployé l'infrastructure complète de services sous Cisco Packet Tracer (deux ASA 5506-X, deux switchs L3, trois routeurs, serveurs DMZ) et sur VM Linux Ubuntu pour les spécialisations (Apache2/OpenSSL pour HTTPS, BIND9/DNSSEC), avec validation par un tableau de 12 tests de conformité. En SAÉ 3.Cyber.03, j'ai aussi déployé Windows Server 2022 multi-rôles (DHCP 10 scopes, DNS, AD, WinGate) et PostgreSQL sous Docker.</p>
+                    <p class="rlabel">&#10067; Pourquoi je l'ai fait</p>
+                    <p>Déployer une infrastructure ne consiste pas à configurer des équipements séparément : il faut vérifier que l'ensemble fonctionne comme un système cohérent. Le tableau de validation finale traduit les exigences du cahier des charges en tests concrets et vérifiables, ce qui est l'approche professionnelle de la recette d'un projet réseau.</p>
+                    <p class="rlabel">&#9881;&#65039; Comment je l'ai fait</p>
+                    <p>Packet Tracer : configuration séquentielle (routeurs → pare-feux → switchs L3 → postes clients), tests de ping inter-sites, <code>nslookup</code> DNS, accès HTTPS depuis les postes Admin. VM Ubuntu : <code>sudo a2enmod ssl</code>, génération certificat OpenSSL, configuration Apache2 SSL, tests depuis le navigateur. Windows Server 2022 : rôles DHCP/DNS/AD via le Gestionnaire de serveur, GPOs via la console GPMC, jonction de postes au domaine.</p>
+                    <p class="rlabel">&#9888;&#65039; Mes difficultés</p>
+                    <p>La coordination entre les spécialisations dans un projet de groupe est la principale difficulté non technique : chaque spécialisation (HTTPS, DNSSEC, STP, ANSSI) dépend d'une infrastructure commune fonctionnelle. Un bug dans la configuration OSPF ou les ACLs bloquait les tests de toutes les spécialisations. Nous avons dû établir un ordre de déploiement et valider chaque couche avant de passer à la suivante.</p>
+                    <p class="rlabel">&#128161; Ce que j'en ai appris</p>
+                    <p>Que la validation finale n'est pas une étape que l'on fait à la fin : chaque composant doit être testé au fur et à mesure de son déploiement. Attendre d'avoir tout configuré pour tester crée une situation où des dizaines de composants sont suspects lors d'un dysfonctionnement. La validation incrémentale (couche par couche) isole les problèmes immédiatement.</p>
+                    <p class="rlabel">&#128260; Ce que je ferais autrement</p>
+                    <p>J'aurais rédigé un plan de test formalisé avant le déploiement, avec pour chaque test : préconditions, actions, résultat attendu, résultat obtenu, statut. Ce format est celui des tests d'intégration en développement logiciel et il s'applique parfaitement à la validation d'une infrastructure réseau. Il aurait aussi constitué une trace documentaire réutilisable pour la soutenance.</p>
+                </div>
             </div>
         </details>
 
