@@ -19,16 +19,16 @@ body {
     text-align: center;
 }
 
-/* MODIFICATION : Liens en blanc cassé (sobre et non fluo) */
+/* MODIFICATION : Liens en bleu ciel doux (non fluo, pro) */
 a {
-    color: #f0f0f0; 
-    text-decoration: underline; /* Souligné pour bien identifier que c'est un lien */
+    color: #add8e6; 
+    text-decoration: none; /* Plus propre sans le soulignement constant */
     transition: all 0.3s ease;
 }
 
 a:hover {
-    color: #cccccc; /* Gris clair au survol */
-    text-decoration: none;
+    color: #ffffff;
+    text-decoration: underline; /* Le soulignement n'apparaît qu'au survol */
 }
 
 /* Texte et paragraphes */
@@ -69,14 +69,14 @@ nav {
 }
 
 nav a {
-    color: white;
+    color: white; 
     text-decoration: none;
     margin: 0 15px;
     font-weight: bold;
 }
 
 nav a:hover {
-    color: #cccccc;
+    color: #add8e6;
     text-decoration: none;
 }
 
@@ -93,7 +93,7 @@ footer p {
 }
 
 footer a {
-    color: #f0f0f0;
+    color: #add8e6;
     text-decoration: none;
 }
 
@@ -225,8 +225,8 @@ tr:hover td {
 }
 
 table a {
-    color: #f0f0f0;
-    text-decoration: underline;
+    color: #add8e6;
+    font-weight: bold;
 }
 
 /* ==========================================================
@@ -242,7 +242,7 @@ pre {
     white-space: pre;
     word-wrap: normal;
     text-align: left;
-    border-left: 3px solid #666; /* Gris neutre au lieu du doré */
+    border-left: 3px solid #add8e6;
 }
 
 pre code {
@@ -281,7 +281,7 @@ details.accordion-subitem {
 summary.accordion-subtitle {
     padding: 12px 20px;
     font-size: 18px;
-    color: #f0f0f0;
+    color: #add8e6; /* Couleur sobre pour les sous-titres */
     cursor: pointer;
     list-style: none;
     text-align: left;
@@ -289,8 +289,8 @@ summary.accordion-subtitle {
 }
 
 details.accordion-subitem[open] {
-    border-color: #666;
-    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    border-color: #add8e6;
+    box-shadow: 0 0 10px rgba(173, 216, 230, 0.2);
 }
 
 .accordion-content {
