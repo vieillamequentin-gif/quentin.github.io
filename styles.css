@@ -1,5 +1,5 @@
 /* ==========================================================
-   1. SÉCURITÉ ET DÉBORDEMENT (ANTI-CASSURE MOBILE)
+   1. SÉCURITÉ, DÉBORDEMENT ET LIENS GLOBAUX
    ========================================================== */
 
 /* Applique la boîte de dimensionnement à tout et empêche de dépasser */
@@ -17,6 +17,18 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
+}
+
+/* MODIFICATION : Suppression du bleu par défaut pour tous les liens */
+a {
+    color: #ffd700; /* Couleur dorée pour remplacer le bleu */
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 /* Texte et paragraphes */
@@ -57,15 +69,15 @@ nav {
 }
 
 nav a {
-    color: white;
+    color: white; /* Les liens du menu restent blancs */
     text-decoration: none;
     margin: 0 15px;
     font-weight: bold;
-    transition: color 0.3s ease;
 }
 
 nav a:hover {
-    color: gray;
+    color: #ffd700; /* Devient doré au survol dans la nav */
+    text-decoration: none;
 }
 
 footer {
@@ -81,7 +93,7 @@ footer p {
 }
 
 footer a {
-    color: gray;
+    color: #ffd700; /* Liens du footer en doré */
     text-decoration: none;
 }
 
@@ -215,6 +227,7 @@ tr:hover td {
 table a {
     color: #ffd700;
     text-decoration: none;
+    font-weight: bold;
 }
 
 /* ==========================================================
@@ -225,7 +238,7 @@ pre {
     color: #fff;
     padding: 15px;
     border-radius: 5px;
-    overflow-x: auto; /* Active le scroll horizontal sur mobile */
+    overflow-x: auto; 
     -webkit-overflow-scrolling: touch;
     white-space: pre;
     word-wrap: normal;
@@ -334,7 +347,6 @@ details.accordion-subitem[open] {
         margin: 15px 5px;
     }
 
-    /* Réduction de l'indentation sur mobile pour gagner de la place */
     details.accordion-subitem {
         margin-left: 10px;
     }
