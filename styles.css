@@ -19,16 +19,17 @@ body {
     text-align: center;
 }
 
-/* MODIFICATION : Liens en bleu ciel doux (non fluo, pro) */
-a {
-    color: #add8e6; 
-    text-decoration: none; /* Plus propre sans le soulignement constant */
-    transition: all 0.3s ease;
+/* MODIFICATION RADICALE : Liens en Blanc simple pour éviter le bleu/violet */
+a, a:visited {
+    color: #ffffff !important; /* Force le blanc pur */
+    text-decoration: underline; /* Souligné pour montrer que c'est cliquable */
+    transition: opacity 0.3s ease;
 }
 
 a:hover {
-    color: #ffffff;
-    text-decoration: underline; /* Le soulignement n'apparaît qu'au survol */
+    color: #ffffff !important;
+    opacity: 0.7; /* Effet visuel simple au survol (devient un peu transparent) */
+    text-decoration: none;
 }
 
 /* Texte et paragraphes */
@@ -68,16 +69,15 @@ nav {
     text-align: center;
 }
 
-nav a {
-    color: white; 
+nav a, nav a:visited {
+    color: white !important;
     text-decoration: none;
     margin: 0 15px;
     font-weight: bold;
 }
 
 nav a:hover {
-    color: #add8e6;
-    text-decoration: none;
+    opacity: 0.7;
 }
 
 footer {
@@ -92,13 +92,12 @@ footer p {
     margin: 5px 0;
 }
 
-footer a {
-    color: #add8e6;
+footer a, footer a:visited {
+    color: white !important;
     text-decoration: none;
 }
 
 footer a:hover {
-    color: white;
     text-decoration: underline;
 }
 
@@ -170,7 +169,7 @@ section#competences-buttons {
 
 .skill-btn {
     background-color: #331616;
-    color: white;
+    color: white !important;
     padding: 12px 25px;
     border-radius: 10px;
     border: 2px solid #444444;
@@ -224,8 +223,8 @@ tr:hover td {
     cursor: pointer;
 }
 
-table a {
-    color: #add8e6;
+table a, table a:visited {
+    color: white !important;
     font-weight: bold;
 }
 
@@ -242,7 +241,7 @@ pre {
     white-space: pre;
     word-wrap: normal;
     text-align: left;
-    border-left: 3px solid #add8e6;
+    border-left: 3px solid #ffffff;
 }
 
 pre code {
@@ -281,7 +280,7 @@ details.accordion-subitem {
 summary.accordion-subtitle {
     padding: 12px 20px;
     font-size: 18px;
-    color: #add8e6; /* Couleur sobre pour les sous-titres */
+    color: white;
     cursor: pointer;
     list-style: none;
     text-align: left;
@@ -289,8 +288,8 @@ summary.accordion-subtitle {
 }
 
 details.accordion-subitem[open] {
-    border-color: #add8e6;
-    box-shadow: 0 0 10px rgba(173, 216, 230, 0.2);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .accordion-content {
