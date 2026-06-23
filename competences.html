@@ -2889,6 +2889,297 @@ GPO Restrictions_AdminPCs   → restreint la connexion locale aux membres de 10_
 
 </div>
 
+<!-- ============================================================ -->
+<!-- STAGE PORTFOLIO                                               -->
+<!-- ============================================================ -->
+<details class="accordion-item" id="stage-portfolio">
+    <summary class="accordion-title">🏢 Stage — Mairie de Bruay-La-Buissière (2026)</summary>
+    <div class="accordion-content">
+
+        <p>
+            Du <strong>7 avril au 10 juin 2026</strong>, j'ai effectué mon stage de 2ᵉ année de BUT R&T
+            au sein du <strong>Service Informatique (DSI) de la Mairie de Bruay-La-Buissière</strong>,
+            sous la supervision de <strong>Monsieur Christophe Verhaeghe</strong>, Responsable Infrastructure et Système.
+            Ce stage m'a permis de mettre en pratique mes compétences en administration systèmes et réseaux,
+            sécurité et déploiement de services dans un environnement professionnel réel.
+        </p>
+
+        <div style="background:var(--clr-surface, #f8f9fa); border-left:4px solid var(--clr-accent, #0077cc); padding:1rem 1.2rem; border-radius:4px; margin:1rem 0;">
+            <strong>Organisme :</strong> Mairie de Bruay-La-Buissière — Service Informatique<br>
+            <strong>Durée :</strong> 9 semaines et 3 jours<br>
+            <strong>Maître de stage :</strong> M. Christophe Verhaeghe, Responsable Infrastructure et Système<br>
+            <strong>Technologies :</strong> Stormshield SN210 · Active Directory · Windows Server 2022 · Docker · Nginx · GLPI · Zabbix · TP-Link Omada · VLANs 802.1Q · LDAP · GPO
+        </div>
+
+        <!-- ─── PROJET 1 : Infrastructure réseau sécurisée ─── -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                🔒 Projet majeur — Infrastructure Réseau Sécurisée, Segmentée et Supervisée
+            </summary>
+            <div class="accordion-content">
+
+                <p>
+                    Le projet principal du stage consistait à concevoir et déployer <strong>de A à Z une infrastructure réseau d'entreprise</strong>
+                    comprenant trois zones de sécurité distinctes (WAN, LAN, DMZ), un pare-feu Stormshield SN210,
+                    un switch TP-Link Omada SG2428P, un contrôleur de domaine Windows Server 2022 et
+                    une solution de téléassistance Remotely hébergée en DMZ.
+                </p>
+
+                <p><strong>Architecture mise en place</strong></p>
+                <p>
+                    L'infrastructure reposait sur trois zones séparées par le Stormshield :
+                    la <strong>zone WAN</strong> (routeur 4G Huawei B535-235 · 10.2.0.254/24),
+                    la <strong>zone DMZ</strong> (serveur Ubuntu + Remotely · 172.16.0.10/16)
+                    et la <strong>zone LAN</strong> segmentée en deux VLANs :
+                    VLAN 300 «Compta» (192.168.10.0/24) pour les serveurs et postes, et
+                    VLAN 400 «RH» (192.168.20.0/24) pour les postes utilisateurs publics.
+                </p>
+
+                <p><strong>Configuration du pare-feu Stormshield SN210</strong></p>
+                <p>
+                    Les interfaces du Stormshield ont été sorties du bridge par défaut pour fonctionner en mode routage pur.
+                    12 règles de filtrage ont été définies selon le principe de moindre privilège :
+                    accès administration restreint au réseau physique 192.168.11.0, relais DHCP vers l'Active Directory,
+                    résolution DNS et services AD (Kerberos, LDAP), accès agents Remotely,
+                    accès Internet pour les VLANs et le serveur DMZ, et une règle cleanup bloquant tout le reste.
+                    Le NAT a été configuré en trois règles : NAT sortant VLAN 300/400, NAT sortant DMZ, et
+                    NAT entrant (DNAT port 5000) pour exposer Remotely depuis l'extérieur.
+                </p>
+
+                <p><strong>Switch TP-Link Omada SG2428P</strong></p>
+                <p>
+                    Ports 1–9 : mode Untagged VLAN 300 (PVID 300) — postes Compta.<br>
+                    Ports 10–17 : mode Untagged VLAN 400 (PVID 400) — postes RH.<br>
+                    Port 24 : mode Tagged (trunk 802.1Q) vers le Stormshield.<br>
+                    Adresse IP de gestion : 192.168.10.254/24.
+                    Référence : <a href="https://www.tp-link.com/fr/support/faq/328/" target="_blank" rel="noopener">Guide TP-Link — VLANs 802.1Q sur switchs L2 Managed</a>.
+                </p>
+
+                <p><strong>Contrôleur de domaine Windows Server 2022 (AD1)</strong></p>
+                <p>
+                    Domaine <code>monentreprise.local</code> créé avec les rôles AD DS, DNS et DHCP.
+                    Deux étendues DHCP déployées (192.168.10.100–200 pour VLAN 300 ; 192.168.20.100–200 pour VLAN 400).
+                    Redirecteurs DNS configurés vers 8.8.8.8, 1.1.1.1 et 10.2.0.254.
+                    Structure AD avec OU SERVICES (sous-OUs Compta, RH, Sport), OU Groupes et groupes de sécurité (GG_Compta_FS, GG_RH_RW, etc.).
+                </p>
+
+                <p><strong>GPO déployées</strong></p>
+                <p>
+                    <em>GPO_Lecteurs_Reseau</em> : mappage automatique des lecteurs Z: (\\AD1\Commun),
+                    S: (\\AD1\Services) et N: (\\AD1\Numerisation) à l'ouverture de session.<br>
+                    <em>GPO Imprimantes</em> : déploiement ciblé par OU via Item-Level Targeting
+                    (Copieur_Etage_1 pour Compta, Copieur_Etage_2 pour RH).<br>
+                    <em>GPO Remotely</em> : déploiement automatique de l'agent Remotely via script PowerShell
+                    (.ps1) au démarrage des postes, avec priorité d'exécution activée dans les modèles d'administration
+                    (<a href="https://rdr-it.com/gpo-executer-un-script-powershell-au-demarrage-de-lordinateur/" target="_blank" rel="noopener">guide RDR-IT</a>).
+                </p>
+
+                <p class="rlabel">Ce que j'ai appris</p>
+                <p>
+                    J'ai compris l'importance de la <strong>défense en profondeur</strong> : chaque couche
+                    (pare-feu, VLAN, ACL, AD) ajoute un obstacle indépendant. La suppression du bridge
+                    par défaut sur le Stormshield était non intuitive mais critique pour que le pare-feu
+                    filtre vraiment inter-zones. Les PVID sur le switch sont souvent négligés mais
+                    indispensables au bon fonctionnement du DHCP relay.
+                </p>
+
+                <p class="rlabel">Difficultés rencontrées</p>
+                <p>
+                    La configuration des ACL sur le Stormshield (interface graphique SNS v4 inconnue au départ),
+                    le débogage du GPO Remotely bloqué par la politique d'exécution PowerShell, et
+                    l'intégration LDAP entre Remotely (conteneur Docker) et l'Active Directory on-premise.
+                    Chaque problème a été résolu par consultation de la
+                    <a href="https://documentation.stormshield.com/SNS/v4/fr/Content/Home.htm" target="_blank" rel="noopener">documentation officielle Stormshield SNS v4</a>,
+                    des <a href="https://rdr-it.com/gpo-executer-un-script-powershell-au-demarrage-de-lordinateur/" target="_blank" rel="noopener">tutoriels RDR-IT</a>
+                    et des <a href="https://github.com/immense/Remotely/discussions/842" target="_blank" rel="noopener">discussions GitHub de la communauté Remotely</a>.
+                </p>
+
+            </div>
+        </details>
+
+        <!-- ─── PROJET 2 : GLPI ─── -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                🗂️ Déploiement GLPI — Gestion de Parc Informatique
+            </summary>
+            <div class="accordion-content">
+
+                <p>
+                    Afin de comprendre et reproduire la solution de ticketing déjà utilisée par la commune,
+                    j'ai installé et configuré <strong>GLPI 11.0.4</strong> sur une machine virtuelle
+                    Ubuntu 22.04, en suivant les recommandations de sécurité officielles.
+                </p>
+
+                <p><strong>Stack technique déployée</strong></p>
+                <p>
+                    Apache2 avec hôte virtuel dédié et <code>mod_rewrite</code> activé,
+                    PHP 8.4-FPM via socket Unix (performances optimisées),
+                    MariaDB avec base dédiée <code>db_glpi</code> et utilisateur à droits minimaux.
+                    Les répertoires sensibles (<code>config</code>, <code>files</code>, <code>marketplace</code>)
+                    ont été déplacés hors du dossier public (<code>/var/www/glpi/public</code>)
+                    conformément aux <a href="https://help.glpi-project.org/tutorials/fr/procedures/install_glpi" target="_blank" rel="noopener">recommandations officielles GLPI</a>.
+                    Durcissement PHP-FPM appliqué :
+                    <code>session.cookie_httponly = on</code> (protection XSS) et
+                    <code>session.cookie_samesite = Lax</code> (protection CSRF).
+                </p>
+
+                <p class="rlabel">Ce que j'ai appris</p>
+                <p>
+                    L'importance de la séparation des répertoires applicatifs (public vs. configuration vs. données)
+                    et des flags de sécurité HTTP pour les cookies de session. GLPI m'a aussi permis de
+                    découvrir concrètement les fonctionnalités d'un outil ITSM professionnel :
+                    gestion d'inventaire, ticketing, supervision du matériel.
+                </p>
+
+            </div>
+        </details>
+
+        <!-- ─── PROJET 3 : Zabbix ─── -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                📊 Supervision Infrastructure — Serveur Zabbix 6.0
+            </summary>
+            <div class="accordion-content">
+
+                <p>
+                    Mise en place d'une plateforme de supervision <strong>Zabbix 6.0</strong> sur Ubuntu 22.04
+                    avec PostgreSQL comme base de données, Nginx comme serveur web et PHP 8.1-FPM.
+                </p>
+
+                <p><strong>Configuration réalisée</strong></p>
+                <p>
+                    Base PostgreSQL créée avec utilisateur dédié et écoute réseau (<code>listen_addresses = '*'</code>).
+                    Résolution DNS locale configurée via <code>/etc/hosts</code> (entrée <code>127.0.0.1 zabbix.quentin</code>).
+                    Services configurés en démarrage automatique (<code>systemctl enable</code>).
+                    Deux modes de supervision testés et validés :
+                </p>
+                <p>
+                    <em>Mode passif</em> : le serveur Zabbix interroge l'agent toutes les X secondes via TCP 10050.
+                    Paramètre <code>Server=</code> renseigné dans <code>/etc/zabbix/zabbix_agentd.conf</code>.<br>
+                    <em>Mode actif</em> : l'agent envoie lui-même ses métriques (CPU, RAM, disque, charge système) au serveur.
+                    Paramètre <code>ServerActive=</code> configuré. Ce mode est préférable derrière un pare-feu strict.
+                </p>
+                <p>
+                    Hôte <code>clientzabbix</code> déclaré dans l'interface web avec le template officiel
+                    «Linux by Zabbix agent», associé au groupe «Linux servers» et supervisé en temps réel.
+                    Référence : <a href="https://www.youtube.com/playlist?list=PLn6POgpklwWq6Qp4vekHy3bCz-SJi_t0X" target="_blank" rel="noopener">Playlist tutoriels Zabbix — XAVKI</a>.
+                </p>
+
+                <p class="rlabel">Ce que j'ai appris</p>
+                <p>
+                    La différence concrète entre supervision active et passive, et pourquoi le mode actif
+                    est préférable dans une architecture avec pare-feu. J'ai aussi compris l'intérêt
+                    des templates Zabbix qui automatisent l'import de dizaines de sondes et seuils d'alerte.
+                </p>
+
+            </div>
+        </details>
+
+        <!-- ─── PROJET 4 : Remotely en DMZ ─── -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                🖥️ Solution de Téléassistance Remotely — Docker + Nginx + LDAP
+            </summary>
+            <div class="accordion-content">
+
+                <p>
+                    Déploiement de la solution de téléassistance <strong>Remotely</strong> sur un serveur
+                    Ubuntu 22.04 situé en DMZ (172.16.0.10/16), accessible depuis le LAN via le port 5000
+                    redirigé par NAT sur le Stormshield.
+                </p>
+
+                <p><strong>Stack Docker Compose</strong></p>
+                <p>
+                    Conteneur <code>immybot/remotely:latest</code> exposé sur le port 5000, avec base SQLite,
+                    authentification LDAP activée et pointant vers l'AD1 (192.168.10.10:389).
+                    Compte de service dédié <code>svc_ldap_remotely</code> créé dans l'OU Remotely
+                    du domaine <code>monentreprise.local</code>.
+                    Références : <a href="https://github.com/immense/Remotely" target="_blank" rel="noopener">dépôt officiel Remotely</a> ·
+                    <a href="https://www.it-connect.fr/comprendre-le-protocole-ldap-pour-les-debutants/" target="_blank" rel="noopener">comprendre LDAP (IT-Connect)</a>.
+                </p>
+
+                <p><strong>Reverse Proxy Nginx + SSL/TLS</strong></p>
+                <p>
+                    Nginx configuré en reverse proxy avec redirection automatique HTTP → HTTPS (port 80 → 443).
+                    Certificat auto-signé généré avec OpenSSL (RSA 2048 bits, validité 1 an, CN=remotely.monentreprise.local).
+                    Protocoles TLS 1.2 et 1.3 uniquement. Permissions renforcées sur la clé privée (<code>chmod 600</code>).
+                    Support WebSocket activé (<code>Upgrade</code> / <code>Connection: upgrade</code>) requis par Remotely.
+                    Référence : <a href="https://nginx.org/en/docs/http/ngx_http_proxy_module.html" target="_blank" rel="noopener">Documentation Nginx Reverse Proxy</a>.
+                </p>
+
+                <p><strong>Résultat</strong></p>
+                <p>
+                    Les postes clients Windows, après déploiement de l'agent par GPO PowerShell,
+                    remontaient dans l'interface Remotely. Les techniciens pouvaient prendre la main à distance,
+                    exécuter des scripts et superviser les machines du domaine depuis une interface centralisée,
+                    authentifiés avec leurs identifiants Windows Active Directory via LDAP.
+                </p>
+
+                <p class="rlabel">Ce que j'ai appris</p>
+                <p>
+                    La chaîne complète d'un déploiement conteneurisé sécurisé :
+                    isolation par Docker, chiffrement TLS en terminaison Nginx, authentification centralisée LDAP,
+                    et exposition contrôlée via DNAT pare-feu. C'est la première fois que j'ai combiné
+                    toutes ces briques dans un projet réel, ce qui m'a donné une vision système globale.
+                </p>
+
+            </div>
+        </details>
+
+        <!-- ─── MISSIONS QUOTIDIENNES ─── -->
+        <details class="accordion-subitem">
+            <summary class="accordion-subtitle">
+                🛠️ Missions de Maintenance et Support Quotidien (9 semaines)
+            </summary>
+            <div class="accordion-content">
+
+                <p>
+                    En parallèle des projets structurants, j'ai assuré des missions de <strong>support informatique de proximité</strong>
+                    auprès des agents municipaux sur l'ensemble des sites de la commune.
+                </p>
+
+                <p><strong>Semaine 1 — Déploiement postes mobiles</strong></p>
+                <p>
+                    Réinstallation complète de Windows via clé USB bootable sur des PC élus.
+                    Cloisonnement de 4 sessions (1 admin + 3 utilisateurs, mots de passe forts).
+                    Configuration des routeurs 4G Huawei (APN orange.fr) et création de raccourcis vers Roundcube et Idelibre.
+                </p>
+
+                <p><strong>Semaine 2 — Maintenance physique et VLANs HP ProCurve</strong></p>
+                <p>
+                    Configuration de VLANs sur un switch HP ProCurve 2824 J4903A pour isoler la centrale d'alarme du CAJ
+                    (VLAN 10 «ALARME» sur port 1 en untagged, port 24 en tagged pour le trunk uplink).
+                    Assemblage d'une baie de brassage 19". Installation d'une station d'accueil DisplayLink D3100.
+                </p>
+
+                <p><strong>Semaine 4 — Éclatement de paires (VLAN Cinéma)</strong></p>
+                <p>
+                    Solution créative pour déplacer un équipement VLAN Cinéma dans une salle uniquement câblée VLAN Orange :
+                    utilisation de doubleurs RJ45 pour multiplexer deux signaux VLAN sur une seule prise murale existante,
+                    évitant de tirer un nouveau câble dans les cloisons.
+                </p>
+
+                <p><strong>Semaines 7–9 — Sécurisation serveurs scolaires Kwartz</strong></p>
+                <p>
+                    Déplacements sur site dans plusieurs écoles de la commune pour installer physiquement des clés de stockage
+                    dédiées aux sauvegardes sur les serveurs pédagogiques Kwartz.
+                </p>
+
+                <p><strong>Semaine 9 — Téléphonie VoIP Cisco (Cinéma Brigitte Bardot)</strong></p>
+                <p>
+                    Installation et raccordement RJ45 de postes téléphoniques Cisco alimentés en PoE.
+                    Vérification du démarrage et de la récupération DHCP. Configuration et provisionnement
+                    des lignes sur la plateforme Cloud Webex pour interconnecter les postes du cinéma.
+                </p>
+
+            </div>
+        </details>
+
+    </div>
+</details>
+
+</div>
+
 <footer>
 <p>
 © 2024 Mon Site Personnel. Tous droits réservés.
