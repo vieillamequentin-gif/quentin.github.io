@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage — Quentin Vieillame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Quentin <span>Vieillame</span></a>
+  <ul class="nav-links" id="navLinks"><li><a href="index.html">Accueil</a></li><li><a href="cv.html">CV</a></li><li><a href="competences.html">Compétences</a></li><li><a href="stage.html" class="active">Stage</a></li><li><a href="hobbies.html">Hobbies</a></li><li><a href="mentions.html">Mentions légales</a></li></ul>
+  <button class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+</nav>
+<main>
+<div class="page-header">
+  <div class="inner">
+    <span class="section-label">Expérience professionnelle</span>
+    <h1>Stage — Mairie de Bruay-la-Buissière</h1>
+    <p>Administration systèmes et réseaux : interventions de maintenance, déploiement d'une solution de gestion de parc (GLPI) et réalisation d'une infrastructure réseau sécurisée, segmentée et supervisée.</p>
+    <dl class="fiche">
+      <div><dt>Période</dt><dd>7 avril – 10 juin 2026</dd></div>
+      <div><dt>Service</dt><dd>Service informatique (DSI)</dd></div>
+      <div><dt>Superviseur</dt><dd>Christophe Verhaeghe</dd></div>
+    </dl>
+  </div>
+</div>
+<section class="section">
+  <div class="container">
+    <nav class="subnav" aria-label="Sommaire de la page">
+      <a href="#contexte">Contexte</a><a href="#deroule">Déroulé</a><a href="#projets">GLPI et Zabbix</a><a href="#grand-projet">Grand projet</a><a href="#difficultes">Difficultés</a><a href="#competences">Compétences</a><a href="#ressources">Ressources</a><a href="#bilan">Bilan</a>
+    </nav>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">9</div><div class="lbl">semaines de stage</div></div>
+      <div class="stat-box"><div class="num">4</div><div class="lbl">technologies déployées</div></div>
+      <div class="stat-box"><div class="num">1</div><div class="lbl">testbed sécurisé livré</div></div>
+      <div class="stat-box"><div class="num">20</div><div class="lbl">bornes Wi-Fi installées</div></div>
+      <div class="stat-box"><div class="num">3</div><div class="lbl">zones réseau : WAN, LAN, DMZ</div></div>
+      <div class="stat-box"><div class="num">12</div><div class="lbl">règles de filtrage</div></div>
+    </div>
+
+    <div id="contexte" class="anchor" style="margin: 2.5rem 0;">
+      <span class="section-label">Contexte</span>
+      <h2 class="section-title" style="margin-bottom:.6rem;">La mission</h2>
+      <p style="color:var(--muted);font-size:.95rem;max-width:720px;line-height:1.75;">
+        Le service informatique de la Mairie de Bruay-la-Buissière souhaitait se doter d'un environnement de test sécurisé pour expérimenter la télémaintenance des équipements du parc informatique communal, sans exposer le réseau de production. Ma mission principale était de concevoir, déployer et documenter ce testbed, du câblage physique à la configuration logicielle.
+      </p>
+      <p style="color:var(--muted);font-size:.95rem;max-width:720px;line-height:1.75;margin-top:.8rem;">
+        La Direction des Systèmes d'Information gère l'ensemble du matériel informatique et des équipements réseau des services municipaux : le support aux agents via un système de tickets, les infrastructures réseau et serveurs (switchs, routeurs, pare-feu, téléphonie IP, serveurs de fichiers et d'applications) ainsi que l'installation et la maintenance des postes dans les différents bâtiments de la commune.
+      </p>
+    </div>
+
+    <span class="section-label">Missions réalisées</span>
+    <h2 class="section-title" style="margin-bottom:1.5rem;">Ce que j'ai fait</h2>
+    <div class="mission-grid">
+      <div class="mission-item"><h4><span class="mi-num">01</span>Pare-feu Stormshield SN210</h4><p>Configuration des règles de filtrage, politique de sécurité périmétrique, zones réseau (LAN / WAN / DMZ), journalisation des flux.</p></div>
+      <div class="mission-item"><h4><span class="mi-num">02</span>Segmentation VLANs 802.1Q</h4><p>Découpage du testbed en VLANs distincts par rôle (administration, télémaintenance, production simulée), tags 802.1Q sur ports trunk.</p></div>
+      <div class="mission-item"><h4><span class="mi-num">03</span>Windows Server 2022</h4><p>Installation et configuration : Active Directory, DHCP, DNS pour le testbed. Création des comptes utilisateurs et des GPOs adaptées.</p></div>
+      <div class="mission-item"><h4><span class="mi-num">04</span>Docker</h4><p>Conteneurisation des services de télémaintenance. Déploiement avec Docker Compose pour une reproductibilité maximale de l'environnement.</p></div>
+      <div class="mission-item"><h4><span class="mi-num">05</span>Télémaintenance avec Remotely</h4><p>Déploiement et configuration de l'outil open source Remotely pour la prise en main à distance sécurisée des postes du testbed.</p></div>
+      <div class="mission-item"><h4><span class="mi-num">06</span>Travaux terrain</h4><p>Brassage de baies informatiques, tirage de câbles, installation et configuration de bornes Wi-Fi dans les bâtiments de la mairie.</p></div>
+    </div>
+    <div id="deroule" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Chronologie</span>
+      <h2 class="section-title" style="margin-bottom:.6rem;">Déroulé du stage, semaine par semaine</h2>
+      <p class="lead">Les interventions de maintenance et le support aux agents ont rythmé les neuf semaines, en parallèle des trois projets techniques présentés plus bas.</p>
+      <div class="timeline"><div class="tl-item"><div class="tl-date">Semaine 1 · 7 au 10 avril</div><h4>Déploiement de postes mobiles et périphériques</h4><p>Déploiement de PC et de routeurs 4G pour les élus : réinstallation complète de Windows via une clé USB bootable, configuration et cloisonnement de 4 sessions (1 administrateur et 3 utilisateurs avec mots de passe forts), paramétrage de l'APN des routeurs mobiles 4G et création de raccourcis vers le webmail Roundcube et l'outil iDélibre.</p></div><div class="tl-item"><div class="tl-date">Semaine 2 · 13 au 17 avril</div><h4>Maintenance matérielle et infrastructure physique</h4><p>Remise en état d'une imprimante (nettoyage, pilotes, tests d'impression), configuration de VLANs sur un switch HP ProCurve 2824 pour isoler un système d'alarme, montage d'une baie de brassage, installation d'un bras articulé et d'une station d'accueil DisplayLink D3100.</p></div><div class="tl-item"><div class="tl-date">Semaine 3 · 20 au 24 avril</div><h4>Support utilisateur</h4><p>Helpdesk de proximité : interventions de maintenance et traitement de tickets auprès des agents, dont le remplacement d'un pare-feu Stormshield dans une autre mairie.</p></div><div class="tl-item"><div class="tl-date">Semaine 4 · 27 au 30 avril</div><h4>Optimisation de câblage par éclatement de paires</h4><p>Déplacement d'un équipement du VLAN Cinéma dans une salle équipée uniquement de prises du VLAN Orange. Pour éviter de tirer un nouveau câble, la prise existante a été optimisée avec deux doubleurs RJ45 : l'un regroupe les deux VLANs côté baie, l'autre sépare à nouveau les paires côté salle.</p></div><div class="tl-item"><div class="tl-date">Semaine 5 · 4 au 7 mai</div><h4>Support utilisateur</h4><p>Configuration d'une borne Wi-Fi TP-Link Omada avec une adresse IP fixe, sans DHCP, ce qui a permis la mise en place d'un logiciel d'inventaire.</p></div><div class="tl-item"><div class="tl-date">Semaine 6 · 11 au 13 mai</div><h4>Support utilisateur</h4><p>Maintenance courante et traitement de tickets d'assistance auprès des agents.</p></div><div class="tl-item"><div class="tl-date">Semaines 7 et 8 · 18 au 29 mai</div><h4>Sécurisation des données et des serveurs scolaires</h4><p>Plan de sauvegarde : déplacements dans plusieurs écoles de la commune pour installer physiquement des clés de stockage dédiées aux sauvegardes sur les serveurs pédagogiques Kwartz.</p></div><div class="tl-item"><div class="tl-date">Semaine 9 · 1er au 5 juin</div><h4>Téléphonie IP et continuité des sauvegardes</h4><p>Fin du déploiement des sauvegardes dans les écoles. Projet de téléphonie IP dans un cinéma : installation et raccordement de postes Cisco alimentés en PoE, vérification du démarrage et de la récupération DHCP, puis provisionnement des lignes sur la plateforme cloud Webex.</p></div></div><div class="fig-grid"><figure class="fig"><img src="images/poste.jpg" alt="Poste de travail utilisateur installé sous Windows pour le déploiement des services de la mairie."><figcaption>Poste de travail utilisateur installé sous Windows pour le déploiement des services de la mairie.</figcaption></figure><figure class="fig"><img src="images/baie.jpg" alt="Assemblage physique d'une baie de brassage informatique."><figcaption>Assemblage physique d'une baie de brassage informatique.</figcaption></figure><figure class="fig"><img src="images/dock.jpg" alt="Station d'accueil DisplayLink modèle D3100."><figcaption>Station d'accueil DisplayLink modèle D3100.</figcaption></figure></div><table class="data"><caption>Matrice de brassage des ports et affectation du VLAN 10 dédié à la centrale d'alarme (semaine 2)</caption><thead><tr><th>Port du switch HP</th><th>VLAN 1 (gestion)</th><th>VLAN 10 (alarme)</th><th>VLAN 30 (futur)</th><th>Rôle</th></tr></thead><tbody><tr><td>Port 1</td><td>Exclu</td><td>Untagged</td><td>Exclu</td><td>Mode accès : centrale d'alarme</td></tr><tr><td>Ports 2 à 23</td><td>Untagged</td><td>Exclu</td><td>Exclu</td><td>Mode accès : PC administratifs</td></tr><tr><td>Port 24</td><td>Untagged</td><td>Tagged</td><td>Tagged</td><td>Mode trunk : liaison uplink vers le cœur de réseau</td></tr></tbody></table><div class="fig-grid"><figure class="fig"><img src="images/doubleurs1.jpg" alt="Optimisation du câblage par doubleurs RJ45 pour le VLAN Cinéma : côté baie."><figcaption>Optimisation du câblage par doubleurs RJ45 pour le VLAN Cinéma : côté baie.</figcaption></figure><figure class="fig"><img src="images/doubleurs2.jpg" alt="Côté salle : le second doubleur sépare à nouveau les paires."><figcaption>Côté salle : le second doubleur sépare à nouveau les paires.</figcaption></figure><figure class="fig"><img src="images/borne.jpg" alt="Borne Wi-Fi TP-Link Omada configurée en IP fixe."><figcaption>Borne Wi-Fi TP-Link Omada configurée en IP fixe.</figcaption></figure></div><div class="fig-grid"><figure class="fig"><img src="images/tel1.jpg" alt="Équipement de téléphonie IP Cisco prêt à être installé."><figcaption>Équipement de téléphonie IP Cisco prêt à être installé.</figcaption></figure><figure class="fig"><img src="images/tel3.jpg" alt="Raccordement RJ45 des postes, alimentés en PoE."><figcaption>Raccordement RJ45 des postes, alimentés en PoE.</figcaption></figure></div>    </div>
+    <div id="projets" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Projets techniques</span>
+      <h2 class="section-title" style="margin-bottom:.6rem;">Gestion de parc et supervision</h2>
+      <div class="cols2">
+        <div>
+          <h3 class="sub">GLPI : gestion de parc et tickets</h3>
+          <p>Pour comprendre le fonctionnement de l'outil déjà utilisé par la commune, j'ai installé ma propre plateforme GLPI sur Ubuntu 22.04.</p><ul class="plain"><li>Pile logicielle : Apache2, PHP 8.4 en mode PHP-FPM via socket Unix, MariaDB, avec une base dédiée et un utilisateur aux droits limités.</li><li>Sécurisation de la base avec le script d'installation sécurisée de MariaDB (suppression des accès anonymes, protection du compte root).</li><li>Durcissement suivant les recommandations de GLPI : répertoires sensibles (config, files, marketplace) déplacés hors de la racine web, cookies de session en HttpOnly et SameSite=Lax.</li><li>Finalisation par l'assistant web (vérification des prérequis, connexion à la base) puis prise en main des modules parc, assistance et administration.</li></ul>
+        </div>
+        <div>
+          <h3 class="sub">Zabbix : métrologie et supervision</h3>
+          <p>J'ai mis en place un serveur de supervision pour suivre en temps réel le processeur, la mémoire, l'espace disque et l'état des services.</p><ul class="plain"><li>Machine virtuelle Ubuntu 22.04, base de données PostgreSQL dédiée, serveur web Nginx et PHP-FPM, services activés au démarrage.</li><li>Résolution DNS locale par le fichier d'hôtes, puis finalisation par l'assistant web de Zabbix 6.0.</li><li>Supervision classique en agent passif (le serveur interroge l'agent sur le port TCP 10050), puis en agent actif (l'agent envoie lui-même ses métriques).</li><li>Déclaration d'un hôte avec le modèle officiel Linux by Zabbix agent, ce qui importe automatiquement sondes et seuils d'alerte.</li></ul>
+        </div>
+      </div><div class="fig-grid"><figure class="fig"><img src="images/glpi.jpg" alt="Interface d'accueil et menu de gestion de parc GLPI."><figcaption>Interface d'accueil et menu de gestion de parc GLPI.</figcaption></figure><figure class="fig"><img src="images/zabbix.jpg" alt="Graphiques de métrologie (charge système et utilisation du processeur) après activation de l'agent Zabbix actif."><figcaption>Graphiques de métrologie (charge système et utilisation du processeur) après activation de l'agent Zabbix actif.</figcaption></figure></div>
+    </div>
+    <div id="grand-projet" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Projet principal</span>
+      <h2 class="section-title" style="margin-bottom:.6rem;">Infrastructure réseau sécurisée, segmentée et supervisée</h2>
+      <p class="lead">Dans le cadre de mon stage, j'ai réalisé un projet visant à concevoir et à mettre en place une infrastructure réseau d'entreprise sécurisée. Le but principal était de permettre à des techniciens informatiques d'administrer des postes clients à distance grâce à la plateforme de téléassistance Remotely, installée dans une DMZ pour renforcer la sécurité du réseau.</p>
+
+      <h3 class="sub">Objectifs et principes de sécurité</h3>
+      <div class="cols2">
+        <div><ul class="plain"><li>Séparer les réseaux : un incident sur un poste utilisateur ne doit pas atteindre les serveurs importants.</li><li>Isoler les services critiques : le serveur accessible depuis l'extérieur est placé dans une DMZ.</li><li>Limiter les flux : tout trafic non explicitement autorisé est bloqué.</li><li>Centraliser l'authentification : les techniciens se connectent à Remotely avec leurs comptes Active Directory.</li><li>Sécuriser les accès distants : chiffrement HTTPS et protection du serveur contre la force brute.</li><li>Automatiser les déploiements : configuration des postes et installation de l'agent par stratégies de groupe.</li></ul>
+        </div>
+        <div>
+          <p><strong>Équipements et services mis en œuvre</strong></p><ul class="plain"><li>Pare-feu Stormshield SN210 (v4) et routeur 4G Huawei B535-235 pour l'accès Internet</li><li>Switch manageable TP-Link Omada SG2428P</li><li>Contrôleur de domaine Windows Server 2022 (Active Directory, DNS, DHCP, partages, impression, GPO)</li><li>Serveur Ubuntu 22.04 en DMZ : Docker, Docker Compose, Nginx, fail2ban</li><li>Plateforme Remotely avec authentification LDAP et chiffrement HTTPS</li></ul>
+        </div>
+      </div>
+
+      <h3 class="sub">Architecture et plan d'adressage</h3>
+      <p>Le réseau est organisé en trois zones séparées par le pare-feu. La zone LAN est elle-même divisée en deux VLANs, ce qui isole le réseau d'administration des postes utilisateurs.</p><div class="fig-grid one"><figure class="fig"><img src="images/topo.jpg" alt="Schéma de la topologie réseau de la maquette de test."><figcaption>Schéma de la topologie réseau de la maquette de test.</figcaption></figure></div><table class="data"><caption>Plan d'adressage de la maquette</caption><thead><tr><th>Zone ou VLAN</th><th>Adressage</th><th>Contenu</th></tr></thead><tbody><tr><td>WAN</td><td>10.2.0.0/24 : routeur 4G en .254, interface WAN du pare-feu en .253</td><td>Accès Internet par le routeur 4G Huawei</td></tr><tr><td>DMZ</td><td>172.16.0.0/16 : interface du pare-feu en .254, serveur en .10</td><td>Serveur Ubuntu hébergeant Remotely</td></tr><tr><td>LAN</td><td>192.168.11.254/24 : interface LAN du pare-feu</td><td>Transit vers les VLANs, administration du pare-feu</td></tr><tr><td>VLAN 300 (compta)</td><td>192.168.10.0/24 : passerelle .1, étendue DHCP de .100 à .200</td><td>Contrôleur de domaine AD1 (192.168.10.10), postes d'administration et utilisateurs</td></tr><tr><td>VLAN 400 (RH)</td><td>192.168.20.0/24 : passerelle .1, étendue DHCP de .100 à .200</td><td>Postes utilisateurs et équipements publics</td></tr></tbody></table>
+
+      <h3 class="sub">1. Commutation : VLANs, trunk et PVID</h3>
+      <p>Sur le switch TP-Link, j'ai créé les VLANs 300 et 400 depuis le menu L2 Features, puis affecté les ports : les ports 1 à 9 en untagged dans le VLAN 300, les ports 10 à 17 en untagged dans le VLAN 400, et le port 24, relié au pare-feu, en tagged pour former un trunk 802.1Q. Les PVID ont été réglés port par port pour associer automatiquement les trames non taguées au bon VLAN, ce qui évite les erreurs de VLAN et garantit le bon fonctionnement du DHCP. Une adresse IP de gestion (L3) permet d'administrer le switch depuis le réseau interne.</p><div class="fig-grid"><figure class="fig"><img src="images/vlan300.jpg" alt="VLAN 300 : ports 1 à 9 en untagged, port 24 en tagged."><figcaption>VLAN 300 : ports 1 à 9 en untagged, port 24 en tagged.</figcaption></figure><figure class="fig"><img src="images/vlan400.jpg" alt="VLAN 400 : ports 10 à 17 en untagged, port 24 en tagged."><figcaption>VLAN 400 : ports 10 à 17 en untagged, port 24 en tagged.</figcaption></figure><figure class="fig"><img src="images/pvid.jpg" alt="Assignation des PVID par port pour le trafic non tagué."><figcaption>Assignation des PVID par port pour le trafic non tagué.</figcaption></figure></div>
+
+      <h3 class="sub">2. Pare-feu Stormshield SN210</h3>
+      <p>J'ai d'abord sorti les interfaces du bridge par défaut, afin que le pare-feu fonctionne en routage et applique des règles indépendantes sur chaque zone : un bridge se comporte comme un simple switch, alors que le pare-feu devait contrôler les communications entre les réseaux. J'ai ensuite configuré les interfaces WAN, LAN et DMZ en adressage fixe, créé les deux interfaces VLAN 300 et 400 sur le LAN, puis modifié le mot de passe et le port d'écoute de l'administration.</p>
+      <p>La politique de filtrage suit le principe « tout flux non autorisé est bloqué ». Les douze règles autorisent uniquement les services nécessaires et se terminent par une règle de nettoyage.</p><table class="data"><caption>Politique de filtrage du Stormshield</caption><thead><tr><th>N°</th><th>Règle</th><th>Flux</th><th>Services</th></tr></thead><tbody><tr><td>1</td><td>Accès administration</td><td>Réseau d'administration vers le pare-feu</td><td>https, ssh</td></tr><tr><td>2</td><td>Relais DHCP</td><td>VLANs 300 et 400 vers AD1</td><td>bootps (UDP)</td></tr><tr><td>3</td><td>Retour DHCP</td><td>AD1 vers les clients des deux VLANs</td><td>bootpc (UDP)</td></tr><tr><td>4</td><td>DNS du serveur Remotely</td><td>Remotely vers AD1</td><td>dns</td></tr><tr><td>5</td><td>Annuaire LDAP</td><td>Remotely vers AD1</td><td>ldap, ldaps, dns</td></tr><tr><td>6</td><td>Services DNS et AD</td><td>VLANs 300 et 400 vers AD1</td><td>dns, kerberos, ldap, microsoft-ds</td></tr><tr><td>7</td><td>Accès et agents Remotely</td><td>VLANs 300 et 400 vers Remotely</td><td>remotely, http, https</td></tr><tr><td>8</td><td>Diagnostic</td><td>VLANs 300 et 400 vers tout</td><td>icmp (ping)</td></tr><tr><td>9</td><td>DNS sortant</td><td>AD1 vers Internet</td><td>dns</td></tr><tr><td>10</td><td>Navigation des clients</td><td>VLANs 300 et 400 vers Internet</td><td>http, https</td></tr><tr><td>11</td><td>Sortie du serveur Remotely</td><td>Remotely vers Internet (installation, mises à jour)</td><td>http, https, dns</td></tr><tr><td>12</td><td>Règle de nettoyage</td><td>Tout vers tout</td><td>bloquer</td></tr></tbody></table><div class="fig-grid one"><figure class="fig"><img src="images/regles.jpg" alt="Règles de filtrage inter-VLANs sur le Stormshield."><figcaption>Règles de filtrage inter-VLANs sur le Stormshield.</figcaption></figure></div>
+      <div class="cols2">
+        <div>
+          <p><strong>NAT</strong></p><ul class="plain"><li>NAT sortant pour les VLANs 300 et 400, vers Internet via l'adresse du pare-feu.</li><li>NAT sortant pour le serveur Remotely situé en DMZ.</li><li>NAT entrant (redirection de port) pour l'accès à Remotely sur le port 5000.</li></ul>
+        </div>
+        <div>
+          <p><strong>Relais DHCP et passerelle</strong></p><ul class="plain"><li>Le serveur DHCP étant sur le contrôleur de domaine, le Stormshield relaie les requêtes des VLANs 300 et 400 vers AD1.</li><li>Une passerelle par défaut pointe vers le routeur 4G pour l'accès à Internet, le routage sortant et le NAT.</li></ul>
+        </div>
+      </div><div class="fig-grid"><figure class="fig"><img src="images/nat.jpg" alt="Configuration du NAT sur le Stormshield."><figcaption>Configuration du NAT sur le Stormshield.</figcaption></figure><figure class="fig"><img src="images/dhcp.jpg" alt="Activation du relais DHCP pour les VLANs 300 et 400."><figcaption>Activation du relais DHCP pour les VLANs 300 et 400.</figcaption></figure></div>
+
+      <h3 class="sub">3. Accès Internet par routeur 4G</h3>
+      <p>J'ai modifié l'adresse IP du routeur 4G Huawei pour qu'elle appartienne au même réseau que l'interface WAN du pare-feu, et désactivé son serveur DHCP afin d'éviter les conflits d'adressage. Pour éviter un double NAT et laisser le Stormshield gérer entièrement la sécurité, le pare-feu a été placé dans la DMZ du routeur.</p><div class="fig-grid one"><figure class="fig"><img src="images/dmz.jpg" alt="Configuration de la DMZ du routeur Huawei vers le Stormshield."><figcaption>Configuration de la DMZ du routeur Huawei vers le Stormshield.</figcaption></figure></div>
+
+      <h3 class="sub">4. Contrôleur de domaine Windows Server (AD1)</h3>
+      <p>Le serveur Windows Server 2022, en adresse IP statique, est le cœur de l'infrastructure. J'y ai installé le rôle AD DS pour créer le domaine <code>monentreprise.local</code>, le DNS s'y configurant automatiquement, avec des redirecteurs vers 8.8.8.8, 1.1.1.1 et le routeur 4G pour l'accès à Internet. Deux étendues DHCP ont été créées, une par VLAN, avec leur passerelle.</p>
+      <div class="cols2">
+        <div>
+          <p><strong>Organisation de l'annuaire</strong></p><ul class="plain"><li>Une OU principale SERVICES regroupant trois sous-OUs : Compta, RH et Sport, et une OU Groupes qui centralise les objets de sécurité.</li><li>Trois utilisateurs créés par service, avec autorisation d'accès réseau dans l'onglet Appel entrant (prévue pour un contrôle d'accès 802.1X par un serveur NPS).</li><li>Droits gérés par groupes de sécurité plutôt que par utilisateur (modèle AGDLP) : trois groupes par service, lecture seule (RO), lecture et écriture (RW) et contrôle total (FS). Un départ ou un changement de poste ne demande de modifier que l'appartenance au groupe.</li></ul>
+        </div>
+        <div>
+          <p><strong>Serveur de fichiers</strong></p><ul class="plain"><li>Arborescence de partages : Services (Compta, RH, Sport), Commun (lecture et écriture pour tous) et Numérisation (un dossier par utilisateur).</li><li>Quotas avec le Gestionnaire de ressources du serveur de fichiers (FSRM) pour qu'un utilisateur ne remplisse pas le disque.</li><li>Confidentialité du dossier Numérisation : héritage désactivé, droits explicites et énumération basée sur l'accès (ABE), qui masque les dossiers des collègues.</li></ul>
+        </div>
+      </div><div class="fig-grid"><figure class="fig"><img src="images/ou1.jpg" alt="Structure de l'Active Directory : OU SERVICES et OU Groupes."><figcaption>Structure de l'Active Directory : OU SERVICES et OU Groupes.</figcaption></figure><figure class="fig"><img src="images/ou2.jpg" alt="Sous-OUs Compta, RH et Sport."><figcaption>Sous-OUs Compta, RH et Sport.</figcaption></figure></div>
+      <p><strong>Automatisation du poste client par stratégies de groupe (GPO)</strong></p><ul class="plain"><li><strong>Lecteurs réseau</strong> : mappage automatique à l'ouverture de session des lecteurs Z (Commun), S (Services) et N (Numérisation), avec des raccourcis sur le bureau.</li><li><strong>Imprimantes</strong> : serveur d'impression centralisé, puis déploiement par GPO avec ciblage au niveau de l'élément selon les groupes de sécurité, pour que chaque agent reçoive uniquement l'imprimante de son service.</li><li><strong>Fond d'écran et restrictions</strong> : fond d'écran imposé et non modifiable, accès au panneau de configuration, à l'invite de commandes et aux mises à jour automatiques interdit aux utilisateurs, avec exclusion du groupe des administrateurs du domaine par délégation.</li><li><strong>Déploiement de l'agent Remotely</strong> : script PowerShell d'installation, modifié pour pointer vers le serveur Remotely, déposé dans le dossier partagé NETLOGON et exécuté au démarrage des postes.</li></ul><div class="fig-grid"><figure class="fig"><img src="images/gpo.jpg" alt="Mappage de lecteur réseau par GPO pour le dossier Commun."><figcaption>Mappage de lecteur réseau par GPO pour le dossier Commun.</figcaption></figure><figure class="fig"><img src="images/imprim.jpg" alt="Déploiement automatique des imprimantes réseau par GPO."><figcaption>Déploiement automatique des imprimantes réseau par GPO.</figcaption></figure></div>
+
+      <h3 class="sub">5. Téléassistance Remotely en DMZ</h3>
+      <p>Le serveur Ubuntu 22.04, placé en DMZ, héberge Remotely dans un conteneur Docker. J'ai installé fail2ban pour bloquer automatiquement les adresses qui multiplient les échecs de connexion SSH.</p>
+      <div class="cols2">
+        <div>
+          <p><strong>Déploiement</strong></p><ul class="plain"><li>Docker et Docker Compose : un fichier docker-compose.yml définit le port (5000), les variables LDAP, les paramètres réseau et les volumes.</li><li>Nginx en reverse proxy : redirection permanente du port 80 vers 443, certificat généré avec OpenSSL, protocoles limités à TLS 1.2 et TLS 1.3.</li><li>Enregistrement DNS dans l'Active Directory pour joindre le serveur par son nom plutôt que par son adresse IP.</li><li>Personnalisation de l'identité de la plateforme et création de groupes d'appareils.</li></ul>
+        </div>
+        <div>
+          <p><strong>Authentification LDAP</strong></p><ul class="plain"><li>Les techniciens utilisent leurs identifiants Windows : les comptes sont centralisés et les comptes locaux deviennent inutiles.</li><li>Un compte de service dédié (svc_ldap_remotely) n'a que les permissions nécessaires à la lecture de l'annuaire, selon le principe du moindre privilège.</li></ul>
+          <p style="margin-top:.8rem;"><strong>Résultat</strong></p><ul class="plain"><li>Les postes du domaine remontent automatiquement dans la console, ce qui permet les prises en main à distance et la supervision centralisée.</li></ul>
+        </div>
+      </div><div class="fig-grid"><figure class="fig"><img src="images/rdl_dl.jpg" alt="Interface de téléchargement de l'agent résident Remotely."><figcaption>Interface de téléchargement de l'agent résident Remotely.</figcaption></figure><figure class="fig"><img src="images/rdl_dev.jpg" alt="Liste des machines connectées sur l'interface Remotely."><figcaption>Liste des machines connectées sur l'interface Remotely.</figcaption></figure></div>
+    </div>
+    <div id="difficultes" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Analyse</span>
+      <h2 class="section-title" style="margin-bottom:1rem;">Difficultés rencontrées et solutions</h2>
+      <div class="diff-grid">
+        <div class="diff"><h4>Règles de filtrage sur Stormshield</h4><p><strong>Difficulté :</strong> je connaissais les ACL mais je ne les avais jamais configurées sur un pare-feu Stormshield avec interface graphique.</p><p><strong>Solution :</strong> échanges avec le service informatique, lecture de la documentation Stormshield SNS v4 et plusieurs tests pour vérifier que Remotely accédait à Internet et aux ressources nécessaires sans bloquer le réseau.</p></div>
+        <div class="diff"><h4>Installation et sécurisation de GLPI</h4><p><strong>Difficulté :</strong> plusieurs alertes de sécurité apparaissaient à l'installation sur Ubuntu.</p><p><strong>Solution :</strong> étude de la documentation officielle de GLPI pour comprendre l'origine des alertes (répertoires exposés, cookies de session) et appliquer les bonnes pratiques de durcissement.</p></div>
+        <div class="diff"><h4>Déploiement de l'agent par GPO</h4><p><strong>Difficulté :</strong> le déploiement ne fonctionnait pas, car Windows bloquait l'exécution des scripts PowerShell.</p><p><strong>Solution :</strong> recherches et tutoriels sur l'exécution d'un script PowerShell au démarrage par GPO, puis activation du paramètre qui autorise l'exécution des scripts PowerShell en premier au démarrage.</p></div>
+        <div class="diff"><h4>Authentification LDAP de Remotely</h4><p><strong>Difficulté :</strong> notion jamais configurée auparavant, qu'il a fallu comprendre avant de l'appliquer.</p><p><strong>Solution :</strong> tutoriels, documentation technique d'IT-Connect sur le protocole LDAP et discussions de la communauté GitHub de Remotely, puis plusieurs essais jusqu'à une authentification fonctionnelle.</p></div>
+      </div>
+      <p class="lead" style="margin-top:1rem;">Ces difficultés ont été résolues progressivement grâce à l'aide du service informatique, à la documentation officielle et aux tutoriels consultés. Cela m'a permis de gagner en autonomie et de progresser dans la résolution de problèmes techniques.</p>
+    </div>
+
+    <div id="competences" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Acquis</span>
+      <h2 class="section-title" style="margin-bottom:1rem;">Compétences développées</h2>
+      <div class="cols2">
+        <div><h3 class="sub">Techniques</h3><ul class="plain"><li>Configuration de VLANs 802.1Q, trunk, PVID et filtrage réseau</li><li>Pare-feu Stormshield : zones, politique de filtrage, NAT, relais DHCP, DMZ</li><li>Administration Windows Server : Active Directory, DNS, DHCP, partages, quotas, impression et GPO</li><li>Administration Linux : Ubuntu, Apache, Nginx, MariaDB, PostgreSQL, fail2ban</li><li>Conteneurisation avec Docker et Docker Compose</li><li>Supervision avec Zabbix et gestion de parc avec GLPI</li><li>Chiffrement HTTPS et authentification centralisée LDAP</li><li>Câblage, brassage, Wi-Fi et téléphonie IP</li></ul></div>
+        <div><h3 class="sub">Transversales</h3><ul class="plain"><li>Autonomie : apprendre un outil nouveau à partir de la documentation officielle</li><li>Rigueur : tester chaque configuration et documenter pour l'équipe</li><li>Communication : échanger avec les utilisateurs et avec le service informatique</li><li>Travail en équipe dans un service de collectivité</li><li>Résolution de problèmes : identifier la cause réelle d'un blocage (par exemple une politique d'exécution de scripts)</li><li>Respect des contraintes d'un service public : délais, budget, sécurité</li></ul></div>
+      </div>
+    </div>
+
+    <div id="ressources" class="anchor" style="margin-top:3.2rem;">
+      <span class="section-label">Sources</span>
+      <h2 class="section-title" style="margin-bottom:1rem;">Ressources utilisées</h2>
+      <ul class="plain">
+        <li><a href="https://www.youtube.com/watch?v=EbRTDo4rUfc" target="_blank" rel="noopener">IT-Connect : installer un contrôleur de domaine AD</a> (Active Directory et DNS)</li>
+        <li><a href="https://www.youtube.com/watch?v=v__Y7_HeXrg" target="_blank" rel="noopener">IT-Connect : monter un lecteur réseau et ciblage par GPO</a></li>
+        <li><a href="https://www.it-connect.fr/comment-deployer-un-logiciel-au-format-msi-par-gpo/" target="_blank" rel="noopener">IT-Connect : déploiement d'un logiciel MSI par GPO</a></li>
+        <li><a href="https://rdr-it.com/gpo-executer-un-script-powershell-au-demarrage-de-lordinateur/" target="_blank" rel="noopener">RDR-IT : exécuter un script PowerShell au démarrage par GPO</a></li>
+        <li><a href="https://www.it-connect.fr/comprendre-le-protocole-ldap-pour-les-debutants/" target="_blank" rel="noopener">IT-Connect : comprendre le protocole LDAP pour les débutants</a></li>
+        <li><a href="https://github.com/immense/Remotely/discussions/842" target="_blank" rel="noopener">Remotely : discussion GitHub sur le déploiement de l'agent</a> et <a href="https://github.com/immense/Remotely" target="_blank" rel="noopener">dépôt officiel</a></li>
+        <li><a href="https://www.youtube.com/playlist?list=PLn6POgpklwWq6Qp4vekHy3bCz-SJi_t0X" target="_blank" rel="noopener">XAVKI : playlist de tutoriels Zabbix</a></li>
+        <li><a href="https://help.glpi-project.org/tutorials/fr/procedures/install_glpi" target="_blank" rel="noopener">TECLIB : installation de GLPI</a></li>
+        <li><a href="https://docs.docker.com/compose/compose-file/" target="_blank" rel="noopener">Docker : référence du fichier Compose</a> et <a href="https://nginx.org/en/docs/http/ngx_http_proxy_module.html" target="_blank" rel="noopener">Nginx : module proxy</a></li>
+        <li><a href="https://documentation.stormshield.com/SNS/v4/fr/Content/Home.htm" target="_blank" rel="noopener">Stormshield : documentation SNS v4</a></li>
+        <li><a href="https://www.tp-link.com/fr/support/faq/328/" target="_blank" rel="noopener">TP-Link : configuration des VLANs 802.1Q sur switchs L2 managés</a></li>
+        <li><a href="https://mariadb.com/kb/en/documentation/" target="_blank" rel="noopener">MariaDB : documentation officielle</a></li>
+      </ul>
+    </div>
+
+    <div style="margin: 3rem 0 2.5rem;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:.9rem;color:var(--text);">Technologies utilisées</h3>
+      <div class="tags">
+        <span class="tag tag-blue">Stormshield SN210</span><span class="tag tag-blue">VLANs 802.1Q</span><span class="tag tag-blue">Windows Server 2022</span><span class="tag tag-blue">Active Directory</span><span class="tag tag-blue">Docker / Docker Compose</span><span class="tag tag-blue">Remotely</span><span class="tag tag-blue">Câblage réseau</span><span class="tag tag-blue">Wi-Fi (bornes)</span><span class="tag tag-blue">DHCP / DNS</span>
+        <span class="tag tag-blue">GLPI</span><span class="tag tag-blue">Zabbix</span><span class="tag tag-blue">Nginx</span><span class="tag tag-blue">LDAP</span><span class="tag tag-blue">GPO</span><span class="tag tag-blue">fail2ban</span><span class="tag tag-blue">TP-Link Omada</span><span class="tag tag-blue">Téléphonie IP Cisco</span>
+      </div>
+    </div>
+
+    <div id="bilan" class="anchor" style="margin: 2.5rem 0; background: var(--light); border-radius:12px; padding:2rem;">
+      <span class="section-label">Bilan</span>
+      <h2 class="section-title" style="margin-bottom:1.2rem;">Ce que ce stage m'a apporté</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;">
+        <div><h4 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">Pratique terrain</h4><p style="font-size:.87rem;color:var(--muted);">Le brassage de baies et l'installation de bornes Wi-Fi m'ont confronté aux contraintes physiques d'un réseau réel — contraintes absentes des simulations en TP.</p></div>
+        <div><h4 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">Exigences professionnelles</h4><p style="font-size:.87rem;color:var(--muted);">Documenter chaque configuration pour la transmettre à l'équipe DSI, respecter les délais, adapter les solutions aux contraintes d'une collectivité territoriale.</p></div>
+        <div><h4 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">Stormshield en production</h4><p style="font-size:.87rem;color:var(--muted);">Premier contact avec un pare-feu professionnel certifié ANSSI, très différent des ASA Cisco de Packet Tracer — interface IPSN, politiques nommées, logs détaillés.</p></div>
+        <div><h4 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.4rem;">Culture collectivité</h4><p style="font-size:.87rem;color:var(--muted);">Comprendre les contraintes budgétaires et réglementaires propres aux services publics, notamment en termes de choix technologiques et de politique de sécurité.</p></div>
+      </div>
+      <p style="font-size:.92rem;color:var(--muted);margin-top:1.4rem;max-width:760px;">Ce stage m'a permis de découvrir le fonctionnement réel d'un service informatique et d'avoir une meilleure vision de l'administration systèmes et réseaux. Il m'a conforté dans mon choix de poursuivre dans le domaine des réseaux et de la cybersécurité.</p>
+    </div>
+
+    <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+      <a href="competences.html" class="btn btn-primary">Voir mes compétences</a>
+      <a href="cv.html" class="btn btn-outline" style="color:var(--text);border-color:var(--border);">Voir mon CV</a>
+      <a href="index.html" class="btn btn-outline" style="color:var(--text);border-color:var(--border);">Retour à l'accueil</a>
+    </div>
+
+  </div>
+</section>
+</main>
+<footer>
+  <p>© 2026 Quentin Vieillame — Portfolio &nbsp;|&nbsp; <a href="cv.html">CV</a> &nbsp;|&nbsp; <a href="mentions.html">Mentions légales</a></p>
+</footer>
+</body>
+</html>
