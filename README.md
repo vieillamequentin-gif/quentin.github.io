@@ -11,10 +11,9 @@ Site statique (HTML et CSS, aucune dépendance à installer).
 - `index.html` : accueil
 - `cv.html` : CV (utilise `style.css`)
 - `competences.html` : partie réflexive par apprentissage critique et soft skills (utilise `styles.css`)
-- `stage.html` : stage détaillé, avec le grand projet (utilise `styles.css` et le dossier `images/`)
 - `images/` : figures de la page stage (photos et captures de configuration)
 - `hobbies.html`, `mentions.html` : pages autonomes (style intégré)
-- `styles.css` : feuille de style commune, couleurs et polices modifiables dans la section `:root`
+- `styles.css` : feuille de style commune, couleurs et polices modifiables dans la section `:root` et stage      détaillé, avec le grand projet 
 
 ## À mettre à jour plus tard
 - `index.html` : année d'étude, objectif
