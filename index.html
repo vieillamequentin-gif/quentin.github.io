@@ -1,76 +1,927 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Mon Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quentin Vieillame — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #1A2744;
+  --navy2:   #243356;
+  --blue:    #2563EB;
+  --blue-lt: #3B82F6;
+  --sky:     #BAD3FA;
+  --white:   #FFFFFF;
+  --off:     #F7F9FC;
+  --off2:    #EEF2F8;
+  --text:    #1A2744;
+  --muted:   #566480;
+  --border:  #D4DCE8;
+  --radius:  8px;
+  --max:     860px;
+  --font-h:  'Space Grotesk', sans-serif;
+  --font-b:  'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-b); color: var(--text); background: var(--white); line-height: 1.65; font-size: 1rem; }
+
+/* ── NAV ─────────────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 60px;
+}
+.nav-logo {
+  font-family: var(--font-h); font-weight: 700; font-size: 1.15rem;
+  color: var(--white); letter-spacing: -.02em; text-decoration: none;
+}
+.nav-logo span { color: var(--sky); }
+.nav-links { display: flex; gap: 0; }
+.nav-links button {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-b); font-size: .875rem; font-weight: 500;
+  color: #8FA7CB; padding: .4rem .9rem; border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.nav-links button:hover, .nav-links button.active {
+  color: var(--white); background: rgba(255,255,255,.08);
+}
+.nav-burger { display: none; background: none; border: none; cursor: pointer; padding: .4rem; }
+.nav-burger span { display: block; width: 22px; height: 2px; background: var(--white); margin: 4px 0; border-radius: 2px; transition: .2s; }
+.nav-mobile { display: none; flex-direction: column; background: var(--navy2); padding: .5rem 1rem 1rem; }
+.nav-mobile button { background: none; border: none; cursor: pointer; font-family: var(--font-b); font-size: .9rem; font-weight: 500; color: #8FA7CB; padding: .6rem .5rem; text-align: left; width: 100%; border-radius: 4px; }
+.nav-mobile button:hover, .nav-mobile button.active { color: var(--white); background: rgba(255,255,255,.06); }
+.nav-mobile.open { display: flex; }
+
+/* ── SECTIONS ────────────────────────────────────────────────────────────── */
+.section { display: none; min-height: calc(100vh - 60px); padding-top: 60px; }
+.section.active { display: block; }
+.container { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
+
+/* ── ACCUEIL ─────────────────────────────────────────────────────────────── */
+#accueil {
+  background: var(--navy);
+  color: var(--white);
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 340px;
+  gap: 3rem; align-items: center;
+  min-height: calc(100vh - 60px); max-width: var(--max); margin: 0 auto; padding: 4rem 1.5rem;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.hero-bg svg { position: absolute; right: -60px; top: 50%; transform: translateY(-50%); opacity: .06; width: 600px; }
+.hero-tag {
+  display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--sky); border: 1px solid rgba(186,211,250,.3);
+  padding: .25rem .75rem; border-radius: 4px; margin-bottom: 1.5rem;
+}
+.hero-name {
+  font-family: var(--font-h); font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 700; line-height: 1.08; letter-spacing: -.03em;
+  margin-bottom: 1rem;
+}
+.hero-name em { color: var(--sky); font-style: normal; }
+.hero-role { font-size: 1.05rem; color: #8FA7CB; margin-bottom: 2rem; font-weight: 400; }
+.hero-bio { font-size: .95rem; color: #B0C0D8; line-height: 1.75; max-width: 52ch; margin-bottom: 2.5rem; }
+.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-family: var(--font-b); font-size: .875rem; font-weight: 600;
+  padding: .65rem 1.4rem; border-radius: var(--radius); cursor: pointer;
+  border: none; text-decoration: none; transition: .15s;
+}
+.btn-primary { background: var(--blue); color: var(--white); }
+.btn-primary:hover { background: var(--blue-lt); }
+.btn-outline { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,.25); }
+.btn-outline:hover { border-color: var(--sky); color: var(--sky); }
+.hero-card {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; padding: 2rem;
+}
+.hero-card-photo {
+  width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #243356 0%, #2563EB22 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-card-photo svg { width: 80px; opacity: .5; }
+.hero-card h3 { font-family: var(--font-h); font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; color: var(--white); }
+.hero-card-info { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+.hero-card-info li { font-size: .825rem; color: #8FA7CB; display: flex; gap: .6rem; align-items: flex-start; }
+.hero-card-info li strong { color: var(--white); min-width: 60px; }
+
+.section-about { background: var(--off); padding: 5rem 0; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+.about-block h2 { font-family: var(--font-h); font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
+.about-block p { color: var(--muted); font-size: .925rem; line-height: 1.8; margin-bottom: .75rem; }
+.school-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+.school-card h3 { font-family: var(--font-h); font-size: 1rem; font-weight: 600; margin-bottom: .75rem; }
+.school-card p { font-size: .85rem; color: var(--muted); line-height: 1.7; margin-bottom: .6rem; }
+.tag-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .75rem; }
+.tag { font-size: .72rem; font-weight: 600; padding: .25rem .6rem; border-radius: 4px; background: var(--off2); color: var(--navy); border: 1px solid var(--border); }
+.tag.blue { background: #EFF6FF; color: var(--blue); border-color: #BFDBFE; }
+
+/* ── COMPÉTENCES ─────────────────────────────────────────────────────────── */
+#competences { background: var(--white); }
+.comp-header { background: var(--navy); color: var(--white); padding: 4rem 0 3rem; }
+.comp-header .container { }
+.section-label { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--sky); margin-bottom: .75rem; }
+.comp-header h2 { font-family: var(--font-h); font-size: 2rem; font-weight: 700; margin-bottom: .75rem; }
+.comp-header p { color: #8FA7CB; font-size: .925rem; max-width: 58ch; }
+.comp-body { padding: 3rem 0 5rem; }
+.bloc { margin-bottom: 2.5rem; }
+.bloc-title {
+  font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--blue);
+  border-bottom: 2px solid var(--off2); padding-bottom: .5rem; margin-bottom: 1rem;
+}
+details.ac { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: .6rem; }
+details.ac + details.ac { }
+summary.ac-sum {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .9rem 1.1rem; cursor: pointer; font-size: .875rem; font-weight: 600;
+  background: var(--white); color: var(--text); list-style: none; gap: 1rem;
+  transition: background .15s;
+}
+summary.ac-sum:hover { background: var(--off); }
+details.ac[open] summary.ac-sum { background: var(--off); border-bottom: 1px solid var(--border); }
+summary.ac-sum::after { content: '+'; font-size: 1.1rem; color: var(--blue); flex-shrink: 0; }
+details.ac[open] summary.ac-sum::after { content: '−'; }
+.ac-code { font-size: .72rem; font-weight: 700; color: var(--blue); background: #EFF6FF; border: 1px solid #BFDBFE; padding: .15rem .45rem; border-radius: 3px; white-space: nowrap; }
+.ac-body { padding: 1.2rem 1.1rem; font-size: .875rem; color: var(--muted); line-height: 1.75; }
+.ac-body p { margin-bottom: .75rem; }
+.ac-body ul { padding-left: 1.2rem; margin-bottom: .75rem; }
+.ac-body li { margin-bottom: .35rem; }
+.ac-body code { background: var(--off2); padding: .1rem .35rem; border-radius: 3px; font-size: .82em; font-family: 'Courier New', monospace; color: var(--navy); }
+.ac-sae { display: inline-block; font-size: .72rem; font-weight: 600; background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; padding: .2rem .5rem; border-radius: 3px; margin-bottom: .75rem; }
+.comp-link-full { background: var(--off); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.comp-link-full p { font-size: .875rem; color: var(--muted); }
+.comp-link-full strong { color: var(--text); }
+
+/* ── STAGE ───────────────────────────────────────────────────────────────── */
+#stage { background: var(--white); }
+.stage-header { background: linear-gradient(135deg, var(--navy) 0%, #243A6E 100%); color: var(--white); padding: 4rem 0 3rem; }
+.stage-header h2 { font-family: var(--font-h); font-size: 2rem; font-weight: 700; margin-bottom: .6rem; }
+.stage-header p { color: #8FA7CB; font-size: .925rem; max-width: 52ch; }
+.stage-body { padding: 3.5rem 0 5rem; }
+.stage-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+.info-card { background: var(--off); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+.info-card-label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
+.info-card-value { font-family: var(--font-h); font-size: 1rem; font-weight: 600; color: var(--text); }
+.info-card-sub { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+.stage-section-title { font-family: var(--font-h); font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text); }
+.timeline { position: relative; padding-left: 1.75rem; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.tl-item { position: relative; margin-bottom: 2rem; }
+.tl-item::before { content: ''; position: absolute; left: -1.75rem; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--blue); border: 2px solid var(--white); box-shadow: 0 0 0 2px var(--border); }
+.tl-item h4 { font-family: var(--font-h); font-size: .95rem; font-weight: 700; margin-bottom: .35rem; }
+.tl-item p { font-size: .875rem; color: var(--muted); line-height: 1.7; }
+.tl-item .tl-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
+.tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.tech-card { background: var(--off); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+.tech-card-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+.tech-card h4 { font-family: var(--font-h); font-size: .85rem; font-weight: 700; margin-bottom: .3rem; }
+.tech-card p { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+
+/* ── HOBBIES ─────────────────────────────────────────────────────────────── */
+#hobbies { background: var(--off); }
+.hobby-header { background: var(--navy); color: var(--white); padding: 4rem 0 3rem; }
+.hobby-header h2 { font-family: var(--font-h); font-size: 2rem; font-weight: 700; margin-bottom: .6rem; }
+.hobby-header p { color: #8FA7CB; font-size: .925rem; }
+.hobby-body { padding: 3.5rem 0 5rem; }
+.hobby-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.hobby-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.hobby-card-img {
+  height: 180px; display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+}
+.hobby-card-img.gaming { background: linear-gradient(135deg, #1a1f36 0%, #243356 100%); }
+.hobby-card-img.writing { background: linear-gradient(135deg, #1a2744 0%, #1e3a5f 100%); }
+.hobby-card-body { padding: 1.5rem; }
+.hobby-card-body h3 { font-family: var(--font-h); font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; }
+.hobby-card-body p { font-size: .875rem; color: var(--muted); line-height: 1.75; margin-bottom: .75rem; }
+
+/* ── MENTIONS LÉGALES ────────────────────────────────────────────────────── */
+#mentions { background: var(--white); }
+.mentions-header { background: var(--navy); color: var(--white); padding: 4rem 0 3rem; }
+.mentions-header h2 { font-family: var(--font-h); font-size: 2rem; font-weight: 700; margin-bottom: .6rem; }
+.mentions-header p { color: #8FA7CB; font-size: .925rem; }
+.mentions-body { padding: 3.5rem 0 5rem; }
+.mentions-section { margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 2.5rem; }
+.mentions-section:last-child { border-bottom: none; }
+.mentions-section h3 { font-family: var(--font-h); font-size: 1rem; font-weight: 700; margin-bottom: .75rem; color: var(--text); }
+.mentions-section p { font-size: .875rem; color: var(--muted); line-height: 1.8; margin-bottom: .5rem; }
+.mentions-section a { color: var(--blue); text-decoration: none; }
+.mentions-section a:hover { text-decoration: underline; }
+
+/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+footer {
+  background: var(--navy); color: #8FA7CB;
+  padding: 2rem 0; text-align: center; font-size: .825rem;
+}
+footer .f-name { font-family: var(--font-h); color: var(--white); font-weight: 700; margin-bottom: .25rem; }
+footer a { color: var(--sky); text-decoration: none; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  nav { padding: 0 1rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: block; }
+  .hero-grid { grid-template-columns: 1fr; padding: 2.5rem 1.25rem 3rem; }
+  .hero-card { display: none; }
+  .about-grid { grid-template-columns: 1fr; }
+  .stage-info-grid { grid-template-columns: 1fr; }
+  .tech-grid { grid-template-columns: 1fr 1fr; }
+  .hobby-grid { grid-template-columns: 1fr; }
+  .comp-link-full { flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .tech-grid { grid-template-columns: 1fr; }
+  .hero-name { font-size: 2.1rem; }
+}
+</style>
 </head>
 <body>
 
-   <header>
-        <h1>Bienvenue sur mon site personnel</h1>
-    </header>
+<!-- ── NAVIGATION ──────────────────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showSection('accueil')">
+    Quentin<span>.</span>
+  </a>
+  <div class="nav-links">
+    <button onclick="showSection('accueil')" class="active" id="nav-accueil">Accueil</button>
+    <button onclick="go('cv')" id="nav-cv">CV</button>
+    <button onclick="go('competences')" id="nav-competences">Compétences</button>
+    <button onclick="go('stage')" id="nav-stage">Stage</button>
+    <button onclick="go('hobbies')" id="nav-hobbies">Hobbies</button>
+    <button onclick="go('mentions')" id="nav-mentions">Mentions légales</button>
+  </div>
+  <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-mobile" id="nav-mobile">
+  <button onclick="showSection('accueil');toggleMenu()" id="mob-accueil" class="active">Accueil</button>
+  <button onclick="go('cv');toggleMenu()" id="mob-cv">CV</button>
+  <button onclick="go('competences');toggleMenu()" id="mob-competences">Compétences</button>
+  <button onclick="go('stage');toggleMenu()" id="mob-stage">Stage</button>
+  <button onclick="go('hobbies');toggleMenu()" id="mob-hobbies">Hobbies</button>
+  <button onclick="go('mentions');toggleMenu()" id="mob-mentions">Mentions légales</button>
+</div>
 
-    <nav>
-        <a href="cv.html">Mon CV</a>
-        <a href="competences.html">Mes Compétences</a>
-        <a href="hobbies.html">Mes Hobbies</a>
-    </nav>
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- ACCUEIL                                                                    -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div id="accueil" class="section active">
+  <div style="background:var(--navy);position:relative;overflow:hidden;">
+    <div class="hero-bg">
+      <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="250" cy="250" r="200" stroke="white" stroke-width=".8"/>
+        <circle cx="250" cy="250" r="140" stroke="white" stroke-width=".8"/>
+        <circle cx="250" cy="250" r="80" stroke="white" stroke-width=".8"/>
+        <line x1="50" y1="250" x2="450" y2="250" stroke="white" stroke-width=".6"/>
+        <line x1="250" y1="50" x2="250" y2="450" stroke="white" stroke-width=".6"/>
+        <line x1="109" y1="109" x2="391" y2="391" stroke="white" stroke-width=".5"/>
+        <line x1="391" y1="109" x2="109" y2="391" stroke="white" stroke-width=".5"/>
+        <circle cx="250" cy="50" r="5" fill="white"/>
+        <circle cx="450" cy="250" r="5" fill="white"/>
+        <circle cx="250" cy="450" r="5" fill="white"/>
+        <circle cx="50" cy="250" r="5" fill="white"/>
+        <circle cx="391" cy="109" r="4" fill="white"/>
+        <circle cx="391" cy="391" r="4" fill="white"/>
+        <circle cx="109" cy="109" r="4" fill="white"/>
+        <circle cx="109" cy="391" r="4" fill="white"/>
+      </svg>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-tag">Portfolio — BUT R&T</div>
+        <h1 class="hero-name">Quentin<br><em>Vieillame</em></h1>
+        <p class="hero-role">Étudiant BUT Réseaux &amp; Télécommunications · Cybersécurité</p>
+        <p class="hero-bio">
+          En troisième année à l'IUT de Béthune, je me spécialise en cybersécurité et administration des systèmes d'information. Mon objectif est de poursuivre en master, en alternance, pour approfondir mes compétences dans un contexte professionnel exigeant.
+        </p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" onclick="go('competences')">Mes compétences</button>
+          <button class="btn btn-outline" onclick="go('stage')">Mon stage</button>
+          <button class="btn btn-outline" onclick="go('cv')">Mon CV</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-photo">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="30" r="16" stroke="white" stroke-width="2"/>
+            <path d="M10 72c0-16.569 13.431-30 30-30s30 13.431 30 30" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Informations</h3>
+        <ul class="hero-card-info">
+          <li><strong>Formation</strong> BUT R&T — 3ème année</li>
+          <li><strong>École</strong> IUT de Béthune</li>
+          <li><strong>Spéc.</strong> Cybersécurité</li>
+          <li><strong>Objectif</strong> Master en alternance</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
+  <!-- Section À propos -->
+  <div class="section-about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-block">
+          <h2>Mon parcours</h2>
+          <p>
+            Je suis actuellement en troisième année du Bachelor Universitaire de Technologie Réseaux et Télécommunications à l'IUT de Béthune, avec une orientation marquée en cybersécurité. Ce cursus m'a permis d'acquérir des compétences solides en administration réseau, sécurisation d'infrastructures et développement d'applications communicantes.
+          </p>
+          <p>
+            Au fil des SAÉ (Situations d'Apprentissage et d'Évaluation), j'ai travaillé sur des projets concrets : conception d'un réseau d'entreprise multi-sites sécurisé, pentesting, développement Python, déploiement PostgreSQL, configuration de pare-feux Cisco ASA. Ces projets sont documentés en détail dans la section Compétences.
+          </p>
+          <p>
+            Mon premier stage, réalisé à la Mairie de Bruay-la-Buissière, m'a confronté à des environnements de production réels et renforcé ma conviction de poursuivre dans l'administration système et la cybersécurité.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Cisco IOS</span>
+            <span class="tag blue">Cisco ASA</span>
+            <span class="tag blue">Linux</span>
+            <span class="tag blue">Python</span>
+            <span class="tag blue">Windows Server</span>
+            <span class="tag blue">Active Directory</span>
+            <span class="tag blue">PostgreSQL</span>
+            <span class="tag blue">Docker</span>
+          </div>
+        </div>
+        <div>
+          <div class="school-card" style="margin-bottom:1rem;">
+            <h3>IUT de Béthune — Département R&T</h3>
+            <p>Le département Réseaux et Télécommunications de l'IUT de Béthune propose un BUT en trois ans combinant formation théorique et projets pratiques (SAÉ). L'alternance en troisième année permet une immersion complète en entreprise.</p>
+            <div class="tag-row">
+              <span class="tag">BUT R&T</span>
+              <span class="tag">Béthune, Pas-de-Calais</span>
+            </div>
+          </div>
+          <div class="school-card">
+            <h3>Objectif professionnel</h3>
+            <p>Poursuivre en master et intégrer une alternance dans le domaine de la cybersécurité ou de l'administration système et réseau, afin d'acquérir une expérience professionnelle structurée et préparer mon entrée sur le marché du travail.</p>
+            <div class="tag-row">
+              <span class="tag blue">Alternance</span>
+              <span class="tag blue">Master</span>
+              <span class="tag blue">Cybersécurité</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- COMPÉTENCES                                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div id="competences" class="section">
+  <div class="comp-header">
+    <div class="container">
+      <div class="section-label">BUT R&T — Semestres 3 &amp; 4</div>
+      <h2>Compétences développées</h2>
+      <p>Compétences acquises au fil des SAÉ de deuxième année, organisées par bloc de compétences du référentiel BUT R&T.</p>
+    </div>
+  </div>
+  <div class="comp-body">
     <div class="container">
 
-        <section id="presentation">
-            <h2>Présentation</h2>
+      <!-- SURVEILLER -->
+      <div class="bloc">
+        <div class="bloc-title">Surveiller</div>
 
-            <p class="welcome">
-                Bonjour, je m'appelle Quentin et je suis étudiant en deuxième année 
-                de BUT Réseaux et Télécommunications à l'IUT de Béthune.
-            </p>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC25.01</span> &nbsp;Administrer les protections contre les logiciels malveillants</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.Cyber.04 — Découvrir le pentesting</span>
+            <p>Analyse de la surface d'attaque d'une machine cible depuis Kali Linux (nmap, curl), identification des services exposés et définition des contre-mesures adaptées : désactivation des services inutiles, hachage bcrypt au lieu de Base64, restriction des droits sudo, fail2ban sur SSH.</p>
+            <ul>
+              <li>Outil principal : <code>nmap -all 10.16.20.187</code></li>
+              <li>Reconnaissance des services exposés et des versions vulnérables</li>
+              <li>Définition d'un plan de protection priorisé basé sur la surface d'attaque réelle</li>
+            </ul>
+          </div>
+        </details>
 
-            <div class="image-container">
-                <img src="images/iut-bethune.jpg" 
-                     alt="IUT de Béthune" 
-                     class="responsive-image">
-            </div>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC25.02</span> &nbsp;Prendre en main des outils de test de pénétration réseau/système</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.Cyber.04 — Découvrir le pentesting</span>
+            <p>Session de pentesting complète en 6 étapes : reconnaissance nmap → extraction de credentials Base64 via curl → contournement du port knocking SSH (deux terminaux en parallèle) → connexion SSH → escalade de privilèges via <code>sudo vim :!bin/sh</code> → récupération du flag.</p>
+            <ul>
+              <li>Méthode : kill chain offensive de A à Z sur environnement réel</li>
+              <li>Ressource clé : GTFOBins pour l'escalade de privilèges</li>
+              <li>Compris pourquoi Base64 ≠ chiffrement, et les limites du port knocking seul</li>
+            </ul>
+          </div>
+        </details>
+      </div>
 
-            <h3>Pourquoi le BUT Réseaux et Télécoms ?</h3>
+      <!-- SÉCURISER -->
+      <div class="bloc">
+        <div class="bloc-title">Sécuriser</div>
 
-            <p>
-                J'ai choisi cette formation parce que je suis intéressé par 
-                la technologie et les communications.
-            </p>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.01</span> &nbsp;Connaître et utiliser les bonnes pratiques et recommandations de cybersécurité (ANSSI)</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Analyse des 62 recommandations du guide ANSSI pour la protection des SI essentiels (v1.0), confrontées à notre infrastructure Packet Tracer. Résultat : <strong>85 % de conformité</strong> (53 mesures retenues, 5 exclues avec plan d'action production documenté).</p>
+          </div>
+        </details>
 
-            <p>
-                Ce qui me plaît dans le BUT, c'est le mélange entre théorie et pratique.
-                On apprend à résoudre des problèmes réels, à travailler en équipe, et à se 
-                préparer pour des métiers qui ont du sens aujourd’hui. Mon objectif, à terme, 
-                est de devenir un professionnel capable de mettre en place et sécuriser des 
-                systèmes réseaux dans un monde où tout est connecté.
-            </p>
-        </section>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.02</span> &nbsp;Mettre en œuvre les outils fondamentaux de sécurisation d'une infrastructure réseau</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Déploiement d'une double couche de filtrage sur deux sites : ACL <code>BLOCK_SERVICE_PROD</code> (whitelist stateful avec <code>established</code> et <code>echo-reply</code>) sur switchs L3 SR1/SR2, et pare-feux Cisco ASA 5506-X avec ACLs INSIDE_IN / OUTSIDE_IN / DMZ_IN et <code>inspect icmp</code>.</p>
+          </div>
+        </details>
 
-        <section id="competences-buttons">
-            <h2>Mes compétences principales</h2>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.03</span> &nbsp;Sécuriser les services (HTTP, DNS, SMTP)</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Migration HTTP → HTTPS sur Apache2 (ma spécialisation individuelle) : certificat auto-signé RSA 4096 bits avec OpenSSL, en-têtes HSTS / X-Frame-Options / X-XSS-Protection, redirection permanente port 80 → 443. DNS sécurisé par DNSSEC (ZSK RSA 2048 + KSK RSA 4096) par Matisse Rudiger.</p>
+          </div>
+        </details>
 
-            <p>Retrouvez ici les 5 grands domaines que j’ai développés durant ma formation et mon stage :</p>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.04</span> &nbsp;Choisir les outils cryptographiques adaptés au besoin fonctionnel</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Trois outils cryptographiques distincts selon le besoin : <strong>IPSec AES-256 / SHA-256 / DH Group 5</strong> pour le tunnel inter-sites, <strong>TLS RSA 4096</strong> pour les services DMZ, <strong>DNSSEC</strong> (signatures RSA) pour l'intégrité DNS. Compréhension de la différence encodage / hachage / chiffrement.</p>
+          </div>
+        </details>
 
-            <div class="skills-buttons">
-                <a class="skill-btn" href="competences.html#surveiller">Surveiller</a>
-                <a class="skill-btn" href="competences.html#securiser">Sécuriser</a>
-                <a class="skill-btn" href="competences.html#programmer">Programmer</a>
-                <a class="skill-btn" href="competences.html#connecter">Connecter</a>
-                <a class="skill-btn" href="competences.html#administrer">Administrer</a>
-                <a class="skill-btn" href="competences.html#stage">Stage</a>
-            </div>
-        </section>
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.05</span> &nbsp;Connaître les différents types d'attaque réseau</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Attaque STP (Root Bridge Hijacking) mise en pratique : switch SW-A configuré avec priorité 0 sur tous les VLANs pour s'élire Root Bridge. Conséquences : trafic inter-VLANs redirigé via l'attaquant (Man-in-the-Middle L2). Contre-mesure : BPDU Guard + PortFast sur tous les ports d'accès.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC24.06</span> &nbsp;Maîtriser les outils de documentation technique en anglais</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.02 — Développer des applications communicantes</span>
+            <p>Code source en anglais (PEP 8), README.md complet, consultation des documentations officielles PyPDF2, openpyxl, BeautifulSoup, socket Python. Conventions respectées : <code>snake_case</code>, <code>CamelCase</code>, <code>UPPER_CASE</code>, docstrings Google style.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- PROGRAMMER -->
+      <div class="bloc">
+        <div class="bloc-title">Programmer</div>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC23.01</span> &nbsp;Automatiser l'administration système avec des scripts</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.Cyber.03 — Réseau multi-sites sécurisé</span>
+            <p>Script PowerShell déployé par GPO pour monter automatiquement les partages réseau au logon. Script Bash <code>init_prod.sh</code> dans <code>/docker-entrypoint-initdb.d/</code> pour initialiser PostgreSQL au premier démarrage du conteneur Docker.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC23.02</span> &nbsp;Développer une application à partir d'un cahier des charges</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.02 — Développer des applications communicantes</span>
+            <p>Application client/serveur de recherche documentaire en Python, structurée en trois modules séparés (<code>serveur.py</code>, <code>client.py</code>, <code>recherche.py</code>). Interface Tkinter, 4 formats de fichiers (PDF, Excel, HTML, TXT nommés <code>pentesting.*</code>), 4 modes de recherche (simple, AND, OR, regex). <code>requirements.txt</code> : PyPDF2, openpyxl, beautifulsoup4.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC23.03</span> &nbsp;Développer des applications en utilisant les principes de la communication réseau</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.02 — Développer des applications communicantes</span>
+            <p>Socket TCP Python from scratch : <code>socket.AF_INET</code>, <code>SO_REUSEADDR</code>, multi-clients via threads daemon, sérialisation JSON, réception par chunks (buffer 16 384 octets), déconnexion propre via signal <code>"q"</code>. Port serveur : 52300.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC23.04</span> &nbsp;Installer et administrer un système de gestion de données</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.02 — Développer des applications communicantes</span>
+            <p>PostgreSQL 14 sur Linux : base <code>société_62</code>, schéma <code>production</code>, 4 rôles (prod_rw, web_read, replicat, prod_admin), 3 tables (clients, produits, employe). Authentification md5 dans <code>pg_hba.conf</code>. Réplication streaming avec <code>pg_basebackup</code> vers un serveur secondaire.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC23.05</span> &nbsp;Développer un moteur de recherche multi-format</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.02 — Développer des applications communicantes</span>
+            <p>Module <code>recherche.py</code> : parseurs PyPDF2 (PDF), openpyxl (xlsx), BeautifulSoup (HTML), lecture TXT avec <code>@lru_cache(maxsize=128)</code>. Fonction <code>match_logic()</code> unifiée pour 4 modes. Gestion des PDFs numérisés et des regex invalides (<code>try/except re.error</code>).</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- CONNECTER -->
+      <div class="bloc">
+        <div class="bloc-title">Connecter</div>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC22.01</span> &nbsp;Maîtriser les systèmes de transmission radio (SDR, GNU Radio)</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.01 — Mettre en œuvre un système de transmission</span>
+            <p>Adalm-Pluto (SDR 325 MHz–3,8 GHz) + GNU Radio : récepteur FM avec la relation <code>Fs = samp_rate / dRS × dAD</code>, émetteur/récepteur AM. Analyse spectrale avec MCS Spectrum Analyzer sur fichiers .mdr. Étude du standard DAB+ (COFDM, 1536 sous-porteuses, HE-AAC v2).</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC22.02</span> &nbsp;Connecter des systèmes de gestion réseau à des environnements distants</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.Cyber.04 — Découvrir le pentesting</span>
+            <p>Accès SSH sur machine protégée par port knocking : synchronisation à deux terminaux (SSH en attente active pendant le knocking nmap). Escalade de privilèges post-connexion via <code>sudo vim :!bin/sh</code>.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC22.03</span> &nbsp;Mettre en place une connexion multi-site via un réseau opérateur</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Tunnel GRE over IPSec entre R1 et R3 via un routeur de transit R2 (réseau opérateur). Dual OSPF process : OSPF 1 pour le réseau physique, OSPF 2 pour le tunnel avec <code>redistribute ospf 1</code> et <code>redistribute connected</code>. Vérification : <code>Tunnel0 is up / ping !!!!!</code></p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC22.04</span> &nbsp;Analyser les réseaux d'accès des opérateurs (LTE, Wi-Fi, DAB+)</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 3.01 — Mettre en œuvre un système de transmission</span>
+            <p>Analyse des trames 4G LTE échangées avec un relais proche de l'IUT (Spectran V4 + MCS Analyzer). Observation de l'occupation des canaux Wi-Fi (2,4 GHz : seuls 1, 6, 11 non-chevauchants). Étude théorique DAB+ : OFDM, bande III, préfixe cyclique 246 µs.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC22.05</span> &nbsp;Capacité à questionner un cahier des charges RT</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Analyse du CDC pour identifier les besoins de segmentation (3 VLANs/site), de services publics (DMZ), d'interconnexion sécurisée (GRE/IPSec) et de protection multicouche (ACL switch + ASA). Production de la matrice d'accès Admin/Service/Production qui devient la référence de test.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- ADMINISTRER -->
+      <div class="bloc">
+        <div class="bloc-title">Administrer</div>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC21.01</span> &nbsp;Configurer et dépanner le routage dynamique</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 + SAÉ 3.Cyber.03</span>
+            <p>Dual OSPF process SAÉ 4.Cyber.01 (OSPF 1 physique + OSPF 2 tunnel GRE avec redistribution). HSRP SAÉ 3.Cyber.03 : SR1_siege priorité 105 avec preempt, <code>ip helper-address 192.168.10.10</code> sur chaque SVI pour le relais DHCP centralisé vers le Windows Server.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC21.02</span> &nbsp;Configurer et expliquer une politique de sécurité réseau</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 — Sécuriser un SI</span>
+            <p>Politique deny-all-permit-by-exception sur deux couches : ACL <code>BLOCK_SERVICE_PROD</code> sur switchs L3 + ACLs ASA (INSIDE_IN / OUTSIDE_IN / DMZ_IN) avec <code>inspect icmp</code>. Matrice de conformité : 9 scénarios testés et validés.</p>
+          </div>
+        </details>
+
+        <details class="ac">
+          <summary class="ac-sum">
+            <span><span class="ac-code">AC21.03</span> &nbsp;Déployer des postes clients et des solutions virtualisées</span>
+          </summary>
+          <div class="ac-body">
+            <span class="ac-sae">SAÉ 4.Cyber.01 + SAÉ 3.Cyber.03</span>
+            <p>Infrastructure complète sous Cisco Packet Tracer (2 ASA 5506-X, 2 switchs L3, 3 routeurs, 2 serveurs DMZ). Windows Server 2022 multi-rôles (DHCP 10 scopes, DNS, Active Directory, WinGate). PostgreSQL sous Docker avec réplication. VMs Linux Ubuntu pour HTTPS et DNSSEC.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="comp-link-full">
+        <div>
+          <strong>Documentation complète avec preuves documentaires</strong>
+          <p>Le fichier <code>competences.html</code> contient les configurations complètes, extraits de code, captures de pages du rapport et du Write Up, et blocs de réflexion analytique BUT2 pour chacun des 21 Apprentissages Critiques.</p>
+        </div>
+        <a href="competences.html" class="btn btn-primary" target="_blank">Voir le détail complet</a>
+      </div>
 
     </div>
+  </div>
+</div>
 
-    <footer>
-        <p> &copy; 2026 Mon Portfolio. Tous droits réservés. <a href="mentions.html">Mentions légales</a></p>
-    </footer>
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- STAGE                                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div id="stage" class="section">
+  <div class="stage-header">
+    <div class="container">
+      <div class="section-label">Stage — 2ème année</div>
+      <h2>Mairie de Bruay-la-Buissière</h2>
+      <p>Service informatique de la Direction des Systèmes d'Information — 7 avril au 10 juin 2026</p>
+    </div>
+  </div>
+  <div class="stage-body">
+    <div class="container">
 
+      <div class="stage-info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Organisme</div>
+          <div class="info-card-value">Mairie de Bruay-la-Buissière</div>
+          <div class="info-card-sub">Direction des Systèmes d'Information (DSI)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Période</div>
+          <div class="info-card-value">7 avril — 10 juin 2026</div>
+          <div class="info-card-sub">10 semaines</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Tuteur de stage</div>
+          <div class="info-card-value">Christophe Verhaeghe</div>
+          <div class="info-card-sub">Service informatique</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Domaine</div>
+          <div class="info-card-value">Administration SI</div>
+          <div class="info-card-sub">Réseau, sécurité, infrastructure</div>
+        </div>
+      </div>
+
+      <h3 class="stage-section-title">Missions réalisées</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <h4>Testbed sécurisé pour la télémaintenance</h4>
+          <p>Conception et déploiement d'un environnement de test isolé permettant d'expérimenter la solution de télémaintenance <strong>Remotely</strong> dans des conditions contrôlées et sécurisées, avant tout déploiement en production sur le parc informatique municipal.</p>
+          <div class="tl-tags">
+            <span class="tag blue">Remotely</span>
+            <span class="tag blue">VLANs 802.1Q</span>
+            <span class="tag blue">Isolation réseau</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <h4>Configuration du pare-feu Stormshield SN210</h4>
+          <p>Paramétrage des règles de filtrage sur le pare-feu <strong>Stormshield SN210</strong> pour sécuriser les flux du testbed, contrôler les accès entre segments réseau et garantir que la solution de télémaintenance ne constitue pas un vecteur d'intrusion vers l'infrastructure municipale.</p>
+          <div class="tl-tags">
+            <span class="tag blue">Stormshield SN210</span>
+            <span class="tag blue">Politique de filtrage</span>
+            <span class="tag blue">Règles de pare-feu</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <h4>Administration Windows Server 2022 &amp; Docker</h4>
+          <p>Gestion de l'environnement serveur Windows Server 2022 du testbed. Déploiement de Remotely et d'autres services via <strong>Docker</strong> pour faciliter la maintenance et la portabilité des applications utilisées dans les tests.</p>
+          <div class="tl-tags">
+            <span class="tag blue">Windows Server 2022</span>
+            <span class="tag blue">Docker</span>
+            <span class="tag blue">Déploiement applicatif</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <h4>Interventions terrain</h4>
+          <p>Participation aux opérations d'infrastructure physique du service informatique : brassage de baies informatiques dans les locaux techniques et installation de bornes Wi-Fi dans les bâtiments municipaux.</p>
+          <div class="tl-tags">
+            <span class="tag">Brassage de baies</span>
+            <span class="tag">Installation Wi-Fi</span>
+            <span class="tag">Infrastructure physique</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="stage-section-title" style="margin-top:2.5rem;">Technologies utilisées</h3>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-card-icon">01</div>
+          <h4>Stormshield SN210</h4>
+          <p>Pare-feu professionnel utilisé en collectivité. Configuration des règles de filtrage, gestion des zones réseau et politique de sécurité périmétrique.</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-icon">02</div>
+          <h4>Windows Server 2022</h4>
+          <p>Administration du serveur hébergeant les services du testbed. Gestion des utilisateurs, des partages et de l'environnement applicatif.</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-icon">03</div>
+          <h4>Docker</h4>
+          <p>Déploiement de Remotely et d'autres services en conteneurs pour faciliter la gestion et la reproductibilité des environnements de test.</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-icon">04</div>
+          <h4>Remotely</h4>
+          <p>Solution de télémaintenance open source. Tests en conditions réelles sur le testbed isolé avant préconisation pour un déploiement à l'échelle municipale.</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-icon">05</div>
+          <h4>VLANs 802.1Q</h4>
+          <p>Segmentation réseau du testbed par VLANs pour isoler les flux de test des réseaux de production de la collectivité.</p>
+        </div>
+        <div class="tech-card">
+          <div class="tech-card-icon">06</div>
+          <h4>Infrastructure Wi-Fi</h4>
+          <p>Installation physique et raccordement de bornes Wi-Fi dans des bâtiments municipaux, câblage et intégration au réseau existant.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:3rem;background:var(--off);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;">
+        <h3 style="font-family:var(--font-h);font-size:1rem;font-weight:700;margin-bottom:.75rem;">Ce que ce stage m'a apporté</h3>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.8;margin-bottom:.6rem;">
+          Ce premier stage en collectivité m'a confronté à des contraintes que les projets académiques ne reflètent pas : des systèmes en production qu'on ne peut pas redémarrer librement, des utilisateurs qui dépendent de la disponibilité des services, et des décisions qui doivent être documentées et validées avant déploiement.
+        </p>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.8;">
+          La configuration du Stormshield m'a familiarisé avec un équipement de sécurité professionnel hors du contexte Cisco/Packet Tracer. Les interventions terrain m'ont appris la rigueur du câblage physique et l'importance d'une documentation précise de chaque modification d'infrastructure.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- HOBBIES                                                                    -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div id="hobbies" class="section">
+  <div class="hobby-header">
+    <div class="container">
+      <div class="section-label">En dehors des études</div>
+      <h2>Centres d'intérêt</h2>
+      <p>Ce qui m'occupe en dehors des cours et des projets.</p>
+    </div>
+  </div>
+  <div class="hobby-body">
+    <div class="container">
+      <div class="hobby-grid">
+
+        <div class="hobby-card">
+          <div class="hobby-card-img gaming">Jeux</div>
+          <div class="hobby-card-body">
+            <h3>Jeux vidéo — Grand Stratégie</h3>
+            <p>
+              Ma pratique se concentre sur les jeux de grande stratégie (Crusader Kings, Hearts of Iron, Victoria) : des systèmes complexes à appréhender, des décisions à chaîner sur des dizaines d'heures, et une logique de gestion de ressources et de risques qui finit par ressembler à de la gestion de réseau.
+            </p>
+            <p>
+              Ces jeux développent une capacité à lire un système dans son ensemble avant d'agir localement — une qualité transférable à l'administration d'une infrastructure.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Grand stratégie</span>
+              <span class="tag">PC Gaming</span>
+              <span class="tag">Gestion de systèmes complexes</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hobby-card">
+          <div class="hobby-card-img writing">Écriture</div>
+          <div class="hobby-card-body">
+            <h3>Écriture créative</h3>
+            <p>
+              Je travaille sur un roman de fantasy, les <em>Chroniques de Nox</em> — un projet de long terme qui demande autant de rigueur dans la construction du monde que de précision dans le style. Écrire une série cohérente impose de gérer des systèmes de règles internes, des personnages avec leur propre logique et des arcs narratifs sur la durée.
+            </p>
+            <p>
+              L'écriture m'oblige à structurer des idées complexes de façon lisible pour un lecteur — une compétence directement utile pour la documentation technique.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Roman fantasy</span>
+              <span class="tag">Chroniques de Nox</span>
+              <span class="tag">Construction de monde</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- MENTIONS LÉGALES                                                           -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div id="mentions" class="section">
+  <div class="mentions-header">
+    <div class="container">
+      <h2>Mentions légales</h2>
+      <p>Informations légales relatives à ce site portfolio.</p>
+    </div>
+  </div>
+  <div class="mentions-body">
+    <div class="container" style="max-width:680px;">
+
+      <div class="mentions-section">
+        <h3>Éditeur du site</h3>
+        <p>Ce site est un portfolio personnel réalisé dans le cadre du BUT Réseaux et Télécommunications à l'IUT de Béthune.</p>
+        <p><strong>Auteur :</strong> Quentin Vieillame</p>
+        <p><strong>Établissement :</strong> IUT de Béthune, Département Réseaux et Télécommunications</p>
+        <p><strong>Statut :</strong> Étudiant — BUT R&T 3ème année</p>
+      </div>
+
+      <div class="mentions-section">
+        <h3>Hébergement</h3>
+        <p>Ce site est hébergé à des fins pédagogiques dans le cadre du cursus BUT R&T. Pour toute information concernant l'hébergement, veuillez contacter l'auteur directement.</p>
+      </div>
+
+      <div class="mentions-section">
+        <h3>Propriété intellectuelle</h3>
+        <p>L'ensemble du contenu de ce site (textes, configurations, extraits de code, captures documentaires) est la propriété de Quentin Vieillame, sauf mention contraire. Les captures issues des rapports de SAÉ appartiennent à leurs auteurs respectifs (Quentin Vieillame, Matisse Rudiger, Adam Duponchelle, Antoine Grevin).</p>
+        <p>Toute reproduction, même partielle, est soumise à autorisation préalable de l'auteur.</p>
+      </div>
+
+      <div class="mentions-section">
+        <h3>Données personnelles</h3>
+        <p>Ce site ne collecte aucune donnée personnelle, n'utilise pas de cookies de traçage et n'intègre aucun outil d'analyse d'audience. Aucun formulaire de contact n'est présent sur ce site.</p>
+        <p>Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679), vous disposez d'un droit d'accès, de rectification et de suppression des informations vous concernant.</p>
+      </div>
+
+      <div class="mentions-section">
+        <h3>Responsabilité</h3>
+        <p>Les informations présentées sur ce site sont fournies à titre indicatif dans un cadre pédagogique. L'auteur s'efforce d'en assurer l'exactitude mais ne peut garantir l'exhaustivité ni l'absence d'erreurs. Les configurations réseau et extraits de code présentés ont été réalisés dans des environnements de simulation (Cisco Packet Tracer, machines virtuelles) et ne doivent pas être appliqués en production sans adaptation.</p>
+      </div>
+
+      <div class="mentions-section">
+        <h3>Contact</h3>
+        <p>Pour toute question relative à ce site ou à son contenu, vous pouvez contacter l'auteur via les coordonnées communiquées dans le cadre du cursus universitaire à l'IUT de Béthune.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="f-name">Quentin Vieillame</div>
+    <p>BUT Réseaux &amp; Télécommunications — IUT de Béthune &nbsp;·&nbsp; <button onclick="go('mentions')" style="background:none;border:none;color:#BAD3FA;cursor:pointer;font-size:.825rem;text-decoration:underline;padding:0;">Mentions légales</button></p>
+  </div>
+</footer>
+
+<script>
+/* Navigation entre les pages du portfolio (fichiers séparés) */
+function go(page) { window.location.href = page + '.html'; }
+
+const sections = ['accueil','competences','stage','hobbies','mentions'];
+
+function showSection(id) {
+  sections.forEach(s => {
+    document.getElementById(s).classList.toggle('active', s === id);
+    const btn = document.getElementById('nav-' + s);
+    const mob = document.getElementById('mob-' + s);
+    if (btn) btn.classList.toggle('active', s === id);
+    if (mob) mob.classList.toggle('active', s === id);
+  });
+  window.scrollTo({ top: 0 });
+}
+
+function toggleMenu() {
+  document.getElementById('nav-mobile').classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('nav-mobile');
+  const burger = document.querySelector('.nav-burger');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !burger.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+</script>
 </body>
 </html>
