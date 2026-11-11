@@ -1,55 +1,388 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentions légales</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Lien vers le fichier CSS -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales — Quentin Vieillame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Reset & base ────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: #1E293B;
+    background: #fff;
+}
+img { max-width: 100%; height: auto; display: block; }
+
+/* ── Variables ───────────────────────────────────── */
+:root {
+    --navy:    #0D1B2A;
+    --navy2:   #152336;
+    --blue:    #3B82F6;
+    --blue2:   #2563EB;
+    --light:   #F1F5F9;
+    --border:  #E2E8F0;
+    --text:    #1E293B;
+    --muted:   #64748B;
+    --white:   #FFFFFF;
+    --radius:  8px;
+    --shadow:  0 2px 16px rgba(13,27,42,.08);
+}
+
+/* ── Navigation ──────────────────────────────────── */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 64px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.nav-brand {
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--white); text-decoration: none;
+    letter-spacing: -.01em;
+}
+.nav-brand span { color: var(--blue); }
+.nav-links { display: flex; gap: 0.25rem; list-style: none; }
+.nav-links a {
+    color: rgba(255,255,255,.72); text-decoration: none;
+    font-size: .875rem; font-weight: 500;
+    padding: .45rem .9rem; border-radius: var(--radius);
+    transition: background .15s, color .15s;
+}
+.nav-links a:hover, .nav-links a.active {
+    background: rgba(59,130,246,.18); color: var(--white);
+}
+.nav-hamburger { display: none; }
+
+/* ── Page content offset ─────────────────────────── */
+main { padding-top: 64px; min-height: calc(100vh - 64px); }
+
+/* ── Hero (index) ────────────────────────────────── */
+.hero {
+    background: var(--navy);
+    position: relative; overflow: hidden;
+    padding: 7rem 2.5rem 5.5rem;
+    display: flex; align-items: center; justify-content: center;
+}
+.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(59,130,246,.18) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+.hero-inner {
+    position: relative; max-width: 780px; width: 100%;
+}
+.hero-tag {
+    display: inline-block;
+    background: rgba(59,130,246,.15);
+    color: var(--blue);
+    border: 1px solid rgba(59,130,246,.3);
+    font-size: .78rem; font-weight: 600;
+    letter-spacing: .06em;
+    padding: .3rem .8rem; border-radius: 20px;
+    margin-bottom: 1.6rem; text-transform: uppercase;
+}
+.hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 800; color: var(--white);
+    line-height: 1.15; letter-spacing: -.02em;
+    margin-bottom: .8rem;
+}
+.hero h1 .accent { color: var(--blue); }
+.hero-sub {
+    font-size: 1.1rem; color: rgba(255,255,255,.62);
+    max-width: 560px; margin-bottom: 2.2rem; line-height: 1.7;
+}
+.hero-ctas { display: flex; gap: .75rem; flex-wrap: wrap; }
+.btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-family: inherit; font-size: .9rem; font-weight: 600;
+    padding: .65rem 1.4rem; border-radius: var(--radius);
+    cursor: pointer; text-decoration: none; transition: all .15s;
+    border: 2px solid transparent;
+}
+.btn-primary {
+    background: var(--blue); color: var(--white);
+    border-color: var(--blue);
+}
+.btn-primary:hover { background: var(--blue2); border-color: var(--blue2); }
+.btn-outline {
+    background: transparent; color: var(--white);
+    border-color: rgba(255,255,255,.3);
+}
+.btn-outline:hover { border-color: rgba(255,255,255,.65); background: rgba(255,255,255,.06); }
+
+/* ── Section ─────────────────────────────────────── */
+.section { padding: 4.5rem 2.5rem; }
+.section-light { background: var(--light); }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label {
+    display: inline-block;
+    font-size: .72rem; font-weight: 700;
+    color: var(--blue); letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: .6rem;
+}
+.section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800; color: var(--text);
+    letter-spacing: -.02em; margin-bottom: .5rem;
+}
+.section-sub {
+    font-size: .975rem; color: var(--muted);
+    max-width: 560px; margin-bottom: 2.8rem;
+}
+
+/* ── Cards ───────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+.card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.75rem;
+    box-shadow: var(--shadow); transition: box-shadow .15s;
+}
+.card:hover { box-shadow: 0 6px 24px rgba(13,27,42,.12); }
+.card-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: rgba(59,130,246,.1);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem; font-size: 1.2rem;
+}
+.card h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: .4rem; }
+.card p { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Tech tags ───────────────────────────────────── */
+.tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.tag {
+    font-size: .75rem; font-weight: 600;
+    padding: .25rem .7rem; border-radius: 20px;
+    background: var(--light); color: var(--text);
+    border: 1px solid var(--border);
+}
+.tag-blue { background: rgba(59,130,246,.1); color: var(--blue2); border-color: rgba(59,130,246,.25); }
+
+/* ── Timeline ────────────────────────────────────── */
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+    content: ''; position: absolute; left: 6px; top: 6px; bottom: 0;
+    width: 2px; background: var(--border);
+}
+.timeline-item { position: relative; margin-bottom: 2.2rem; }
+.timeline-item::before {
+    content: ''; position: absolute; left: -2rem; top: 6px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--blue); border: 3px solid var(--white);
+    box-shadow: 0 0 0 2px var(--blue);
+}
+.timeline-date {
+    font-size: .78rem; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: .35rem;
+}
+.timeline-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+.timeline-sub { font-size: .875rem; color: var(--muted); margin-bottom: .6rem; }
+
+/* ── Profile card (index) ────────────────────────── */
+.profile-card {
+    display: flex; gap: 2.5rem; align-items: flex-start;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 2.2rem;
+    box-shadow: var(--shadow);
+}
+.profile-avatar {
+    flex-shrink: 0;
+    width: 96px; height: 96px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), #0284C7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 800; color: var(--white);
+    letter-spacing: -.02em;
+}
+.profile-info h2 { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: .3rem; }
+.profile-info .role { font-size: .9rem; color: var(--blue2); font-weight: 600; margin-bottom: .6rem; }
+.profile-info p { font-size: .9rem; color: var(--muted); line-height: 1.65; }
+
+/* ── Stage page ──────────────────────────────────── */
+.mission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.mission-item {
+    border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem;
+    background: var(--white);
+}
+.mission-item h4 { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+.mission-item p { font-size: .82rem; color: var(--muted); }
+
+/* ── Stat bar ────────────────────────────────────── */
+.stat-row { display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; }
+.stat-box {
+    text-align: center; padding: 1.2rem 1.8rem;
+    background: var(--navy); border-radius: 10px; color: var(--white);
+    min-width: 120px;
+}
+.stat-box .num { font-size: 1.8rem; font-weight: 800; color: var(--blue); }
+.stat-box .lbl { font-size: .75rem; color: rgba(255,255,255,.55); margin-top: .15rem; }
+
+/* ── Page header (inner pages) ───────────────────── */
+.page-header {
+    background: var(--navy); padding: 4.5rem 2.5rem 3.5rem;
+    position: relative; overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(59,130,246,.14) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+.page-header .inner { position: relative; max-width: 1100px; margin: 0 auto; }
+.page-header .section-label { margin-bottom: .5rem; }
+.page-header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800; color: var(--white); letter-spacing: -.02em;
+    margin-bottom: .6rem;
+}
+.page-header p { font-size: 1rem; color: rgba(255,255,255,.6); max-width: 540px; }
+
+/* ── Proof images ────────────────────────────────── */
+figure.proof-img { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+figure.proof-img img { width: 100%; height: auto; max-height: 480px; object-fit: contain; background: #fff; }
+figure.proof-img figcaption { padding: .5rem .9rem; font-size: .75rem; color: var(--muted); font-style: italic; border-top: 1px solid var(--border); }
+
+/* ── Accordion (competences) ─────────────────────── */
+.accordion-item { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+.accordion-title { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.4rem; cursor: pointer; list-style: none; font-weight: 700; color: var(--navy); font-size: 1rem; transition: background .1s; }
+.accordion-title:hover { background: var(--light); }
+.accordion-title::marker, .accordion-title::-webkit-details-marker { display: none; }
+.accordion-title::after { content: '+'; font-size: 1.2rem; color: var(--blue); margin-left: .5rem; }
+details[open] > .accordion-title::after { content: '−'; }
+.accordion-content { padding: 0 1.4rem 1.4rem; }
+.accordion-subitem { border: 1px solid var(--border); border-radius: 8px; margin-top: .75rem; }
+.accordion-subtitle { padding: .85rem 1.1rem; cursor: pointer; list-style: none; font-weight: 600; color: var(--text); font-size: .9rem; }
+.accordion-subtitle::-webkit-details-marker { display: none; }
+.accordion-content { padding: 0 1.1rem 1.1rem; }
+
+/* ── Reflexion block ─────────────────────────────── */
+.reflexion { background: #EFF6FF; border-left: 3px solid var(--blue); padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin-top: 1.2rem; }
+.reflexion p { margin-bottom: .4rem; font-size: .9rem; }
+.rlabel { font-weight: 700; color: var(--blue2); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── Footer ──────────────────────────────────────── */
+footer {
+    background: var(--navy); color: rgba(255,255,255,.45);
+    text-align: center; font-size: .82rem;
+    padding: 1.8rem 2rem;
+    border-top: 1px solid rgba(255,255,255,.06);
+}
+footer a { color: var(--blue); text-decoration: none; }
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 768px) {
+    .nav { padding: 0 1.2rem; }
+    .nav-links { display: none; }
+    .nav-hamburger {
+        display: block; background: none; border: none;
+        cursor: pointer; color: var(--white); font-size: 1.4rem;
+    }
+    .nav-links.open {
+        display: flex; flex-direction: column;
+        position: fixed; top: 64px; left: 0; right: 0;
+        background: var(--navy); padding: 1rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    .hero { padding: 4.5rem 1.4rem 3.5rem; }
+    .section { padding: 3rem 1.4rem; }
+    .page-header { padding: 3.2rem 1.4rem 2.5rem; }
+    .profile-card { flex-direction: column; gap: 1.2rem; }
+    .stat-row { gap: .75rem; }
+    pre, code { font-size: .78em; }
+    pre { overflow-x: auto; }
+}
+
+</style>
 </head>
-
 <body>
-    <!-- En-tête -->
-    <header>
-        <h1>Mentions légales</h1>
-    </header>
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Quentin <span>Vieillame</span></a>
+  <ul class="nav-links" id="navLinks"><li><a href="index.html">Accueil</a></li><li><a href="cv.html">CV</a></li><li><a href="competences.html">Compétences</a></li><li><a href="stage.html">Stage</a></li><li><a href="hobbies.html">Hobbies</a></li><li><a href="mentions.html" class="active">Mentions légales</a></li></ul>
+  <button class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+</nav>
+<main>
 
-    <!-- Menu de navigation -->
-    <nav>
-        <a href="index.html">Accueil</a>
-        <a href="cv.html">Mon CV</a>
-        <a href="competences.html">Compétences</a>
-        <a href="hobbies.html">Mes Hobbies</a>
-    </nav>
+<div class="page-header">
+  <div class="inner">
+    <span class="section-label">Informations légales</span>
+    <h1>Mentions légales</h1>
+    <p>Informations relatives au présent site portfolio personnel.</p>
+  </div>
+</div>
 
-    <!-- Contenu des mentions légales -->
-    <div class="container">
-        <section>
-            <!-- Titre en gras au-dessus des informations légales -->
-            <h1 class="bold-title">Informations légales</h1>
-            
-            <p>Le site <strong>Bienvenue sur mon site personnel</strong> a été créé suite à la SAé 14. Il est édité par
-                Quentin, étudiant à l'IUT de Béthune, dans le cadre de la formation en Réseaux et Télécommunications.</p>
-            
-            <h2 class="bold-title">Mentions légales:</h2>
+<section class="section">
+  <div class="container" style="max-width:780px;">
 
-            <h3 class="yellow-center">Propriétaire du site</h3>
-            <p>Mr Vieillame</p>
-            <p>Mon Email: vieillamequentin@gmail.com</p>
+    <div style="display:flex;flex-direction:column;gap:2.2rem;">
 
-            <h4 class="yellow-center">Propriété intellectuelle</h4>
-            <p>Le contenu de ce site est la propriété exclusive de Quentin. Toute reproduction de ce site sans autorisation
-                est interdite.</p>
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Éditeur du site</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          Ce site est un portfolio personnel édité par :<br>
+          <strong style="color:var(--text);">Quentin Vieillame</strong><br>
+          Étudiant en BUT Réseaux &amp; Télécommunications, spécialisation Cybersécurité<br>
+          IUT de Béthune, Université d'Artois<br>
+          Région Hauts-de-France, France
+        </p>
+      </div>
 
-            <h1 class="bold-title">Crédits :</h1>
-            <p>La police d'écriture utilisée est Arial.</p>
-        </section>
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Hébergement</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          Ce site est un portfolio statique (HTML/CSS). Il peut être hébergé sur tout serveur web compatible (GitHub Pages, serveur personnel, etc.). Aucun cookie ni traceur tiers n'est utilisé.
+        </p>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Propriété intellectuelle</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          L'ensemble des contenus présents sur ce site (textes, captures d'écran de travaux personnels, configurations réseau, réflexions) sont la propriété de Quentin Vieillame, sauf mention contraire. Les images extraites des rapports de SAÉ sont des travaux personnels réalisés dans le cadre du BUT R&amp;T à l'IUT de Béthune.
+        </p>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;margin-top:.7rem;">
+          Toute reproduction, même partielle, est soumise à l'accord préalable de l'auteur.
+        </p>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Données personnelles</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          Ce site ne collecte aucune donnée personnelle. Il ne contient ni formulaire de contact actif, ni outil d'analyse d'audience, ni cookie. Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679), vous disposez d'un droit d'accès, de rectification et de suppression des données vous concernant.
+        </p>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Responsabilité</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          Les informations contenues sur ce site sont fournies à titre indicatif et pédagogique. Les configurations réseau et commandes présentées ont été réalisées dans des environnements de formation contrôlés (Packet Tracer, VMs, stages supervisés). L'auteur ne saurait être tenu responsable de tout usage détourné de ces informations.
+        </p>
+      </div>
+
+      <div>
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:2px solid var(--blue);display:inline-block;">Technologies utilisées</h2>
+        <p style="color:var(--muted);font-size:.92rem;line-height:1.75;">
+          Ce site utilise uniquement HTML5 et CSS3. La police Inter est chargée depuis Google Fonts (requête vers <code>fonts.googleapis.com</code>). Aucune bibliothèque JavaScript externe n'est utilisée. Aucune donnée n'est envoyée à un tiers.
+        </p>
+      </div>
+
+      <div style="background:var(--light);border-radius:10px;padding:1.2rem 1.4rem;font-size:.82rem;color:var(--muted);">
+        Dernière mise à jour : septembre 2026
+      </div>
     </div>
-
-   <!-- Pied de page -->
-   <footer>
-    <p>&copy; 2026 Mon Portfolio. Tous droits réservés.<a href="mentions.html">Mentions légales</a></p>
-   </footer>
+  </div>
+</section>
+</main>
+<footer>
+  <p>© 2026 Quentin Vieillame — Étudiant BUT R&amp;T, IUT de Béthune &nbsp;|&nbsp; <a href="mentions.html">Mentions légales</a></p>
+</footer>
 </body>
-
 </html>
